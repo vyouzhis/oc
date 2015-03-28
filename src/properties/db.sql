@@ -74,3 +74,54 @@ CREATE TABLE IF NOT EXISTS `web_article` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+----- postgresql
+
+DROP TABLE IF EXISTS role_user_info;
+CREATE TABLE IF NOT EXISTS role_user_info (
+  uid SERIAL ,
+  name varchar NOT NULL  UNIQUE,
+  passwd varchar NOT NULL,
+  cm varchar NOT NULL ,
+  nickname varchar NOT NULL ,
+  email varchar NOT NULL ,
+  ctime int NOT NULL DEFAULT '1' ,
+  etime int  DEFAULT '0' ,  
+  ltime int NOT NULL DEFAULT '1' ,  
+  phone varchar NOT NULL DEFAULT '' ,
+  status int NOT NULL DEFAULT '1' ,  
+  isdelete int DEFAULT '0' ,
+  gid int NOT NULL DEFAULT '0' ,
+  cid int NOT NULL DEFAULT '0' ,
+  error int NOT NULL DEFAULT '0' ,
+  PRIMARY KEY (uid)
+) ;
+
+
+DROP TABLE IF EXISTS role_group;
+CREATE TABLE IF NOT EXISTS role_group  (
+  id SERIAL,
+  gname varchar NOT NULL DEFAULT '' ,
+  gdesc varchar NOT NULL DEFAULT '' ,
+  position int DEFAULT '1' ,    
+  mainrole text ,  
+  subrole text ,
+  status int NOT NULL DEFAULT '1' ,
+  isdelete int DEFAULT '0' ,
+  uid int NOT NULL DEFAULT '0' ,
+  ctime int NOT NULL ,  
+  etime int NOT NULL ,  
+  PRIMARY KEY (id)
+) ;
+
+
+DROP TABLE IF EXISTS role_log;
+CREATE TABLE IF NOT EXISTS  role_log (
+  id SERIAL,
+  lid varchar NOT NULL DEFAULT '' , 
+  uid int NOT NULL  , 
+  action int DEFAULT '0' ,
+  ip varchar NOT NULL DEFAULT '' ,   
+  ctime int NOT NULL DEFAULT '0' ,  
+   PRIMARY KEY (id)   
+) ;
+
