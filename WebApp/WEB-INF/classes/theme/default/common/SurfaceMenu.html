@@ -1,0 +1,102 @@
+<div id="header"> <!-- class="sticky" for sticky menu -->
+
+				<!-- Top Bar -->
+				<header id="topBar" class="styleBackgroundColor">
+					<div class="container">
+
+						<!-- mail , phone -->
+						<div class="call-us fsize13 pull-left margin-top10">
+							Call Us Today: <strong>1800-555-1234 </strong>
+							<span class="hide_mobile">
+								&bull; <a href="mailto:mail@yourdomain.com">mail@domain.com</a>
+							</span>
+						</div>
+
+						<div class="pull-right fsize13 hide_mobile">
+
+							<div class="block text-right"><!-- social -->
+								<a href="index-home-10.html#" class="social fa fa-facebook"></a>
+								<a href="index-home-10.html#" class="social fa fa-twitter"></a>
+								<a href="index-home-10.html#" class="social fa fa-google-plus"></a>
+								<a href="index-home-10.html#" class="social fa fa-linkedin"></a>
+								<a href="index-home-10.html#" class="social fa fa-pinterest"></a>
+							</div><!-- /social -->
+
+						</div>
+
+					</div><!-- /.container -->
+				</header>
+				<!-- /Top Bar -->
+
+
+				<!-- Top Nav -->
+				<header id="topNav">
+					<div class="container">
+
+						<!-- Logo -->
+						<a class="logo" href="index.html">
+							<img src="${surface_static_images_uri}/logo.png" height="50" alt="" />
+						</a>
+
+						<!-- Mobile Menu Button -->
+						<button class="btn btn-mobile" data-toggle="collapse" data-target=".nav-main-collapse">
+							<i class="fa fa-bars"></i>
+						</button>
+
+						<!-- Top Nav -->
+						<div class="navbar-collapse nav-main-collapse collapse pull-right">
+							<nav class="nav-main">
+
+								<!--
+									NOTE
+									
+									For a regular link, remove "dropdown" class from LI tag and "dropdown-toggle" class from the href.
+									Direct Link Example: 
+
+									<li>
+										<a href="#">HOME</a>
+									</li>
+								-->
+								<ul id="topMain" class="nav nav-pills nav-main colored"><!-- "colored" class = colored active menu -->
+									<li class="mega-menu dropdown <#if SurfaceMenu==''> active </#if> ">
+										<a href="/tea">
+											HOME <span>welcome</span>
+										</a>
+										
+									</li>
+									
+									
+									
+									<li class="dropdown">
+										<a href="Product_List.html">Products <span>recent news</span></a>
+										
+									</li>
+									<li class="dropdown <#if SurfaceMenu=='icore'||SurfaceMenu=='user_info'> active </#if>">
+										<a class="dropdown-toggle" href="#">User <span>Profile</span></a>
+										<ul class="dropdown-menu">		
+										<#if uid??>
+										<li><a href="/tea/logout"><i class="fa fa-user"></i> LogOut</a></li>
+										<li><a href="/tea/user_info"><i class="fa fa-key"></i> user_info</a></li>
+										<li><a href="/tea/icore/1422580921"><i class="fa fa-angle-right"></i> User Profile</a></li>
+										<#else>									
+										<li><a href="/tea/login"><i class="fa fa-user"></i> Login</a></li>
+										<li><a href="/tea/register"><i class="fa fa-user"></i> Register</a></li>
+										</#if>
+										
+										</ul>
+									</li>
+									<li class="dropdown">
+										<a href="contact.html">CONTACT <span>write us</span></a>
+										
+									</li>
+								</ul>
+
+							</nav>
+						</div>
+						<!-- /Top Nav -->
+
+					</div><!-- /.container -->
+				</header>
+				<!-- /Top Nav -->
+
+			</div>

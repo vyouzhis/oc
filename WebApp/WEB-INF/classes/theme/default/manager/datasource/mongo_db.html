@@ -1,0 +1,240 @@
+
+<body> 
+  ${navbar!""}
+  <div class="main-container" id="main-container"> 
+   <script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script> 
+   <div class="main-container-inner"> 
+    
+    ${menu!""}
+     <div class="main-content"> 
+     <div class="breadcrumbs" id="breadcrumbs"> 
+      <script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script> 
+      <ul class="breadcrumb"> 
+       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
+       <li class="active">${name}</li> 
+      </ul> 
+      <!-- #nav-search --> 
+     </div> 
+     <div class="page-content"> 
+      <!-- /.page-header --> 
+      <div class="row"> 
+      	<div class="col-xs-12 well bigger-175 blue">
+					<form enctype="multipart/form-data" action="${action_url}" method="POST" class="form-inline">
+						db.<input type="text" autocomplete="off" value='${def_collention!""}' id="db_collection" name="db_collection" class="db-search-input" placeholder="Collection ..." /> 
+				         <ul class="typeahead dropdown-menu" style="top: 28px; left: 0px; display: none;"> 
+				          <li data-value="" class="active"></li>          
+				         </ul> </span>
+									.<select data-trigger="hover" data-toggle="tooltip" data-original-title="Tooltip goes here" id="fetch_query" name="fetch_query" >
+	               	<option value="0" <#if fetch_query==0> selected="selected" </#if>  >find</option>	               	
+	               	<!-- <option value="1">findOne</option>  -->
+					<option value="2" <#if fetch_query==2> selected="selected" </#if> >distinct</option>							
+					<option value="3" <#if fetch_query==3> selected="selected" </#if> >count</option>
+	               </select>.(
+					<textarea id="where_query" name="where_query">{}</textarea>
+					,<textarea id="field_query" name="field_query">{}</textarea>
+					<span id="sort" name="sort" class="<#if fetch_query!=0> hide </#if>">													
+	              	).sort(
+	               </span>
+					<textarea id="sort_query" name="sort_query" class="<#if fetch_query!=0> hide </#if>">{  }</textarea>)
+					          
+					<button class="btn btn-info btn-sm" type="submit">
+						<i class="icon-search nav-search-icon"></i>
+							执行
+					</button>
+					
+						
+					</form>
+				</div>
+												
+	  <div class="col-xs-4 well"> 
+        <div class="form-group"> 
+         <label for="form-field-gplus" class="col-sm-2 control-label no-padding-right">名称：</label> 
+         <div class="col-sm-9"> 
+          <span class="input-group-btn"> <span class="input-icon"> <input type="text" id="form-field-gplus" value="..." /> <i class="icon-save bigger-160 red"></i> </span> <button type="button" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button> </span> 
+         </div> 
+        </div> 
+       </div>								
+   
+       <div class="col-xs-12"> 
+        
+        <div class="table-header">
+          Results for ${error!""}
+        </div> 
+        <h5><span id="json_result" name="json_result"></span></h5> 
+       <!-- /row --> 
+      </div> 
+     </div> 
+     <!-- /.row --> 
+    <!-- /.main-content --> 
+    <div class="ace-settings-container" id="ace-settings-container"> 
+     <div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn"> 
+      <i class="icon-cog bigger-150"></i> 
+     </div> 
+     <div class="ace-settings-box" id="ace-settings-box"> 
+      <div> 
+       <div class="pull-left"> 
+        <select id="skin-colorpicker" class="hide"> <option data-skin="default" value="#438EB9">#438EB9</option> <option data-skin="skin-1" value="#222A2D">#222A2D</option> <option data-skin="skin-2" value="#C6487E">#C6487E</option> <option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option> </select> 
+       </div> 
+       <span>&nbsp; 选择皮肤</span> 
+      </div> 
+      <div> 
+       <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-navbar" /> 
+       <label class="lbl" for="ace-settings-navbar"> 固定导航条</label> 
+      </div> 
+      <div> 
+       <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-sidebar" /> 
+       <label class="lbl" for="ace-settings-sidebar"> 固定滑动条</label> 
+      </div> 
+      <div> 
+       <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-breadcrumbs" /> 
+       <label class="lbl" for="ace-settings-breadcrumbs">固定面包屑</label> 
+      </div> 
+      <div> 
+       <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-rtl" /> 
+       <label class="lbl" for="ace-settings-rtl">切换到左边</label> 
+      </div> 
+      <div> 
+       <input type="checkbox" class="ace ace-checkbox-2" id="ace-settings-add-container" /> 
+       <label class="lbl" for="ace-settings-add-container"> 切换窄屏 <b></b> </label> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- /#ace-settings-container --> 
+   </div> 
+   <!-- /.main-container-inner --> 
+   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
+  </div> 
+  <!-- /.main-container --> 
+  <script src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
+  
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/underscore-min.js" ></script>
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/backbone-min.js" ></script>
+
+  <!-- src dev
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/pretty-json-debug.js" ></script>
+  -->
+  <!-- src build -->
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/pretty-json-min.js" ></script>
+    
+    
+  <script type="text/javascript">
+  	
+  	jQuery(function(a) {
+		ace.enable_search_db(jQuery);
+	});
+
+	ace.enable_search_db = function(a) {
+		ace.variable_US_DB = [${CollectionList}];
+		try {
+			a("#db_collection").typeahead({
+				source: ace.variable_US_DB,
+				updater: function(c) {
+					a("#db_collection").focus();
+					return c
+				}
+			})
+		} catch (b) {}
+	};
+	
+	
+jQuery(function($) {
+	<#if data_result??>
+		var json_data = '${data_result}'; 
+		var json_res = JSON.parse(json_data);
+		
+		
+		new PrettyJSON.view.Node({
+		  el:$('#json_result'),
+		  data:json_res
+		});
+	</#if>
+	
+	<#if where_query??>
+		var wquery = ${where_query};
+	
+		$("#where_query").val(JSON.stringify(wquery,null,4));
+	</#if>
+	
+	<#if field_query??>
+		var fquery =${field_query};
+		$("#field_query").val(JSON.stringify(fquery,null,4));
+	</#if>
+	
+	<#if sort_query??>
+		var squery = ${sort_query};
+		$("#sort_query").val(JSON.stringify(squery,null,4));
+	</#if>
+		
+		
+	$("#fetch_query").change(function(){
+		
+		var val = $("#fetch_query").val();
+		if(val==0){
+			$("#sort").attr("class","");
+			$("#sort_query").attr("class","");
+		}else{
+			$("#sort").attr("class","hide");
+			$("#sort_query").attr("class","hide");
+		}
+	});
+	
+
+	
+	//var elements = ['{}','PorG', 'PorG.r', 'PorG.gt_ms', 'PorG.u', 'SERVER.HTTP_HOST','SERVER.HTTP_COOKIE','$gt','$lt'];
+		var completes = [
+							{ // emoji strategy
+								  mongo : ['gt','lt','regex','in','eq','gte','lte','ne','nin','or','and','not','exists','group'],
+					    	  match: /\$(\w*)$/,
+					        search: function (term, callback) {
+					            callback($.map(this.mongo, function (element) {
+					                return element.indexOf(term) === 0 ? element : null;
+					            }));
+					        },
+					        index: 1,
+					        replace: function (element) {
+					            return ['$'+element+':',  ''];
+					        }
+					    },
+					    { // emoji strategy
+					    	  ext: ['}','['],
+					        match: /\B{([\w]*)$/,
+				        	search: function (term, callback) {
+					           callback($.map(this.ext, function (element) {
+					        	   return element.indexOf(term) === 0 ? element : null;
+					           }));
+					        },
+					        index: 1,
+					        replace: function (element) {
+					        		if(element=="}"){
+					            	return ['{',  '\r\n}'];
+					          	}else{
+					          		return ['[',  '\r\n]'];
+					        		}
+					        }
+					    },
+					    { // tech companies
+					        words: ${field_all!"[]"},
+					        match: /\b(\w{1,})$/,
+					        search: function (term, callback) {
+					            callback($.map(this.words, function (word) {
+					                return word.indexOf(term) === 0 ? word : null;
+					            }));
+					        },
+					        index: 1,
+					        replace: function (word) {
+					        		if(word == 'true' || word=='false') return word;
+					            return ['"' + word + '":{', '\r\n}'];
+					        }
+					    },
+					    
+					];	
+		$('#where_query').textcomplete(completes);
+		$('#field_query').textcomplete(completes);
+	 	$('#sort_query').textcomplete(completes);
+	});
+</script>  
+ 

@@ -1,0 +1,46 @@
+<a class="menu-toggler" id="menu-toggler" href="#"> <span class="menu-text"></span> </a> 
+    <div class="sidebar" id="sidebar"> 
+     <script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+					</script> 
+    <!-- <div class="sidebar-shortcuts" id="sidebar-shortcuts"> 
+      <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large"> 
+       <button class="btn btn-success"> <i class="icon-signal"></i> </button> 
+       <button class="btn btn-info"> <i class="icon-pencil"></i> </button> 
+       <button class="btn btn-warning"> <i class="icon-group"></i> </button> 
+       <button class="btn btn-danger"> <i class="icon-cogs"></i> </button> 
+      </div> 
+      <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini"> 
+       <span class="btn btn-success"></span> 
+       <span class="btn btn-info"></span> 
+       <span class="btn btn-warning"></span> 
+       <span class="btn btn-danger"></span> 
+      </div> 
+     </div>
+      #sidebar-shortcuts --> 
+     <ul class="nav nav-list"> 
+      <li class=""> <a href="${Index_url}"> <i class="icon-dashboard"></i> <span class="menu-text"> 控制台 </span> </a> </li> 
+       
+      <#list menu?keys as key>
+      <#assign ml = menu[key]>
+      <#assign ml_size = ml?size>
+      <#if (ml_size>0) >
+      <li <#if fun.isMainMenuActive(key) > class="active open" </#if>> <a class="dropdown-toggle" href="#"> <i class="icon-list"></i> <span class="menu-text"> ${fun.MainName(key)} </span> <b class="arrow icon-angle-down"></b> </a> 
+       <ul class="submenu"> 
+       	
+       	<#list ml?keys as m>
+        <li <#if fun.isLib(m)> class="active" </#if> > <a href="${fun.MenuUrl(m)}"> <i class="icon-double-angle-right"></i> ${fun.libName(m)} </a> </li>
+        </#list> 
+       </ul> 
+       </li>
+       </#if>
+       </#list> 
+     </ul>
+     <!-- /.nav-list --> 
+     <div class="sidebar-collapse" id="sidebar-collapse"> 
+      <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i> 
+     </div> 
+     <script type="text/javascript">
+						try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+					</script> 
+    </div> 

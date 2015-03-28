@@ -1,0 +1,277 @@
+
+<body>
+	${navbar!""}
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<div class="main-container-inner">
+
+			${menu!""}
+			<div class="main-content">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check('breadcrumbs', 'fixed')
+						} catch (e) {
+						}
+					</script>
+					<ul class="breadcrumb">
+						<li><i class="icon-home home-icon"></i> <a href="#">首页</a></li>
+						<li class="active">${name}</li>
+					</ul>
+					<!-- .breadcrumb -->
+					
+				</div>
+				<div class="page-content">
+
+
+					<div class="row">
+						<div class="col-xs-12">
+							<!-- PAGE CONTENT BEGINS -->
+
+
+							<div class="hr dotted"></div>
+							<#if alerts??>
+							<div class="alert alert-danger">
+								<button data-dismiss="alert" class="close" type="button">
+									<i class="icon-remove"></i>
+								</button>
+
+								<strong> <i class="icon-bullhorn"></i> 注意!
+								</strong> ${save_msg}. <br>
+							</div>
+							</#if>
+							<div>
+								<div class="user-profile row" id="user-profile-3">
+									<div class="col-sm-offset-1 col-sm-10">
+
+										<div class="space"></div>
+
+										<form enctype="multipart/form-data" action="${action_url}"
+											method="POST" class="form-horizontal" name="user_add"
+											id="user_add">
+											<input type="text" value="1" name="edit_id" id="edit_id"
+												style="display: none;">
+											<div class="tabbable">
+												<ul class="nav nav-tabs padding-16">
+													<li class="active"><a href="#edit-basic"
+														data-toggle="tab"> <i
+															class="green icon-edit bigger-125"></i> 基本信息
+													</a></li>
+
+
+												</ul>
+
+												<div class="tab-content profile-edit-tab-content">
+													<div class="tab-pane in active" id="edit-basic">
+														<h4 class="header blue bolder smaller">资料</h4>
+													<div class="widget-body">
+														<div class="widget-main">
+															<input type="file" id="user_logo_file" name="user_logo_file"/>														
+														</div>
+													</div>
+
+
+														<div class="form-group">
+															<label for="form-field-date"
+																class="col-sm-3 control-label no-padding-right"><span
+																style="color: red">*</span>昵称:</label>
+
+															<div class="col-sm-9">
+																<div class="input-medium">
+																	<div class="input-group">
+																		<input type="text" value="${nickname!"
+																			"}" placeholder="Username" name="nickname"
+																			id="nickname" class="col-xs-12 col-sm-18">
+
+																	</div>
+																</div>
+															</div>
+														</div>
+
+														<div class="form-group">
+															<label for="form-field-date"
+																class="col-sm-3 control-label no-padding-right"><span
+																style="color: red">*</span>登录名:</label>
+
+															<div class="col-sm-9">
+																<div class="input-medium">
+																	<div class="input-group">
+																		<input type="text" value='${username!""}' readonly
+																			placeholder="LoginName" name="username" id="username"
+																			class="col-xs-12 col-sm-18">
+
+																	</div>
+																</div>
+															</div>
+														</div>
+
+
+														<div class="space-4"></div>
+
+														<!-- 
+															<div class="space-4"></div>
+
+															<div class="form-group">
+																<label for="form-field-comment" class="col-sm-3 control-label no-padding-right">描述</label>
+
+																<div class="col-sm-9">
+																	<textarea name="comment" id="comment"></textarea>
+																</div>
+															</div>
+ 															-->
+														<div class="space"></div>
+														<h4 class="header blue bolder smaller">联系方式</h4>
+
+														<div class="form-group">
+															<label for="form-field-email"
+																class="col-sm-3 control-label no-padding-right"><span
+																style="color: red">*</span>邮件</label>
+
+															<div class="col-sm-9">
+																<span class="input-icon input-icon-right"> <input
+																	type="email" value="${email!"
+																	"}" placeholder="alexdoe@gmail.com" name="email"
+																	id="email"> <i class="icon-envelope"></i>
+																</span>
+															</div>
+														</div>
+
+
+														<div class="space-4"></div>
+
+														<div class="form-group">
+															<label for="form-field-phone"
+																class="col-sm-3 control-label no-padding-right">电话</label>
+
+															<div class="col-sm-9">
+																<span class="input-icon input-icon-right"> <input
+																	type="text" value="${phone!" "}" name="phone"
+																	id="phone" class="input-medium input-mask-phone">
+																	<i class="icon-phone icon-flip-horizontal"></i>
+																</span>
+															</div>
+														</div>
+
+														<div class="space"></div>
+														<h4 class="header blue bolder smaller">密码</h4>
+
+														<div class="tab-pane" id="edit-password">
+															<div class="space-10"></div>
+
+															<div class="form-group">
+																<label for="form-field-pass1"
+																	class="col-sm-3 control-label no-padding-right"><span
+																	style="color: red">*</span>密码</label>
+
+																<div class="col-sm-9">
+																	<input type="password" name="pass1" id="pass1">
+																</div>
+															</div>
+
+															<div class="space-4"></div>
+
+															<div class="form-group">
+																<label for="form-field-pass2"
+																	class="col-sm-3 control-label no-padding-right"><span
+																	style="color: red">*</span>再次确认</label>
+
+																<div class="col-sm-9">
+																	<input type="password" name="pass2" id="pass2">
+																</div>
+															</div>
+														</div>
+
+													</div>
+
+												</div>
+											</div>
+
+											<div class="clearfix form-actions">
+												<div class="col-md-offset-3 col-md-9">
+													<button type="submit" class="btn btn-info">
+														<i class="icon-ok bigger-110"></i> Save
+													</button>
+
+													&nbsp; &nbsp;
+													<button type="reset" class="btn">
+														<i class="icon-undo bigger-110"></i> Reset
+													</button>
+												</div>
+											</div>
+										</form>
+									</div>
+									<!-- /span -->
+								</div>
+								<!-- /user-profile -->
+							</div>
+
+							<!-- PAGE CONTENT ENDS -->
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+			<div class="ace-settings-container" id="ace-settings-container">
+				<div class="btn btn-app btn-xs btn-warning ace-settings-btn"
+					id="ace-settings-btn">
+					<i class="icon-cog bigger-150"></i>
+				</div>
+				<div class="ace-settings-box" id="ace-settings-box">
+					<div>
+						<div class="pull-left">
+							<select id="skin-colorpicker" class="hide">
+								<option data-skin="default" value="#438EB9">#438EB9</option>
+								<option data-skin="skin-1" value="#222A2D">#222A2D</option>
+								<option data-skin="skin-2" value="#C6487E">#C6487E</option>
+								<option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+							</select>
+						</div>
+						<span>&nbsp; 选择皮肤</span>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-navbar" /> <label class="lbl"
+							for="ace-settings-navbar"> 固定导航条</label>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-sidebar" /> <label class="lbl"
+							for="ace-settings-sidebar"> 固定滑动条</label>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-breadcrumbs" /> <label class="lbl"
+							for="ace-settings-breadcrumbs">固定面包屑</label>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-rtl" /> <label class="lbl"
+							for="ace-settings-rtl">切换到左边</label>
+					</div>
+					<div>
+						<input type="checkbox" class="ace ace-checkbox-2"
+							id="ace-settings-add-container" /> <label class="lbl"
+							for="ace-settings-add-container"> 切换窄屏 <b></b>
+						</label>
+					</div>
+				</div>
+			</div>
+			<!-- /#ace-settings-container -->
+		</div>
+		<!-- /.main-container-inner -->
+		<a href="#" id="btn-scroll-up"
+			class="btn-scroll-up btn btn-sm btn-inverse"> <i
+			class="icon-double-angle-up icon-only bigger-110"></i>
+		</a>
+	</div>
+	<!-- /.main-container -->
+	

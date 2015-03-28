@@ -1,0 +1,123 @@
+
+	<body class="login-layout">
+		<div class="main-container">
+			<div class="main-content">
+				<div class="row">
+					<div class="col-sm-10 col-sm-offset-1">
+						<div class="login-container">
+							<div class="center">
+								<h1>
+									<i class="icon-leaf green"></i>
+									<span class="red">Ace</span>
+									<span class="white">Application</span>
+								</h1>
+								<h4 class="blue">&copy; Company Name</h4>
+							</div>
+
+							<div class="space-6"></div>
+
+							<div class="position-relative">
+								<div id="login-box" class="login-box visible widget-box no-border">
+									<div class="widget-body">
+										<div class="widget-main">
+											<h4 class="header blue lighter bigger">
+												<i class="icon-coffee green"></i>
+												Please Enter Your Information
+											</h4>
+
+											<div class="space-6"></div>
+
+											<form role="form" action="${admin_login_action_uri}" enctype="multipart/form-data" method="post">
+											<input  style="display:none;" type="text" id="salt" name="salt" value="${salt}" />
+											<input  style="display:none;" type="text" id="action" name="action" value="login" />
+												<fieldset>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control"  id="email" name="email"  placeholder="Email"/>
+															<i class="icon-user"></i>
+														</span>
+													</label>
+
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" class="form-control"  id="passwd" name="passwd"  placeholder="Password" />
+															<i class="icon-lock"></i>
+														</span>
+													</label>
+
+													<div class="space"></div>
+
+													<div class="clearfix">
+														<label class="inline">
+															<input type="checkbox" class="ace" />
+															<span class="lbl"> Remember Me</span>
+														</label>
+
+														<button  type="submit"  class="width-35 pull-right btn btn-sm btn-primary">
+															<i class="icon-key"></i>
+															Login
+														</button>
+													</div>
+
+													<div class="space-4"></div>
+												</fieldset>
+											</form>
+											
+										</div>					
+									</div><!-- /widget-body -->
+								</div><!-- /login-box -->
+
+							</div><!-- /position-relative -->
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div>
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<script src="${static_js_uri}/jquery-last.min.js"></script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="${static_js_uri}/jquery-last.min.js"></script>
+<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='${static_js_uri}/jquery-last.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='${static_js_uri}/jquery-last.min.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='${static_js_uri}/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+		<script src="${static_js_uri}/jquery.md5.js"></script>
+	<script type="text/javascript">
+
+        $(document).ready(function(){
+        	  $("form").submit(function(e){
+        		  chkForm();
+        	  });
+        	});
+    	
+        function chkForm(){
+           var passwd = $("#passwd").val();
+           var salt = $("#salt").val();
+           var md5 = $.md5($.md5(passwd)+salt);
+           $("#passwd").val(md5);           
+        }
+    </script>
+
+

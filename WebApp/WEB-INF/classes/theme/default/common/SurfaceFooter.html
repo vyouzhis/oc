@@ -1,0 +1,142 @@
+<!-- FOOTER -->
+<footer id="footer">
+	<div class="container">
+
+		<div class="row">
+
+			<!-- col #1 -->
+			<div class="logo_footer col-md-8">
+
+				<img alt="" src="${surface_static_images_uri}/logo_footer_alt.png"
+					height="50" class="logo" />
+
+				<p class="block">
+					<strong><em>Why Choose Us?</em></strong> Lorem ipsum dolor sit
+					amet, consectetur adipiscing elit. Curabitur imperdiet hendrerit
+					volutpat. Sed in nunc nec ligula consectetur mollis in vel justo.
+					Vestibulum ante ipsum. Lorem ipsum dolor sit amet, consectetur
+					adipiscing elit. Curabitur imperdiet hendrerit volutpat. Sed in
+					nunc nec ligula consectetur mollis in vel justo. Vestibulum ante
+					ipsum. <a href="page-about-basic.html">View More <i
+						class="fa fa-arrow-right"></i></a>
+				</p>
+				<h2>(800) 123-4567</h2>
+			</div>
+			<!-- /col #1 -->
+
+			<!-- col #2 -->
+			<div class="spaced col-md-4">
+				<h4>
+					About <strong>Us</strong>
+				</h4>
+				<p>Incredibly beautiful responsive Bootstrap Template for
+					Corporate and Creative Professionals.</p>
+
+				<h4>
+					<small><strong>Subscribe to our Newsletter</strong></small>
+				</h4>
+				<form id="newsletterSubscribe" method="post"
+					action="http://theme.stepofweb.com/Epona/v1.2/HTML/php/newsletter.php"
+					class="input-group">
+					<input required type="email" class="form-control"
+						name="newsletter_email" id="newsletter_email" value=""
+						placeholder="E-mail Address"> <span
+						class="input-group-btn">
+						<button class="btn btn-primary">SUBMIT</button>
+					</span>
+				</form>
+
+			</div>
+			<!-- /col #2 -->
+
+		</div>
+
+	</div>
+
+	<hr />
+
+	<div class="copyright">
+		<div class="container text-center fsize12">
+			Epona theme by <a href="http://www.stepofweb.com" target="_blank"
+				title="bootstrap themes &amp; templates" class="copyright">stepofweb</a>
+			&bull; All Right Reserved &copy; Your Company LLC. &nbsp; <a
+				href="page-privacy.html" class="fsize11">Privacy Policy</a> &bull; <a
+				href="page-terms.html" class="fsize11">Terms of Service</a>
+		</div>
+	</div>
+</footer>
+<!-- /FOOTER -->
+
+<a href="index-home-10.html#" id="toTop"></a>
+
+</div>
+<!-- /#wrapper -->
+
+<!-- JAVASCRIPT FILES -->
+<script type="text/javascript"
+	src="${surface_plugins}/jquery-2.1.1.min.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/jquery.isotope.js"></script>
+<script type="text/javascript" src="${surface_plugins}/masonry.js"></script>
+
+<script type="text/javascript"
+	src="${surface_plugins}/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/magnific-popup/jquery.magnific-popup.min.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/owl-carousel/owl.carousel.min.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/knob/js/jquery.knob.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/flexslider/jquery.flexslider-min.js"></script>
+
+<!-- REVOLUTION SLIDER -->
+<script type="text/javascript"
+	src="${surface_plugins}/revolution-slider/js/jquery.themepunch.tools.min.js"></script>
+<script type="text/javascript"
+	src="${surface_plugins}/revolution-slider/js/jquery.themepunch.revolution.min.js"></script>
+<script type="text/javascript"
+	src="${surface_static_js_uri}/revolution_slider.js"></script>
+<script type="text/javascript" src="${surface_static_js_uri}/scripts.js"></script>
+
+<#if register_js??>
+<script type="text/javascript" src="${static_js_uri}/jquery.md5.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("form").submit(function(e) {
+			chkForm();
+		});
+	});
+
+	function chkForm() {
+		var passwd = $("#passwd1").val();
+		if (passwd != null) {
+			var md5 = $.md5(passwd);
+			$("#passwd1").val(md5);
+		}
+
+		var passwd2 = $("#passwd2").val();
+		if (passwd2 != null) {
+			var md52 = $.md5(passwd2);
+			$("#passwd2").val(md52);
+		}
+
+		var passwd_login = $("#passwd_login").val();
+		if (passwd_login != null) {
+			var md_login = $.md5(passwd_login);
+			var salt = $("#salt").val();
+			$("#passwd_login").val($.md5(md_login+salt));
+		}
+	}
+	
+	function changeCode() {
+		$('#kaptchaImage').attr(
+				'src',
+				'/tea/captcha_image?'
+						+ Math.floor(Math.random() * 100)).fadeIn();		
+	}
+	
+</script>
+</#if>
+</body>
+</html>
