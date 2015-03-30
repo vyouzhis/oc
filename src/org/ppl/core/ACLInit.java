@@ -220,7 +220,7 @@ public class ACLInit extends DBSQL {
 		InitGroup(uid, gid);
 		String format = "UPDATE "
 				+ DB_PRE
-				+ "user_info SET `gid` = '%d'WHERE `uid`='%d';";
+				+ "user_info SET `gid` = '%d' WHERE `uid`='%d';";
 		String sql = String.format(format, gid,uid);
 
 		try {

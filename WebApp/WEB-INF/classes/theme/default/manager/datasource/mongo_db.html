@@ -49,16 +49,18 @@
 						
 					</form>
 				</div>
-												
+		<#if save_project??>						
 	  <div class="col-xs-4 well"> 
+	  <form enctype="multipart/form-data" action='${create_url}?db_collection=${def_collention!""}&fetch_query=${fetch_query}&where_query=${where_query}&field_query=${field_query}&sort_query=${sort_query}' method="POST" class="form-inline" id="project_action" >
         <div class="form-group"> 
          <label for="form-field-gplus" class="col-sm-2 control-label no-padding-right">名称：</label> 
          <div class="col-sm-9"> 
-          <span class="input-group-btn"> <span class="input-icon"> <input type="text" id="form-field-gplus" value="..." /> <i class="icon-save bigger-160 red"></i> </span> <button type="button" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button> </span> 
+          <span class="input-group-btn"> <span class="input-icon"> <input type="text" id="project_name" name="project_name" placeholder="..." /> <i class="icon-save bigger-160 red"></i> </span> <button type="submit" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button> </span> 
          </div> 
         </div> 
+        </form>
        </div>								
-   
+   	</#if>
        <div class="col-xs-12"> 
         
         <div class="table-header">
@@ -142,6 +144,21 @@
 	
 	
 jQuery(function($) {
+	
+
+   	  $("form").submit(function(e){
+   		  chkForm();
+   	  });
+
+	
+   function chkForm(){
+      var passwd = $("#passwd").val();
+      var salt = $("#salt").val();
+      var md5 = $.md5($.md5(passwd)+salt);
+      $("#passwd").val(md5);           
+   }
+   
+	
 	<#if data_result??>
 		var json_data = '${data_result}'; 
 		var json_res = JSON.parse(json_data);

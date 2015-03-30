@@ -28,12 +28,8 @@ public class HikariConnectionPool extends PObject {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		LoadDBLib();
 
 		HikariConfig config = new HikariConfig();
 		// echo(mConfig.GetValue("database.url"));
@@ -53,6 +49,15 @@ public class HikariConnectionPool extends PObject {
 		Connect();
 	}
 
+	private void LoadDBLib() {
+		String ldbl = myConfig.GetValue("database.driverClassName");
+		try {
+			Class.forName(ldbl);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private void Connect() {
 
 		try {

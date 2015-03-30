@@ -10,6 +10,7 @@ import org.ppl.core.ACLControl;
 import org.ppl.etc.globale_config;
 import org.ppl.io.Encrypt;
 import org.ppl.io.ProjectPath;
+import org.ppl.io.TimeClass;
 
 import com.alibaba.fastjson.JSON;
 
@@ -25,6 +26,11 @@ public class BaseView extends ACLControl{
 	public BaseView() {
 		// TODO Auto-generated constructor stub
 		
+	}
+	
+	public String DateFormat(Long TimeStamp, String format ) {
+		TimeClass tc = TimeClass.getInstance();
+		return tc.TimeStamptoDate(TimeStamp, format);
 	}
 	
 	public void View() {

@@ -1,6 +1,6 @@
 package com.lib.manager.datasource;
 
-import java.util.Collections;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
@@ -14,11 +14,12 @@ import com.alibaba.fastjson.JSON;
 public class mongo_db extends Permission implements BasePerminterface {
 	private List<String> rmc;
 
-	private int fetch_query = 0;
-	private int ctype_query = 0;
+	private String db_collection;
+	private int fetch_query = 0;	
 	private String where_query;
 	private String field_query;
 	private String sort_query;
+	private String project_name;
 	private MGDB mgdb;
 
 	public mongo_db() {
@@ -37,6 +38,21 @@ public class mongo_db extends Permission implements BasePerminterface {
 		if (super.Init() == -1)
 			return;
 
+		db_collection = porg.getKey("db_collection");
+		String fq = porg.getKey("fetch_query");
+		if (fq!= null && fq.matches("[0-9]+")) {
+			fetch_query = Integer.valueOf(fq);
+		}
+		where_query = porg.getKey("where_query");
+		field_query = porg.getKey("field_query");
+		sort_query = porg.getKey("sort_query");
+		project_name = porg.getKey("project_name");
+		
+		where_query = Myreplace(where_query);
+
+		field_query = Myreplace(field_query);
+		sort_query = Myreplace(sort_query);
+		
 		mgdb = new MGDB();
 		rmc = porg.getRmc();
 		if (rmc.size() != 2) {
@@ -51,6 +67,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 		case "search":
 			search(null);
 			break;
+		case "create":
+			create(null);
+			return;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -74,7 +93,23 @@ public class mongo_db extends Permission implements BasePerminterface {
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-
+		
+		int now = time();
+		
+		String format = "INSERT INTO hor_rule(name, collention, qaction, query, field, sort, ctime, stime, etime)" +
+				"VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
+		String sql = String.format(format, project_name,db_collection,fetch_query, where_query, field_query,sort_query, now, 0,0);
+		echo(sql);
+		
+		UrlClassList ucl = UrlClassList.getInstance();
+		String url = ucl.read(SliceName(stdClass));
+		try {
+			update(sql);
+			TipMessage(url, _CLang("ok_save"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -92,19 +127,10 @@ public class mongo_db extends Permission implements BasePerminterface {
 	@Override
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
-		String fq = porg.getKey("fetch_query");
-		if (fq.matches("[0-9]+")) {
-			fetch_query = Integer.valueOf(fq);
-		}
 
-		field_query = porg.getKey("field_query");
-		where_query = porg.getKey("where_query");
+		
 
-		where_query = Myreplace(where_query);
-
-		field_query = Myreplace(field_query);
-
-		echo("where:"+where_query);
+		echo("where:" + where_query);
 		if (where_query.length() == 0) {
 			setRoot("where_query", "{}");
 		} else {
@@ -128,7 +154,8 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("action_url", ucl.search(SliceName(stdClass)));
-
+		setRoot("create_url", ucl.create(SliceName(stdClass)));
+		setRoot("save_project", "1");
 	}
 
 	private void CollectionList() {
@@ -144,31 +171,22 @@ public class mongo_db extends Permission implements BasePerminterface {
 		}
 		clists.substring(0, clists.length() - 1);
 
-		String select_collection = porg.getKey("db_collection");
-		if (select_collection == null) {
+		if (db_collection == null) {
 
 			setRoot("def_collention", def_col);
 		} else {
-			mgdb.SetCollection(select_collection);
-			setRoot("def_collention", select_collection);
+			mgdb.SetCollection(db_collection);
+			setRoot("def_collention", db_collection);
 		}
 
 		setRoot("CollectionList", clists);
 
 		mgdb.DBEnd();
-
-		String cq = porg.getKey("ctype_query");
-		if (cq != null && cq.matches("[0-9]+")) {
-			ctype_query = Integer.valueOf(cq);
-		}
-		setRoot("ctype_query", ctype_query);
 	}
 
 	private void SortQuery() {
 
-		sort_query = porg.getKey("sort_query");
-
-		sort_query = Myreplace(sort_query);
+		
 
 		if (sort_query.length() > 2) {
 			mgdb.JsonSort(sort_query);
@@ -191,7 +209,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private void Distinct() {
-
 		where_query = where_query.replace("\"", "");
 
 		if (field_query.length() > 2) {
@@ -207,7 +224,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 			setRoot("data_result", list_json);
 		} else {
-			setRoot("error", "error:"+mgdb.getErrorMsg());
+			setRoot("error", "error:" + mgdb.getErrorMsg());
 		}
 		TipList(null);
 
@@ -259,6 +276,8 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private String Myreplace(String old) {
+		if(old == null)return null;
+		
 		String news = old.replace("&nbsp;", "");
 		news = news.replace("&quot;", "\"");
 

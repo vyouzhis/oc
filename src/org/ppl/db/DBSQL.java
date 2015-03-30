@@ -100,16 +100,21 @@ public class DBSQL extends BaseLang {
 	public List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
 		long tid = myThreadId();
-		
+		String clearSQL = sql;
+		if(myConfig.GetValue("database.driverClassName").equals("org.postgresql.Driver")){
+			clearSQL = sql.replace("`", "");
+		}
 		Connection ConDB = globale_config.GDB.get(tid);
 
 		if (ConDB == null) {
-			echo("con sql:" + sql);
+			echo("con sql:" + clearSQL);
 			return null;
 		}
+		
+		
 		ResultSet rs = null;
 		stmt = ConDB.createStatement();
-		rs = stmt.executeQuery(sql);
+		rs = stmt.executeQuery(clearSQL);
 		results = map(rs);
 		rs.close();
 		stmt.close();
@@ -141,14 +146,19 @@ public class DBSQL extends BaseLang {
 	public long update(String sql) throws SQLException {
 		long numRowsUpdated = 0;
 		long tid = myThreadId();
+		String clearSQL = sql;
+		if(myConfig.GetValue("database.driverClassName").equals("org.postgresql.Driver")){
+			clearSQL = sql.replace("`", "");
+		}
 		
 		Connection ConDB = globale_config.GDB.get(tid);
 		if (ConDB == null) {
-			echo("con sql:" + sql);
+			echo("con sql:" + clearSQL);
 			return -1;
 		}
+		
 		stmt = ConDB.createStatement();
-		numRowsUpdated = stmt.executeUpdate(sql,
+		numRowsUpdated = stmt.executeUpdate(clearSQL,
 				Statement.RETURN_GENERATED_KEYS);
 
 		return numRowsUpdated;

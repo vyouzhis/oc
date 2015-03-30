@@ -177,7 +177,7 @@ public class admin_permission_setting extends Permission implements
 				+ " VALUES ('%s', '%s',  '%s', '%s', %d, %d, %d);";
 		String sql = String.format(format, group_name, group_desc, MainRole,
 				SubRole, aclGetUid(), now, now);
-
+		
 		try {
 			update(sql);
 		} catch (SQLException e) {

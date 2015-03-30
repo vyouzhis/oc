@@ -99,7 +99,13 @@
 			<version>2.13.0-rc0</version>
 		</dependency>
 		<!-- mongodb end -->
-
+		<!-- postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		<!-- postgresql end -->
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<!-- log -->
 		<dependency>

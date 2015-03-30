@@ -64,10 +64,10 @@
 														</td>
 														<td>${item.nickname}</td>
 														<td class="hidden-480">${item.email}</td>
-														<td>${item.ctime}</td>
+														<td>${fun.DateFormat(item.ctime, "yyyy-MM-dd HH:mm")}</td>
 
 														<td class="hidden-480">
-															${item.ltime}</td>
+															${fun.DateFormat(item.ltime, "yyyy-MM-dd HH:mm")}</td>
 
 														<td>
 															<div class="visible-md visible-lg hidden-sm hidden-xs btn-group">

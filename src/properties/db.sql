@@ -125,3 +125,20 @@ CREATE TABLE IF NOT EXISTS  role_log (
    PRIMARY KEY (id)   
 ) ;
 
+
+
+DROP TABLE IF EXISTS hor_rule;
+CREATE TABLE IF NOT EXISTS hor_rule (
+ id SERIAL ,
+ name varchar NOT NULL ,
+ collention varchar NOT NULL,
+ qaction smallint NOT NULL DEFAULT '0',
+ query text NOT NULL ,
+ field text NOT NULL ,
+ sort text NOT NULL ,
+ ctime int NOT NULL ,
+ stime int NOT NULL ,
+ etime int NOT NULL DEFAULT '0' ,
+ PRIMARY KEY (id)
+);
+

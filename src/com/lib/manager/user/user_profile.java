@@ -4,13 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
-import org.ppl.common.ShowMessage;
-import org.ppl.etc.Config;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
 import org.ppl.io.Encrypt;
 import org.ppl.io.TimeClass;
 
