@@ -8,6 +8,7 @@ import org.ppl.BaseClass.BaseModule;
 import org.ppl.BaseClass.Permission;
 import org.ppl.Module.ModuleBind;
 import org.ppl.etc.UrlClassList;
+import org.ppl.etc.globale_config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -105,8 +106,14 @@ public class Menu extends BaseModule {
 	}
 	
 	private int isMenu(String lib) {
-		Injector injector = Guice.createInjector(new ModuleBind());
-		Permission home = (Permission) injector.getInstance(Key.get(Permission.class, Names.named(lib)));
-		return home.getAction();
+		Injector injector = globale_config.injector;
+		try {
+			Permission home = (Permission) injector.getInstance(Key.get(Permission.class, Names.named(lib)));
+			return home.getAction();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return -1;
+		}
+		
 	}
 }

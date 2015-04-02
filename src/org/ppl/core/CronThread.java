@@ -49,12 +49,7 @@ public class CronThread extends LibThread {
 		}
 				
 		while (true) {
-			try {
-				Thread.sleep(60 * cronDelay * 1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			int now = (int)tc.time();
 			
 			int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
@@ -96,7 +91,12 @@ public class CronThread extends LibThread {
 				cron.free();
 				
 			}
-			
+			try {
+				Thread.sleep(60 * cronDelay * 1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 	}

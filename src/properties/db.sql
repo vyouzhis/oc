@@ -126,19 +126,61 @@ CREATE TABLE IF NOT EXISTS  role_log (
 ) ;
 
 
-
 DROP TABLE IF EXISTS hor_rule;
 CREATE TABLE IF NOT EXISTS hor_rule (
- id SERIAL ,
- name varchar NOT NULL ,
- collention varchar NOT NULL,
- qaction smallint NOT NULL DEFAULT '0',
- query text NOT NULL ,
- field text NOT NULL ,
- sort text NOT NULL ,
- ctime int NOT NULL ,
- stime int NOT NULL ,
- etime int NOT NULL DEFAULT '0' ,
- PRIMARY KEY (id)
+  id serial NOT NULL,
+  name character varying NOT NULL,
+  collention character varying NOT NULL,
+  qaction smallint NOT NULL DEFAULT 0::smallint,
+  query text NOT NULL,
+  field text NOT NULL,
+  sort text NOT NULL,
+  ctime integer NOT NULL,
+  stime integer NOT NULL DEFAULT 0,
+  etime integer NOT NULL DEFAULT 0,
+  istop smallint NOT NULL DEFAULT 0, -- default 0 ,  1 is stop
+  CONSTRAINT hor_rule_pkey PRIMARY KEY (id )
+)
+WITH (
+  OIDS=FALSE
 );
+ALTER TABLE hor_rule
+  OWNER TO vyouzhi;
+COMMENT ON TABLE hor_rule
+  IS 'name 规则名称
+	collention 集合名
+	qaction 查询方式 
+	query  查询条件
+	field 查询条件
+	sort 排序
+	ctime 创建时间
+	stime 开始时间
+	etime 当前结束时间';
 
+	
+DROP TABLE IF EXISTS hor_mongodbcount;
+CREATE TABLE IF NOT EXISTS hor_mongodbcount
+(
+  rule integer NOT NULL DEFAULT (0)::smallint,
+  volume integer NOT NULL,
+  ctime integer NOT NULL DEFAULT 0,
+  CONSTRAINT rule_ctime UNIQUE (rule , ctime )
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hor_mongodbcount
+  OWNER TO vyouzhi;
+COMMENT ON TABLE hor_mongodbcount
+  IS 'rule 规则ID
+volume 数量
+ctime 时间';
+
+-- Index: rul_ctime
+
+-- DROP INDEX rul_ctime;
+
+CREATE INDEX rul_ctime
+  ON hor_mongodbcount
+  USING btree
+  (rule , ctime );

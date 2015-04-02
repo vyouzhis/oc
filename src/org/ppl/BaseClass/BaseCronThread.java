@@ -1,11 +1,13 @@
 package org.ppl.BaseClass;
 
 import org.ppl.db.DBSQL;
+import org.ppl.db.HikariConnectionPool;
 
 public abstract class BaseCronThread extends DBSQL{
 	public BaseCronThread() {
 		// TODO Auto-generated constructor stub
-		ThreadSetCon();
+		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
+		hcp.GetCon();
 	}
 	public abstract int minute();
 	public abstract int hour();

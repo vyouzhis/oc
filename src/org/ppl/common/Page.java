@@ -4,7 +4,8 @@ public class Page {
 
 	public String s_page(String url, int total, int page, int limit, String para) {
 		if(para.length()>0) para = '&'+para;
-		int ceil = (int)Math.ceil(total/limit);
+		double tol_page = (double)total/(double)limit;
+		int ceil = (int)Math.ceil(tol_page);
 		int st=0;
 		int ceil_limit=0;
 		String spage, npage, ppage;
@@ -35,7 +36,7 @@ public class Page {
 	            if(page==0) page=1;
 	            spage +="<b class='here_num' style='margin:5px;padding:0px;font-size:16px;'>"+page+"</b>";
 	        }else{	            
-	             spage += "<a href='"+url+"/"+st+para+"' style='margin:5px;padding:0px;font-size:16px;'>"+st+"</a>";
+	             spage += "<a href='"+url+"?p="+st+para+"' style='margin:5px;padding:0px;font-size:16px;'>"+st+"</a>";
 	        }
 	    }
 
@@ -43,12 +44,12 @@ public class Page {
 	        npage = "[已到尾页]";
 	    }else {
 	    	
-         npage = "<a href='"+url+"/"+(page+1)+para+"' style='margin:5px;padding:0px;font-size:16px;'>[下一页]</a>";
-         npage += "<a href='"+url+"/"+ceil+para+"' style='margin:5px;padding:0px;font-size:16px;'>[到尾页]</a>";
+         npage = "<a href='"+url+"?p="+(page+1)+para+"' style='margin:5px;padding:0px;font-size:16px;'>[下一页]</a>";
+         npage += "<a href='"+url+"?p="+ceil+para+"' style='margin:5px;padding:0px;font-size:16px;'>[到尾页]</a>";
 	        
 	    }
 	   
-	      ppage = (page>7) ? "<a href='"+url+"/1?"+para+"&tol="+total+"' style='margin:5px;padding:0px;font-size:16px;'>[回首页]</a>" : "";
+	      ppage = (page>7) ? "<a href='"+url+"?p=1&"+para+"&tol="+total+"' style='margin:5px;padding:0px;font-size:16px;'>[回首页]</a>" : "";
 	   
 	    return ceil>1?ppage+spage+npage:spage; 
 		

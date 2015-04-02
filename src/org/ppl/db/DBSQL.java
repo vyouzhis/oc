@@ -21,21 +21,15 @@ public class DBSQL extends BaseLang {
 	private Statement stmt = null;
 	protected String DB_NAME = mConfig.GetValue("db.name");
 	protected String DB_PRE = mConfig.GetValue("db.rule.ext");
+	protected String DB_HOR_PRE = mConfig.GetValue("db.hor.ext");
 	protected String DB_WEB_PRE = mConfig.GetValue("db.web.ext");
-
+	
 	public DBSQL() {
 
 	}
 
 	public void SetCon() {
 
-	}
-
-	public void ThreadSetCon() {
-
-		// ConDB = hcp.GetCon();
-		// long tid = myThreadId();
-		// globale_config.GDB.put(tid, hcp.GetCon());
 	}
 
 	public void end() {

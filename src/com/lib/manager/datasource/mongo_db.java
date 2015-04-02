@@ -2,6 +2,7 @@ package com.lib.manager.datasource;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.ppl.BaseClass.BasePerminterface;
@@ -10,12 +11,13 @@ import org.ppl.db.MGDB;
 import org.ppl.etc.UrlClassList;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.mail.auth.MD4;
 
 public class mongo_db extends Permission implements BasePerminterface {
 	private List<String> rmc;
 
 	private String db_collection;
-	private int fetch_query = 0;	
+	private int fetch_query = 0;
 	private String where_query;
 	private String field_query;
 	private String sort_query;
@@ -40,19 +42,22 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 		db_collection = porg.getKey("db_collection");
 		String fq = porg.getKey("fetch_query");
-		if (fq!= null && fq.matches("[0-9]+")) {
+		if (fq != null && fq.matches("[0-9]+")) {
 			fetch_query = Integer.valueOf(fq);
 		}
 		where_query = porg.getKey("where_query");
 		field_query = porg.getKey("field_query");
 		sort_query = porg.getKey("sort_query");
 		project_name = porg.getKey("project_name");
-		
+
+		if (project_name != null) {
+			setRoot("project_name", project_name);
+		}
 		where_query = Myreplace(where_query);
 
 		field_query = Myreplace(field_query);
 		sort_query = Myreplace(sort_query);
-		
+
 		mgdb = new MGDB();
 		rmc = porg.getRmc();
 		if (rmc.size() != 2) {
@@ -70,6 +75,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 		case "create":
 			create(null);
 			return;
+		case "edit":
+			edit(null);
+			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -93,14 +101,16 @@ public class mongo_db extends Permission implements BasePerminterface {
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-		
+
 		int now = time();
-		
-		String format = "INSERT INTO hor_rule(name, collention, qaction, query, field, sort, ctime, stime, etime)" +
-				"VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
-		String sql = String.format(format, project_name,db_collection,fetch_query, where_query, field_query,sort_query, now, 0,0);
-		echo(sql);
-		
+		int stime = getLastTime(db_collection);
+		String format = "INSERT INTO "
+				+ DB_HOR_PRE
+				+ "rule(name, collention, qaction, query, field, sort, ctime, stime, etime)"
+				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
+		String sql = String.format(format, project_name, db_collection,
+				fetch_query, where_query, field_query, sort_query, now, stime, stime);
+
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
 		try {
@@ -111,11 +121,81 @@ public class mongo_db extends Permission implements BasePerminterface {
 			e.printStackTrace();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	private int getLastTime(String col) {
+		mgdb.DBEnd();
+		int ltime = 0;
+		String field = "{\"SERVER.REQUEST_TIME\":1}";
+		mgdb.SetCollection(col);
+		mgdb.JsonColumn(field);
+		mgdb.JsonSort(field);
+		mgdb.setLimit(1);
+		boolean s = mgdb.FetchList();
+		if(s){
+			List<Map<String, Object>> res = mgdb.GetValue();
+			
+			Map<String, Object> times = (Map<String, Object>) res.get(0).get("SERVER");
+			echo(times);
+			ltime = Integer.valueOf(times.get("REQUEST_TIME").toString());
+		}
+		
+		return ltime;
+	}
 
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
+		String id = porg.getKey("id");
+		int eid = 0;
+		if (id != null && id.matches("[0-9]+")) {
+			eid = Integer.valueOf(id);
+		}
+		echo("where:"+where_query);
+		
+		if (db_collection == null || db_collection.length()==0) {
+			String format = "select * from " + DB_HOR_PRE
+					+ "rule  where id=%d limit 1";
+			String sql = String.format(format, eid);
+			Map<String, Object> res;
 
+			res = FetchOne(sql);
+			if (res != null) {
+
+				db_collection = res.get("collention").toString();
+				mgdb.SetCollection(db_collection);
+				String fq = res.get("qaction").toString();
+				if (fq != null && fq.matches("[0-9]+")) {
+					fetch_query = Integer.valueOf(fq);
+				}
+				where_query = res.get("query").toString();
+				field_query = res.get("field").toString();
+				sort_query = res.get("sort").toString();
+				project_name = res.get("name").toString();
+			}
+		}
+
+		setRoot("project_name", project_name);
+
+		if (where_query.length() < 3) {
+			setRoot("where_query", "{}");
+		} else {
+			setRoot("where_query", where_query);
+		}
+
+		if (field_query.length() < 3) {
+			setRoot("field_query", "{}");
+		} else {
+			setRoot("field_query", field_query);
+		}
+
+		FetchRule();
+
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("action_url", ucl.edit(SliceName(stdClass)) + "?id=" + eid
+				+ "&project_name=" + project_name);
+		setRoot("create_url", ucl.create("mongo_db_edit_action"));
+		setRoot("eid", eid);
 	}
 
 	@Override
@@ -128,9 +208,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
 
-		
-
-		echo("where:" + where_query);
 		if (where_query.length() == 0) {
 			setRoot("where_query", "{}");
 		} else {
@@ -143,6 +220,17 @@ public class mongo_db extends Permission implements BasePerminterface {
 			setRoot("field_query", field_query);
 		}
 
+		FetchRule();
+
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("action_url", ucl.search(SliceName(stdClass)));
+
+		setRoot("create_url", ucl.create(SliceName(stdClass)));
+
+	}
+
+	private void FetchRule() {
+
 		if (fetch_query == 0) {
 			SortQuery();
 			Find();
@@ -151,10 +239,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 		} else if (fetch_query == 3) {
 			FetchCount();
 		}
-
-		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("action_url", ucl.search(SliceName(stdClass)));
-		setRoot("create_url", ucl.create(SliceName(stdClass)));
 		setRoot("save_project", "1");
 	}
 
@@ -186,8 +270,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 	private void SortQuery() {
 
-		
-
 		if (sort_query.length() > 2) {
 			mgdb.JsonSort(sort_query);
 			setRoot("sort_query", sort_query);
@@ -199,9 +281,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 	private void FetchCount() {
 		if (where_query.length() > 2 && where_query.substring(0, 1).equals("{")) {
 			mgdb.JsonWhere(where_query);
-		}
-		if (field_query.length() > 2) {
-			mgdb.JsonColumn(field_query);
 		}
 
 		int count = mgdb.FetchCont();
@@ -276,8 +355,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private String Myreplace(String old) {
-		if(old == null)return null;
-		
+		if (old == null)
+			return "";
+
 		String news = old.replace("&nbsp;", "");
 		news = news.replace("&quot;", "\"");
 

@@ -14,7 +14,7 @@ import com.lib.common.Navbar;
 
 public class Permission extends BaseTheme {
 	private int Action = 0; // default 0 is menu, 1 is action
-
+		
 	protected int Init() {
 		
 		UrlClassList ucl = UrlClassList.getInstance();
@@ -134,6 +134,10 @@ public class Permission extends BaseTheme {
 
 	public void setAction(int action) {
 		Action = action;
+	}
+	
+	public void InAction() {
+		Action = 1;
 	}
 
 	public void Msg(String msg) {

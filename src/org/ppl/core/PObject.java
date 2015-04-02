@@ -189,6 +189,11 @@ public class PObject {
 		TimeClass tc = TimeClass.getInstance();
 		return (int) tc.time();
 	}
+	
+	public String DateFormat(Long TimeStamp, String format ) {
+		TimeClass tc = TimeClass.getInstance();
+		return tc.TimeStamptoDate(TimeStamp, format);
+	}
 
 	public long myThreadId() {
 		return Thread.currentThread().getId();

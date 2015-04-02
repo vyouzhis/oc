@@ -27,12 +27,7 @@ public class BaseView extends ACLControl{
 		// TODO Auto-generated constructor stub
 		
 	}
-	
-	public String DateFormat(Long TimeStamp, String format ) {
-		TimeClass tc = TimeClass.getInstance();
-		return tc.TimeStamptoDate(TimeStamp, format);
-	}
-	
+		
 	public void View() {
 		
 		if (root == null) {
