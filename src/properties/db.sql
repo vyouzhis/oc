@@ -126,9 +126,9 @@ CREATE TABLE IF NOT EXISTS  role_log (
 ) ;
 
 
-DROP TABLE IF EXISTS hor_rule;
-CREATE TABLE IF NOT EXISTS hor_rule (
-  id serial NOT NULL,
+DROP TABLE IF EXISTS hor_mongodbrule;
+CREATE TABLE IF NOT EXISTS hor_mongodbrule (
+  id integer NOT NULL DEFAULT nextval('hor_rule_id_seq'::regclass),
   name character varying NOT NULL,
   collention character varying NOT NULL,
   qaction smallint NOT NULL DEFAULT 0::smallint,
@@ -136,17 +136,17 @@ CREATE TABLE IF NOT EXISTS hor_rule (
   field text NOT NULL,
   sort text NOT NULL,
   ctime integer NOT NULL,
-  stime integer NOT NULL DEFAULT 0,
+  stime integer NOT NULL,
   etime integer NOT NULL DEFAULT 0,
   istop smallint NOT NULL DEFAULT 0, -- default 0 ,  1 is stop
-  CONSTRAINT hor_rule_pkey PRIMARY KEY (id )
+  CONSTRAINT hor_rule_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE hor_rule
+ALTER TABLE hor_mongodbrule
   OWNER TO vyouzhi;
-COMMENT ON TABLE hor_rule
+COMMENT ON TABLE hor_mongodbrule
   IS 'name 规则名称
 	collention 集合名
 	qaction 查询方式 
@@ -156,14 +156,14 @@ COMMENT ON TABLE hor_rule
 	ctime 创建时间
 	stime 开始时间
 	etime 当前结束时间';
+COMMENT ON COLUMN hor_mongodbrule.istop IS 'default 0 ,  1 is stop';
 
-	
 DROP TABLE IF EXISTS hor_mongodbcount;
 CREATE TABLE IF NOT EXISTS hor_mongodbcount
 (
   rule integer NOT NULL DEFAULT (0)::smallint,
   volume integer NOT NULL,
-  ctime integer NOT NULL DEFAULT 0,
+  dial integer NOT NULL DEFAULT 0,
   CONSTRAINT rule_ctime UNIQUE (rule , ctime )
 )
 WITH (
@@ -173,8 +173,8 @@ ALTER TABLE hor_mongodbcount
   OWNER TO vyouzhi;
 COMMENT ON TABLE hor_mongodbcount
   IS 'rule 规则ID
-volume 数量
-ctime 时间';
+	volume 数量
+	dial 刻度盘';
 
 -- Index: rul_ctime
 

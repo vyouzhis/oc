@@ -14,7 +14,6 @@ import org.ppl.db.HikariConnectionPool;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;

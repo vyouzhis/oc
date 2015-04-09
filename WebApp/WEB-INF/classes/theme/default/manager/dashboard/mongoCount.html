@@ -1,0 +1,312 @@
+
+<body>
+	${navbar!""}
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<div class="main-container-inner">
+
+			${menu!""}
+			<div class="main-content">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check('breadcrumbs', 'fixed')
+						} catch (e) {
+						}
+					</script>
+					<ul class="breadcrumb">
+						<li><i class="icon-home home-icon"></i> <a href="#">首页</a></li>
+						<li class="active">${name}</li>
+					</ul>
+					<!-- #nav-search -->
+				</div>
+				<div class="page-content">
+					<!-- /.page-header -->
+					<div class="row">
+
+						<div class="col-xs-9">
+							<div class="page-header">
+								<h1>
+									User Profile Page <small> <i
+										class="icon-double-angle-right"></i> 3 styles with inline
+										editable feature
+									</small>
+								</h1>
+
+							</div>
+							<div id="custom-container" style="height: 360px;"></div>
+						</div>
+						<div class="col-xs-3">
+
+
+							<div class="widget-box">
+
+								<div class="widget-header header-color-blue2">
+									<h5 class="bigger lighter">
+										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
+											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>更新数据
+										</a>
+									</h5>
+
+									<div class="widget-toolbar">
+										<a data-action="collapse" href="#"> <i
+											class="icon-chevron-up"></i>
+										</a>
+									</div>
+								</div>
+
+								<div class="widget-body">
+
+									<div class="widget-main no-padding">
+										<div id="tree1" class="tree"></div>
+									</div>
+
+
+								</div>
+
+
+							</div>
+							<!-- /row -->
+						</div>
+					</div>
+					<!-- /.row -->
+					<!-- show resulte -->
+					<div class="row">
+						<div class="page-content">
+							<div class="page-header">
+								<h1>
+									<i class="icon-th-large"></i><a href="javascript:void(0)"
+										onclick="SaveImg()">保存历史记录</a>
+
+								</h1>
+							</div>
+							<div class="col-xs-12">
+								<div class="wysiwyg-editor" name="dataEditor" id="dataEditor"></div>
+							</div>
+						</div>
+					</div>
+					<!-- /show resulte -->
+					
+				</div>
+				<!-- /.main-container-inner -->
+				<a href="#" id="btn-scroll-up"
+					class="btn-scroll-up btn btn-sm btn-inverse"> <i
+					class="icon-double-angle-up icon-only bigger-110"></i>
+				</a>
+			</div>
+			<!-- /.main-container -->
+
+			<script src="${static_js_uri}/jquery.hotkeys.min.js"></script>
+			<script src="${static_js_uri}/bootstrap-wysiwyg.min.js"></script>
+
+			<script src="${static_js_uri}/echarts/esl.js" type="text/javascript"></script>
+			
+			<script src="${static_js_uri}/fuelux/fuelux.tree.min.js"></script>
+			<script type="text/javascript">
+				var DataSourceTree = function(options) {
+					this._data = options.data;
+					this._delay = options.delay;
+				}
+
+				DataSourceTree.prototype.data = function(options, callback) {
+					var self = this;
+					var $data = null;
+
+					if (!("name" in options) && !("type" in options)) {
+						$data = this._data;//the root tree
+
+						callback({
+							data : $data
+						});
+						return;
+					} else if ("type" in options && options.type == "folder") {
+						if ("additionalParameters" in options
+								&& "children" in options.additionalParameters) {
+							$data = options.additionalParameters.children;
+						} else
+							$data = {}//no data
+					}
+
+					if ($data != null)//this setTimeout is only for mimicking some random delay
+						setTimeout(function() {
+							callback({
+								data : $data
+							});
+						}, parseInt(Math.random() * 500) + 200);
+
+					//we have used static data here
+					//but you can retrieve your data dynamically from a server using ajax call
+					//checkout examples/treeview.html and examples/treeview.js for more info
+				};
+
+				var tree_data = {
+					'mongodb' : {
+						name : 'MongoDB',
+						type : 'folder'
+					},
+					'vehicles' : {
+						name : 'Vehicles',
+						type : 'folder'
+					},
+					
+				}
+				tree_data['mongodb']['additionalParameters'] = ${MongoTree!""}
+					
+				
+				
+
+				var treeDataSource = new DataSourceTree({
+					data : tree_data
+				});
+
+				jQuery(function($) {
+
+					$('#tree1')
+							.ace_tree(
+									{
+										dataSource : treeDataSource,
+										multiSelect : true,
+										loadingHTML : '<div class="tree-loading"><i class="icon-refresh icon-spin blue"></i></div>',
+										'open-icon' : 'icon-minus',
+										'close-icon' : 'icon-plus',
+										'selectable' : true,
+										'selected-icon' : 'icon-ok',
+										'unselected-icon' : 'icon-remove'
+									});
+
+				});
+			</script>
+			<script type="text/javascript">
+			
+				var option_1 = {
+					title : {
+						text : '某站点用户访问来源',
+						subtext : '纯属虚构',
+						x : 'center'
+					},
+					tooltip : {
+						trigger : 'item',
+						formatter : "{a} <br/>{b} : {c} ({d}%)"
+					},
+					legend : {
+						orient : 'vertical',
+						x : 'left',
+						data : [ '直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎' ]
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							mark : {
+								show : true
+							},
+							dataView : {
+								show : true,
+								readOnly : false
+							},
+							restore : {
+								show : true
+							},
+							saveAsImage : {
+								show : true
+							}
+						}
+					},
+					calculable : true,
+					series : [ {
+						name : '访问来源',
+						type : 'pie',
+						radius : '55%',
+						center : [ '50%', '60%' ],
+						data : [ {
+							value : 335,
+							name : '直接访问'
+						}, {
+							value : 310,
+							name : '邮件营销'
+						}, {
+							value : 234,
+							name : '联盟广告'
+						}, {
+							value : 135,
+							name : '视频广告'
+						}, {
+							value : 1548,
+							name : '搜索引擎'
+						} ]
+					} ]
+				};
+							
+				require.config({
+			        paths:{ 
+			            echarts:'${static_js_uri}/echarts/echarts-map',
+			            'echarts/chart/bar' : '${static_js_uri}/echarts/echarts-map',
+			            'echarts/chart/line' : '${static_js_uri}/echarts/echarts-map',  
+			            'echarts/chart/pie' : '${static_js_uri}/echarts/echarts-map',  
+			            'echarts/chart/map' : '${static_js_uri}/echarts/echarts-map',
+			            'echarts/chart/scatter' : '${static_js_uri}/echarts/echarts-map',
+			            'echarts/chart/funnel' : '${static_js_uri}/echarts/echarts-map',
+			        }
+			    });
+				
+				var f = 1;
+				var myChart4;
+				require([ 'echarts', 'echarts/chart/bar', 'echarts/chart/line',
+						'echarts/chart/pie', 'echarts/chart/scatter',
+						'echarts/chart/funnel', ], function(ec) {
+					myChart4 = ec.init(document
+							.getElementById('custom-container'));
+					myChart4.setOption(option_1, true);
+				});
+
+				function focusGraphic() {
+
+					myChart4.showLoading();
+					setTimeout(refresh, 1000);
+				}
+
+				function refresh() {
+					var o = $('#tree1').tree('selectedItems');
+					var ids=[];
+					var i=0;
+					for(key in o) {
+						//console.log( o[key].id );
+						ids[i++] = o[key].id;						
+					}
+					
+					var selectedItems = JSON.stringify(ids);
+					console.log( JSON.stringify(o) );
+					$.ajax({
+						  url: "${json_url}?jsoncallback=?",
+						  dataType: 'json',
+						  data:{"ids":selectedItems},
+						  success: function(result){
+							  console.log("success"+result);
+						  },
+						  error: function(request, textStatus, errorThrown) {
+						    //alert(textStatus);
+						  },
+						  complete: function(request, textStatus) { //for additional info
+							  var option = request.responseText;
+						      if(option.length > 2){
+							  	myChart4.clear();
+							  	myChart4.setOption(JSON.parse(option), true);
+							  	myChart4.refresh();
+						  	  }
+							  myChart4.hideLoading();
+						  }
+						});
+				}
+
+				$("#dataEditor").ace_wysiwyg();
+				function SaveImg() {
+					var dataURL = myChart4.getDataURL();
+					var imgs = "<img src='"+dataURL+"' />";
+					var val = $("#dataEditor").html();
+					$("#dataEditor").html(val + imgs);
+				}
+			</script>

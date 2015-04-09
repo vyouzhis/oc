@@ -10,8 +10,6 @@ import org.ppl.BaseClass.BaseCronThread;
 import org.ppl.db.MGDB;
 
 import com.alibaba.fastjson.JSON;
-import com.jhlabs.math.VLNoise;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 /**
  * 
@@ -42,7 +40,7 @@ public class mclt extends BaseCronThread {
 	public void Run() {
 		// TODO Auto-generated method stub
 		int offset = 0;
-		String sql = "select id,collention,query, etime,istop from hor_rule where qaction=3 order by id limit 10 offset "
+		String sql = "select id,collention,query, etime,istop from "+DB_HOR_PRE+"mongodbrule SET where qaction=3 order by id limit 10 offset "
 				+ offset;
 		List<Map<String, Object>> res;
 		try {
@@ -101,7 +99,7 @@ public class mclt extends BaseCronThread {
 		
 		Map<String, Integer> add = new HashMap<>();
 		int lt = start;
-		String format = "INSERT INTO "+DB_HOR_PRE+"mongodbcount( rule, volume, ctime)VALUES" ;
+		String format = "INSERT INTO "+DB_HOR_PRE+"mongodbcount( rule, volume, dial)VALUES" ;
 		String sql_format = "(%d, %d, %d),";
 		
 		Map<String, Integer>  sql_val = new HashMap<>();
@@ -150,7 +148,7 @@ public class mclt extends BaseCronThread {
 			e.printStackTrace();
 		}
 		
-		sql = "update "+DB_HOR_PRE+"rule SET etime = "+lt+" where id="+rule;
+		sql = "update "+DB_HOR_PRE+"mongodbrule SET etime = "+lt+" where id="+rule;
 		
 		try {
 			update(sql);

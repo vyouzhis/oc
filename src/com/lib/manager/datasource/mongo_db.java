@@ -106,7 +106,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		int stime = getLastTime(db_collection);
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
-				+ "rule(name, collention, qaction, query, field, sort, ctime, stime, etime)"
+				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime)"
 				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
 		String sql = String.format(format, project_name, db_collection,
 				fetch_query, where_query, field_query, sort_query, now, stime, stime);
@@ -155,7 +155,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		
 		if (db_collection == null || db_collection.length()==0) {
 			String format = "select * from " + DB_HOR_PRE
-					+ "rule  where id=%d limit 1";
+					+ "mongodbrule  where id=%d limit 1";
 			String sql = String.format(format, eid);
 			Map<String, Object> res;
 

@@ -84,7 +84,7 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 			id = Integer.valueOf(eid);
 		}
 		
-		String format = "UPDATE hor_rule SET " +
+		String format = "UPDATE "+DB_HOR_PRE+"mongodbrule SET " +
 				" name='%s', collention='%s', qaction='%s', query='%s', field='%s', sort='%s'" +
 				" WHERE id=%d;";
 		String sql = String.format(format, project_name, db_collection, fetch_query, where_query, field_query, sort_query, id);
@@ -116,7 +116,7 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 			id = Integer.valueOf(eid);
 		}
 		
-		String format = "UPDATE hor_rule SET " +
+		String format = "UPDATE "+DB_HOR_PRE+"mongodbrule SET " +
 				" istop = 1" +
 				" WHERE id=%d;";
 		String sql = String.format(format,  id);
