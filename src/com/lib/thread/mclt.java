@@ -40,14 +40,13 @@ public class mclt extends BaseCronThread {
 	public void Run() {
 		// TODO Auto-generated method stub
 		int offset = 0;
-		String sql = "select id,collention,query, etime,istop from "+DB_HOR_PRE+"mongodbrule SET where qaction=3 order by id limit 10 offset "
+		String sql = "select id,collention,query, etime,istop from "+DB_HOR_PRE+"mongodbrule where qaction=3 order by id limit 10 offset "
 				+ offset;
 		List<Map<String, Object>> res;
 		try {
 			res = FetchAll(sql);
 			if (res != null) {
-				for (int i = 0; i < res.size(); i++) {
-					
+				for (int i = 0; i < res.size(); i++) {					
 					Operation(res.get(i));
 				}				
 			}
@@ -64,8 +63,8 @@ public class mclt extends BaseCronThread {
 		}
 		
 		int rule = Integer.valueOf(o.get("id").toString());
-		//int now = time();
-		int now=1420991960;
+		int now = time();
+		//int now=1421025243; //test end time 
 		int start = Integer.valueOf(o.get("etime").toString());
 		
 		// Greater than 1 hour

@@ -81,7 +81,7 @@
 							<div class="page-header">
 								<h1>
 									<i class="icon-th-large"></i><a href="javascript:void(0)"
-										onclick="SaveImg()">保存历史记录</a>
+										onclick="SaveImg()">保存图表</a>
 
 								</h1>
 							</div>
@@ -145,8 +145,8 @@
 				};
 
 				var tree_data = {
-					'mongodb' : {
-						name : 'MongoDB',
+					'webSite' : {
+						name : '网站浏览',
 						type : 'folder'
 					},
 					'vehicles' : {
@@ -155,7 +155,7 @@
 					},
 					
 				}
-				tree_data['mongodb']['additionalParameters'] = ${MongoTree!""}
+				tree_data['webSite']['additionalParameters'] = ${MongoTree!""}
 					
 				
 				
@@ -271,14 +271,14 @@
 
 				function refresh() {
 					var o = $('#tree1').tree('selectedItems');
-					var ids=[];
-					var i=0;
-					for(key in o) {
+					//var ids=[];
+					//var i=0;
+					//for(key in o) {
 						//console.log( o[key].id );
-						ids[i++] = o[key].id;						
-					}
+						//ids[i++] = o[key].id;						
+					//}
 					
-					var selectedItems = JSON.stringify(ids);
+					var selectedItems = JSON.stringify(o);
 					console.log( JSON.stringify(o) );
 					$.ajax({
 						  url: "${json_url}?jsoncallback=?",

@@ -114,7 +114,8 @@ public class mongo_db extends Permission implements BasePerminterface {
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
 		try {
-			update(sql);
+			long id = insert(sql);
+			echo("id:"+id);
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

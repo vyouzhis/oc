@@ -155,7 +155,7 @@ public class MGDB extends PObject {
 	}
 
 	public Boolean FetchList() {
-
+		echo(DBWhere);
 		dbCursor = DBLink.find(DBWhere, DBColumn).sort(DBSort).limit(DBLimit)
 				.skip(DBOffset);
 		if (dbCursor == null) {

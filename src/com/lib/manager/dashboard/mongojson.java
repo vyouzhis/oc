@@ -27,7 +27,7 @@ public class mongojson extends Permission implements BasePerminterface {
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
 		super.GetSubClassName(className);
-		// setRoot("name", _MLang("name"));
+		setRoot("name", _MLang("name"));
 		InAction(); // 设置只是动作
 		setAjax(true); // 设置是 ajax
 		isAutoHtml = false; // 不用加载页头和页脚
@@ -74,8 +74,7 @@ public class mongojson extends Permission implements BasePerminterface {
 		}
 
 		GsonOption option = new GsonOption();
-		option.legend("高度(km)与气温(°C)变化关系");
-
+		
 		option.toolbox()
 				.show(true)
 				.feature(Tool.mark, Tool.dataView,
@@ -83,8 +82,8 @@ public class mongojson extends Permission implements BasePerminterface {
 						Tool.saveAsImage);
 
 		option.calculable(true);
-		option.tooltip().trigger(Trigger.axis)
-				.formatter("Temperature : <br/>{b}km : {c}°C");
+		option.tooltip().trigger(Trigger.axis);
+				//.formatter("{a} <br/>{b} : ({c}%)");
 
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
@@ -93,29 +92,26 @@ public class mongojson extends Permission implements BasePerminterface {
 		CategoryAxis categoryAxis = new CategoryAxis();
 		categoryAxis.axisLine().onZero(false);
 		categoryAxis.setType(AxisType.value);
-		categoryAxis.axisLabel().formatter("{value} km");
+		categoryAxis.axisLabel().formatter("{value}");
 
-		//List<Integer> ListVolume;
-		List<Integer> Listdial;
-
-		List<String> ids = JSON.parseObject(json_id, List.class);
+		List<Map<String, String>> ids = JSON.parseObject(json_id, List.class);
 		String format = "select rule,volume,dial from hor_mongodbcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
 		boolean Xbool = true;
 		List<Map<String, Object>> res;
-		
-		
-		for (String id : ids) {
-			if (!id.matches("[0-9]+"))
+				
+		for (Map<String, String> id : ids) {
+			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
 
-			String sql = String.format(format, Integer.valueOf(id));
+			String sql = String.format(format, Integer.valueOf(id.get("id").toString()));
 			try {
 				res = FetchAll(sql);
 				if (res != null && res.size()>0) {
 					//ListVolume = new ArrayList<>();
 					// Listdial = new ArrayList<>();
+					option.legend(id.get("name").toString());
 					Line line = new Line();
-					line.smooth(true).name("高度(km)与气温(°C)变化关系").itemStyle().normal()
+					line.smooth(true).name(id.get("name").toString()).itemStyle().normal()
 					.lineStyle();
 					for (Map<String, Object> key : res) {
 //						ListVolume.add(Integer.valueOf(key.get("volume")
