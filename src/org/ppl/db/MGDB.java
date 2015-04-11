@@ -150,7 +150,9 @@ public class MGDB extends PObject {
 
 	@SuppressWarnings("unchecked")
 	public List<Object> Distinct(String field) {
-		List<Object> list = DBLink.distinct(field);
+		String f = field.replace("\"", "");
+		f = f.replace("'", "");
+		List<Object> list = DBLink.distinct(f,DBWhere);
 		return list;
 	}
 

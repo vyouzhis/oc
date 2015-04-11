@@ -11,10 +11,10 @@ import org.ppl.etc.UrlClassList;
 
 import com.alibaba.fastjson.JSON;
 
-public class mongoCount extends Permission implements BasePerminterface {
+public class DashboardView extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private Map<String, Map<String, Map<String, String>>> Mongo;
-	public mongoCount() {
+	public DashboardView() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
@@ -55,14 +55,14 @@ public class mongoCount extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		getMongoDBList();
-		
+		getMongoDBList(3, "webSite");
+		getMongoDBList(2, "webDistinct");
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("mongojson"));
 	}
 	
-	private void getMongoDBList() {
-		String sql = "SELECT id,name FROM "+DB_HOR_PRE+"mongodbrule order by id desc;";
+	private void getMongoDBList(int qaction, String RootName) {
+		String sql = "SELECT id,name FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" order by id desc;";
 		Mongo = new HashMap<String, Map<String,Map<String,String>>>();
 		
 		List<Map<String, Object>> res;
@@ -74,17 +74,17 @@ public class mongoCount extends Permission implements BasePerminterface {
 				Map<String, String> Item = new HashMap<>();
 				Item.put("name", map.get("name").toString());
 				Item.put("type", "item");
-				Item.put("id",  map.get("id").toString());	
+				Item.put("id",  map.get("id").toString());
+				Item.put("qaction",  qaction+"");	
 				file.put(map.get("id").toString(), Item);				
 			}
 			Mongo.put("children", file);
 			String JsonTree = JSON.toJSONString(Mongo);
-			setRoot("MongoTree", JsonTree);
+			setRoot(RootName, JsonTree);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}		
 		
 	}
 

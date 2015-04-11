@@ -47,7 +47,7 @@ public class CronThread extends LibThread {
 				e.printStackTrace();
 			}
 		}
-				
+		
 		while (true) {
 			
 			int now = (int)tc.time();
@@ -56,6 +56,7 @@ public class CronThread extends LibThread {
 			int nowDay = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "dd"));
 						
 			for (String key:cronMap.keySet()) {
+				System.out.print("KEY:"+key);
 				Injector injector = Guice
 						.createInjector(new ModuleBind());
 				BaseCronThread cron = (BaseCronThread) injector

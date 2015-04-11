@@ -21,6 +21,7 @@ import com.github.abel533.echarts.series.Line;
 
 public class mongojson extends Permission implements BasePerminterface {
 	private List<String> rmc;
+	private GsonOption option = null;
 
 	public mongojson() {
 		// TODO Auto-generated constructor stub
@@ -44,7 +45,9 @@ public class mongojson extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
+		option = new GsonOption();
+		InitOption();
+		
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
@@ -57,6 +60,24 @@ public class mongojson extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
+	}
+
+	private void InitOption() {
+		option.toolbox()
+				.show(true)
+				.feature(Tool.mark, Tool.dataView, Tool.dataZoom,
+						new MagicType(Magic.line, Magic.bar), Tool.restore,
+						Tool.saveAsImage);
+
+		option.calculable(true);
+		option.tooltip().trigger(Trigger.axis);
+		// .formatter("{a} <br/>{b} : ({c}%)");
+
+		CategoryAxis categoryAxis = new CategoryAxis();
+		categoryAxis.axisLine().onZero(false);
+		categoryAxis.setType(AxisType.value);
+		categoryAxis.axisLabel().formatter("{value}");
+		option.yAxis(categoryAxis);
 	}
 
 	@Override
@@ -73,49 +94,35 @@ public class mongojson extends Permission implements BasePerminterface {
 			return "";
 		}
 
-		GsonOption option = new GsonOption();
-		
-		option.toolbox()
-				.show(true)
-				.feature(Tool.mark, Tool.dataView,
-						new MagicType(Magic.line, Magic.bar), Tool.restore,
-						Tool.saveAsImage);
-
-		option.calculable(true);
-		option.tooltip().trigger(Trigger.axis);
-				//.formatter("{a} <br/>{b} : ({c}%)");
-
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
 		// valueAxis.axisLabel().formatter("{value} °C");
 
-		CategoryAxis categoryAxis = new CategoryAxis();
-		categoryAxis.axisLine().onZero(false);
-		categoryAxis.setType(AxisType.value);
-		categoryAxis.axisLabel().formatter("{value}");
-
 		List<Map<String, String>> ids = JSON.parseObject(json_id, List.class);
-		String format = "select rule,volume,dial from hor_mongodbcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
+		String format = "select rule,volume,dial from "
+				+ DB_HOR_PRE
+				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
 		boolean Xbool = true;
 		List<Map<String, Object>> res;
-				
+
 		for (Map<String, String> id : ids) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
 
-			String sql = String.format(format, Integer.valueOf(id.get("id").toString()));
+			String sql = String.format(format,
+					Integer.valueOf(id.get("id").toString()));
 			try {
 				res = FetchAll(sql);
-				if (res != null && res.size()>0) {
-					//ListVolume = new ArrayList<>();
+				if (res != null && res.size() > 0) {
+					// ListVolume = new ArrayList<>();
 					// Listdial = new ArrayList<>();
 					option.legend(id.get("name").toString());
 					Line line = new Line();
-					line.smooth(true).name(id.get("name").toString()).itemStyle().normal()
-					.lineStyle();
+					line.smooth(true).name(id.get("name").toString())
+							.itemStyle().normal().lineStyle();
 					for (Map<String, Object> key : res) {
-//						ListVolume.add(Integer.valueOf(key.get("volume")
-//								.toString()));
+						// ListVolume.add(Integer.valueOf(key.get("volume")
+						// .toString()));
 						// Listdial.add(Integer.valueOf(key.get("dial").toString()));
 						// echo(Listdial);
 						if (Xbool) {
@@ -123,9 +130,9 @@ public class mongojson extends Permission implements BasePerminterface {
 						}
 						line.data(key.get("volume"));
 					}
-					//echo(ListVolume);
+					// echo(ListVolume);
 					Xbool = false;
-					
+
 					option.series(line);
 				}
 			} catch (SQLException e) {
@@ -133,11 +140,17 @@ public class mongojson extends Permission implements BasePerminterface {
 				e.printStackTrace();
 			}
 		}
-		
+
 		option.xAxis(valueAxis);
-		option.yAxis(categoryAxis);
-		if(Xbool) return "";
+
+		if (Xbool){
+			return "";
+		}
 		return option.toString();
+	}
+	
+	private String Pie() {
+		return null;
 	}
 
 	private String Myreplace(String old) {

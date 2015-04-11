@@ -158,29 +158,60 @@ COMMENT ON TABLE hor_mongodbrule
 	etime 当前结束时间';
 COMMENT ON COLUMN hor_mongodbrule.istop IS 'default 0 ,  1 is stop';
 
-DROP TABLE IF EXISTS hor_mongodbcount;
-CREATE TABLE IF NOT EXISTS hor_mongodbcount
+DROP TABLE IF EXISTS hor_webvisitcount;
+CREATE TABLE IF NOT EXISTS hor_webvisitcount
 (
   rule integer NOT NULL DEFAULT (0)::smallint,
   volume integer NOT NULL,
+  val  varcahr NOT NULL DEFAULT "",
   dial integer NOT NULL DEFAULT 0,
-  CONSTRAINT rule_ctime UNIQUE (rule , ctime )
+  modify_time timestamp without time zone DEFAULT now()
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE hor_mongodbcount
+ALTER TABLE hor_webvisitcount
   OWNER TO vyouzhi;
-COMMENT ON TABLE hor_mongodbcount
+COMMENT ON TABLE hor_webvisitcount
   IS 'rule 规则ID
-	volume 数量
-	dial 刻度盘';
+volume 数量
+dial 刻度盘';
 
--- Index: rul_ctime
+-- Index: rul_dial
 
--- DROP INDEX rul_ctime;
+-- DROP INDEX rul_dial;
 
-CREATE INDEX rul_ctime
-  ON hor_mongodbcount
+CREATE INDEX rul_wvcdial
+  ON hor_webvisitcount
   USING btree
-  (rule , ctime );
+  (rule, dial);
+  
+  
+DROP TABLE IF EXISTS hor_webvisitdistinct;
+CREATE TABLE IF NOT EXISTS hor_webvisitdistinct
+(
+  rule integer NOT NULL DEFAULT (0)::smallint,
+  volume integer NOT NULL,
+  val  varcahr NOT NULL,
+  dial integer NOT NULL DEFAULT 0,  
+  modify_time timestamp without time zone DEFAULT now()
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hor_webvisitdistinct
+  OWNER TO vyouzhi;
+COMMENT ON TABLE hor_webvisitdistinct
+  IS 'rule 规则ID
+volume 数量
+val 值
+dial 刻度盘';
+
+-- Index: rul_dial
+
+-- DROP INDEX rul_dial;
+
+CREATE INDEX rul_wvddial
+  ON hor_webvisitdistinct
+  USING btree
+  (rule, dial);

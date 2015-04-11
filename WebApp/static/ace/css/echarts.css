@@ -1,0 +1,54 @@
+.chart_1 {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    float: left;
+    height: 26px;
+    left: 0;
+    width: 100%;
+}
+.chart_1 .chart_text {
+    margin-left: 35px;
+}
+.chart_line {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_bar {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -25px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_scatter {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -51px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_k {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -76px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_pie {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -101px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_radar {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -126px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_chord {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -151px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_force {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -176px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_map {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -201px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_gauge {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -226px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
+.chart_funnel {
+    background: url("../images/icon-bar.png") no-repeat scroll 0 -251px rgba(0, 0, 0, 0);
+    margin-left: 0;
+}
