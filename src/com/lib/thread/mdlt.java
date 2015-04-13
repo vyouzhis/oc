@@ -41,7 +41,7 @@ public class mdlt extends BaseCronThread {
 		String sql = "select id,collention,query, etime, field, istop from "+DB_HOR_PRE+"mongodbrule where qaction=2 order by id limit 10 offset "
 				+ offset;
 		List<Map<String, Object>> res;
-		echo(sql);
+		
 		try {
 			res = FetchAll(sql);
 			if (res != null) {

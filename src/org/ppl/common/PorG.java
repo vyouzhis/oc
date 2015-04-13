@@ -150,7 +150,7 @@ public class PorG  {
 	}
 
 	private String Check(String value) {
-		value = value.replace("'", "&apos;");
+		//value = value.replace("'", "&apos;");
 		value = value.replaceAll("&", "&amp;");
 		value = value.replace("\"", "&quot;");
 		value = value.replace("\t", "&nbsp;&nbsp;");

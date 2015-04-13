@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.etc.UrlClassList;
 
 public class sqledit extends Permission implements BasePerminterface {
 	private List<String> rmc;
@@ -55,7 +56,13 @@ public class sqledit extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("action_url", ucl.read(SliceName(stdClass)));
+		String sql = porg.getKey("sql_script");
+		if(sql!=null){
+			echo(Myreplace(sql));
+			setRoot("sql_edit", "\r\n"+sql.replace("&apos;", "\'"));
+		}
 	}
 
 	@Override
@@ -80,6 +87,17 @@ public class sqledit extends Permission implements BasePerminterface {
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private String Myreplace(String old) {
+		if (old == null)
+			return "";
+
+		String news = old.replace("&nbsp;", "");
+		news = news.replace("&quot;", "\"");
+		news = news.replace("&apos", "\'");
+
+		return news;
 	}
 
 }
