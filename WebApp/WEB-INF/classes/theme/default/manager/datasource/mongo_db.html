@@ -130,7 +130,7 @@
 	});
 
 	ace.enable_search_db = function(a) {
-		ace.variable_US_DB = [${CollectionList}];
+		ace.variable_US_DB = [${CollectionList!""}];
 		try {
 			a("#db_collection").typeahead({
 				source: ace.variable_US_DB,
