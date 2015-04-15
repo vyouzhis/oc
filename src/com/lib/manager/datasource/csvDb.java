@@ -1,15 +1,14 @@
-package com.lib.manager.analysis;
+package com.lib.manager.datasource;
 
 import java.util.List;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
-import org.ppl.etc.UrlClassList;
 
-public class sqledit extends Permission implements BasePerminterface {
+public class csvDb extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	
-	public sqledit() {
+	public csvDb() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
@@ -46,58 +45,40 @@ public class sqledit extends Permission implements BasePerminterface {
 			break;
 		default:
 			Msg(_CLang("error_role"));
-			return;		    
+			return;
 		}
-
 		
 		super.View();
 	}
-	
+
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("action_url", ucl.read(SliceName(stdClass)));
-		String sql = porg.getKey("sql_script");
-		if(sql!=null){
-			echo(Myreplace(sql));
-			setRoot("sql_edit", "\r\n"+sql.replace("&apos;", "\'"));
-		}
+
 	}
 
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void remove(Object arg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
-		
-	}
-	
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
 
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-		news = news.replace("&apos;", "\'");
-
-		return news;
 	}
 
 }

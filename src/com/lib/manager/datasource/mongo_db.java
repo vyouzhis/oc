@@ -246,6 +246,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 	private void CollectionList() {
 
 		Set<String> clist = mgdb.CollectionList();
+		if(clist.size()<1) return;  
 		String clists = "";
 		String def_col = "";
 		for (String s : clist) {

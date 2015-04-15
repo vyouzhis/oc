@@ -58,7 +58,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		getMongoDBList(3, "webSite");
 		getMongoDBList(2, "webDistinct");
 		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("json_url", ucl.read("mongojson"));
+		setRoot("json_url", ucl.read("EchartsJson"));
 	}
 	
 	private void getMongoDBList(int qaction, String RootName) {

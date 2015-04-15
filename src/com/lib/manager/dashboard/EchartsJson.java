@@ -1,7 +1,6 @@
 package com.lib.manager.dashboard;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +18,11 @@ import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Line;
 
-public class mongojson extends Permission implements BasePerminterface {
+public class EchartsJson extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private GsonOption option = null;
 
-	public mongojson() {
+	public EchartsJson() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;

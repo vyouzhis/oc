@@ -150,11 +150,11 @@ public class PorG  {
 	}
 
 	private String Check(String value) {
-		//value = value.replace("'", "&apos;");
-		value = value.replaceAll("&", "&amp;");
+		value = value.replace("'", "&apos;");
+		//value = value.replaceAll("&", "&amp;");
 		value = value.replace("\"", "&quot;");
 		value = value.replace("\t", "&nbsp;&nbsp;");
-		value = value.replace(" ", "&nbsp;");
+		//value = value.replace(" ", "&nbsp;");
 		value = value.replace("<", "&lt;");
 		value = value.replaceAll(">", "&gt;");
 		return value.trim();

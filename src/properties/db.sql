@@ -187,31 +187,36 @@ CREATE INDEX rul_wvcdial
   (rule, dial);
   
   
-DROP TABLE IF EXISTS hor_webvisitdistinct;
-CREATE TABLE IF NOT EXISTS hor_webvisitdistinct
+  
+CREATE TABLE hor_class
 (
-  rule integer NOT NULL DEFAULT (0)::smallint,
-  volume integer NOT NULL,
-  val  varcahr NOT NULL,
-  dial integer NOT NULL DEFAULT 0,  
-  modify_time timestamp without time zone DEFAULT now()
+  rule integer,
+  act_v0 text,
+  act_v1 text,
+  act_v2 text,
+  act_v3 text,
+  act_v4 text,
+  act_v5 text,
+  act_v6 text,
+  act_v7 text,
+  act_v8 text,
+  act_v9 text,
+  act_va text,
+  act_vb text,
+  act_vc text,
+  act_vd text,
+  act_ve text,
+  act_vf text,
+  modify_time timestamp without time zone DEFAULT now(),
+  CONSTRAINT hor_class_rule_fkey FOREIGN KEY (rule)
+      REFERENCES hor_classinfo (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE hor_webvisitdistinct
+ALTER TABLE hor_class
   OWNER TO vyouzhi;
-COMMENT ON TABLE hor_webvisitdistinct
-  IS 'rule 规则ID
-volume 数量
-val 值
-dial 刻度盘';
-
--- Index: rul_dial
-
--- DROP INDEX rul_dial;
-
-CREATE INDEX rul_wvddial
-  ON hor_webvisitdistinct
-  USING btree
-  (rule, dial);
+COMMENT ON TABLE hor_class
+  IS '外部数据插入，比如CSV
+rule 依赖于 classinfo 的 id 字段';

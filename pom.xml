@@ -233,7 +233,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.3</version>
 		</dependency>
-		<!-- ECharts end-->
+		<!-- ECharts end -->
 	</dependencies>
 
 

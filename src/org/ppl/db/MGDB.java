@@ -251,6 +251,11 @@ public class MGDB extends PObject {
 
 	}
 
+	public void Insert(String json) {
+		BasicDBObject data = (BasicDBObject) JSON.parse(json);
+		DBLink.insert(data);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<String> UpdateTipList(List<String> newList) {
 		DBCollection dbc = db.getCollection("TipList");
