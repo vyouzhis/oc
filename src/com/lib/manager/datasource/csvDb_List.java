@@ -9,18 +9,17 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.common.Page;
 import org.ppl.etc.UrlClassList;
 
-public class mongo_purge_list extends Permission implements BasePerminterface {
+public class csvDb_List extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private int Limit = 10;
 	private int page = 0;
 
-	public mongo_purge_list() {
+	public csvDb_List() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
-
 		setRoot("fun", this);
 	}
 
@@ -36,22 +35,25 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 			return;
 		}
 
-		if (porg.getKey("p")!=null && porg.getKey("p").matches("\\d+")) {
-			page = Integer.parseInt(porg.getKey("p"));
-		}
-
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
+			break;
+		case "search":
+			search(null);
+			break;
+		case "create":
+			create(null);
+			return;
+		case "edit":
+			edit(null);
 			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
 		}
 
-		
 		super.View();
-
 	}
 
 	@Override
@@ -63,22 +65,21 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 			offset = (page-1)*Limit;
 		}
 		
-		String format = "select * from "+DB_HOR_PRE+"mongodbrule order by id desc  limit %d offset %d";
+		String format = "select * from "+DB_HOR_PRE+"classinfo order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 		
 		List<Map<String, Object>> res;
 
 		try {
 			res = FetchAll(sql);
-			setRoot("purge_list", res);
+			setRoot("csv_list", res);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		SetPage();
 	}
-
+	
 	private void SetPage() {
 		Page p = new Page();
 		UrlClassList ucl = UrlClassList.getInstance();
@@ -89,30 +90,17 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 				Limit, "");
 		
 		setRoot("Page", page_html);
-		setRoot("edit_url", ucl.edit("mongo_db"));
-		setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
-		setRoot("new_purge_url", ucl.read("mongo_db"));
+		setRoot("edit_url", ucl.edit("csvDb"));
+		//setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
+		setRoot("new_csv_url", ucl.read("csvDb"));
 	}
 	
 	private int Tol() {
-		String sql ="select count(*) as count from "+DB_HOR_PRE+"mongodbrule limit 1";
+		String sql ="select count(*) as count from "+DB_HOR_PRE+"classinfo limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if(res!=null)return Integer.valueOf( res.get("count").toString());
 		return 0;
-	}
-
-	public String QueryRule(int i) {
-		switch (i) {
-		case 0:
-			return "find";
-		case 2:
-			return "distinct";
-		case 3:
-			return "count";
-		default:
-			return "";
-		}
 	}
 
 	@Override

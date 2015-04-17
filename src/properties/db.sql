@@ -207,6 +207,7 @@ CREATE TABLE hor_class
   act_vd text,
   act_ve text,
   act_vf text,
+  act_v10 text,
   modify_time timestamp without time zone DEFAULT now(),
   CONSTRAINT hor_class_rule_fkey FOREIGN KEY (rule)
       REFERENCES hor_classinfo (id) MATCH SIMPLE
@@ -220,3 +221,14 @@ ALTER TABLE hor_class
 COMMENT ON TABLE hor_class
   IS '外部数据插入，比如CSV
 rule 依赖于 classinfo 的 id 字段';
+
+CREATE TABLE IF NOT EXISTS hor_usersql
+(
+  id SERIAL,
+  sql text NOT NULL,
+  name character varying NOT NULL,
+  modify_time timestamp without time zone DEFAULT now()
+)
+WITH (
+  OIDS=FALSE
+);

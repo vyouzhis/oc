@@ -63,7 +63,7 @@ public class Index extends HttpServlet {
 				res.getWriter().println(rmc.getHtml());
 			}
 		}
-		// SystemInfo(req, res);
+		//SystemInfo(req, res);
 	}
 
 	private void SystemInfo(HttpServletRequest req, HttpServletResponse res) {

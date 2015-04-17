@@ -28,13 +28,15 @@
 				<div class="page-content">
 					<!-- /.page-header -->
 					<div class="row">
+						<#if ErrorMsg??>
 						<div class="alert alert-danger">
 							<button data-dismiss="alert" class="close" type="button">
 								<i class="icon-remove"></i>
 							</button>
-							<strong> <i class="icon-remove"></i> Oh snap!
-							</strong> Change a few things up and try submitting again. <br />
+							<strong> <i class="icon-remove"></i> Oh Bug!
+							</strong> ${ErrorMsg!""}. <br />
 						</div>
+						</#if>
 						<div class="well">
 						<form id="target" name="target" enctype="multipart/form-data" action='${action_url!""}' method="POST" class="form-inline">
 							<label for="sqledit">SQL:</label>
@@ -50,22 +52,27 @@
 							</pre>
 						</form>
 						</div>
+						<#if create_sql??>
 						<div class="col-xs-4 well">
-							<div class="form-group">
-								<label for="form-field-gplus"
-									class="col-sm-2 control-label no-padding-right">名称：</label>
-								<div class="col-sm-9">
-									<span class="input-group-btn"> <span class="input-icon">
-											<input type="text" id="form-field-gplus" placeholder="..." />
-											<i class="icon-save bigger-160 red"></i>
-									</span>
-										<button type="button" class="btn btn-sm btn-default">
-											<i class="icon-ok bigger-110"></i> 保存
-										</button>
-									</span>
+							<form enctype="multipart/form-data" action='${create_url!""}' method="POST" class="form-inline" id="project_action" >
+								<div class="form-group">
+									<label for="form-field-gplus"
+										class="col-sm-2 control-label no-padding-right">名称：</label>
+									<div class="col-sm-9">
+										<input class="hide" type="text" id="sql" name="sql" value='${create_sql!""}' />
+										<span class="input-group-btn"> <span class="input-icon">
+												<input type="text" id="name" name="name" placeholder="..." />
+												<i class="icon-save bigger-160 red"></i>
+										</span>
+											<button type="submit" class="btn btn-sm btn-default">
+												<i class="icon-ok bigger-110"></i> 保存
+											</button>
+										</span>
+									</div>
 								</div>
-							</div>
+							</form>
 						</div>
+						</#if>
 						<div class="col-xs-12">
 							<h3 class="header smaller lighter blue">
 								结果 <small>[<a href="">All Checkboxes, Radio</a>]
@@ -78,29 +85,23 @@
 									id="sample-table-1">
 									<thead>
 										<tr>
-											<th class="center">id</th>
-											<th>Domain</th>
-											<th>Price</th>
-											<th class="hidden-480">Clicks</th>
-											<th><i class="icon-time bigger-110 hidden-480"></i>
-												Update</th>
-											<th class="hidden-480">Status</th>
-											<th>ddd</th>
+											<#if Key_Title??>
+											<#list Key_Title as value>
+											<th class="center">${value}</th>
+											</#list>
+											</#if>
 										</tr>
 									</thead>
 									<tbody>
+									    <#if List_Data??>
+									    <#list List_Data as item>
 										<tr>
-											<td class="center"><label> <input
-													type="checkbox" class="ace" /> <span class="lbl"></span>
-											</label></td>
-											<td><a href="#">ace.com</a></td>
-											<td>$45</td>
-											<td class="hidden-480">3,330</td>
-											<td>Feb 12</td>
-											<td class="hidden-480"><span
-												class="label label-sm label-warning">Expiring</span></td>
-											<td>ddd</td>
+										    <#list Key_Title as value> 
+											<td class="center">${item[value]}</td>
+											</#list>											
 										</tr>
+										</#list>
+										</#if>
 									</tbody>
 								</table>
 							</div>

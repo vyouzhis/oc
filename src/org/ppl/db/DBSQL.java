@@ -23,6 +23,8 @@ public class DBSQL extends BaseLang {
 	protected String DB_PRE = mConfig.GetValue("db.rule.ext");
 	protected String DB_HOR_PRE = mConfig.GetValue("db.hor.ext");
 	protected String DB_WEB_PRE = mConfig.GetValue("db.web.ext");
+
+	private String ErrorMsg = "";
 	
 	public DBSQL() {
 
@@ -85,7 +87,6 @@ public class DBSQL extends BaseLang {
 				}
 			}
 		} finally {
-			// close(rs);
 		}
 
 		return results;
@@ -95,7 +96,8 @@ public class DBSQL extends BaseLang {
 		List<Map<String, Object>> results = null;
 		long tid = myThreadId();
 		String clearSQL = sql;
-		if(myConfig.GetValue("database.driverClassName").equals("org.postgresql.Driver")){
+		if (myConfig.GetValue("database.driverClassName").equals(
+				"org.postgresql.Driver")) {
 			clearSQL = sql.replace("`", "");
 		}
 		Connection ConDB = globale_config.GDB.get(tid);
@@ -104,8 +106,7 @@ public class DBSQL extends BaseLang {
 			echo("con sql:" + clearSQL);
 			return null;
 		}
-		
-		
+
 		ResultSet rs = null;
 		stmt = ConDB.createStatement();
 		rs = stmt.executeQuery(clearSQL);
@@ -129,6 +130,7 @@ public class DBSQL extends BaseLang {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			setErrorMsg(e.getMessage().toString());
 		}
 		if (fetlist != null && fetlist.size() > 0) {
 			results = fetlist.get(0);
@@ -138,39 +140,60 @@ public class DBSQL extends BaseLang {
 	}
 
 	public long update(String sql) throws SQLException {
-		return exec(sql);
+		return exec(sql, true);
 	}
-	
+
 	public long insert(String sql) throws SQLException {
 		long numRowsUpdated = -1;
-		exec(sql);
-		ResultSet rs = stmt.getGeneratedKeys();  
-	  		
-		if (rs.next()) {  		  
-			numRowsUpdated = rs.getLong(1);  		  
-		}  
-				
+		exec(sql, true);
+		ResultSet rs = stmt.getGeneratedKeys();
+
+		if (rs.next()) {
+			numRowsUpdated = rs.getLong(1);
+		}
+
 		return numRowsUpdated;
 	}
-	
-	private long exec(String sql) throws SQLException{
+
+	public long insert(String sql, boolean ret) throws SQLException {
+		long numRowsUpdated = -1;
+		exec(sql, ret);
+		if (ret) {
+			ResultSet rs = stmt.getGeneratedKeys();
+
+			if (rs.next()) {
+				numRowsUpdated = rs.getLong(1);
+			}
+		}
+		return numRowsUpdated;
+	}
+
+	public void dbcreate(String sql) throws SQLException {
+		exec(sql, false);
+	}
+
+	private long exec(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
 		long tid = myThreadId();
 		String clearSQL = sql;
-		if(myConfig.GetValue("database.driverClassName").equals("org.postgresql.Driver")){
+		if (myConfig.GetValue("database.driverClassName").equals(
+				"org.postgresql.Driver")) {
 			clearSQL = sql.replace("`", "");
 		}
-		
+
 		Connection ConDB = globale_config.GDB.get(tid);
 		if (ConDB == null) {
 			echo("con sql:" + clearSQL);
 			return -1;
 		}
-		
+
 		stmt = ConDB.createStatement();
-		numRowsUpdated = stmt.executeUpdate(clearSQL,
-				Statement.RETURN_GENERATED_KEYS);
-		
+		if (ret) {
+			numRowsUpdated = stmt.executeUpdate(clearSQL,
+					Statement.RETURN_GENERATED_KEYS);
+		} else {
+			stmt.executeUpdate(clearSQL);
+		}
 		return numRowsUpdated;
 	}
 
@@ -183,6 +206,14 @@ public class DBSQL extends BaseLang {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public String getErrorMsg() {
+		return ErrorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		ErrorMsg = errorMsg;
 	}
 
 }

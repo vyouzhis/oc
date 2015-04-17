@@ -30,7 +30,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
-
+		InAction();
 		setRoot("fun", this);
 	}
 
@@ -115,7 +115,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		String url = ucl.read(SliceName(stdClass));
 		try {
 			long id = insert(sql);
-			echo("id:"+id);
+			//echo("id:"+id);
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -137,7 +137,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 			List<Map<String, Object>> res = mgdb.GetValue();
 			
 			Map<String, Object> times = (Map<String, Object>) res.get(0).get("SERVER");
-			echo(times);
+			
 			ltime = Integer.valueOf(times.get("REQUEST_TIME").toString());
 		}
 		
@@ -313,11 +313,17 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private void Find() {
-
+		String error = "";
 		mgdb.setLimit(10);
 
 		if (where_query.length() > 2 && where_query.substring(0, 1).equals("{")) {
-			mgdb.JsonWhere(where_query);
+			try {
+				mgdb.JsonWhere(where_query);
+			} catch (Exception e) {
+				// TODO: handle exception
+				error = e.getMessage();				
+			}
+			
 		}
 		if (field_query.length() > 2) {
 			mgdb.JsonColumn(field_query);
@@ -336,11 +342,14 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 				field = mgdb.Fields();
 			} else {
-				setRoot("error", mgdb.getErrorMsg());
+				error = mgdb.getErrorMsg();
 			}
 
 		} else {
-			setRoot("error", mgdb.getErrorMsg());
+			error = mgdb.getErrorMsg();
+		}
+		if(error.length()>1){
+			setRoot("error", error);
 		}
 		TipList(field);
 		mgdb.DBEnd();

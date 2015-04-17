@@ -234,6 +234,14 @@
 			<version>2.3</version>
 		</dependency>
 		<!-- ECharts end -->
+		
+		<!-- csv -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<!-- csv end -->
 	</dependencies>
 
 

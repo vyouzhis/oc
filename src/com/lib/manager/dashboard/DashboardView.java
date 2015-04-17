@@ -57,6 +57,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		getMongoDBList(3, "webSite");
 		getMongoDBList(2, "webDistinct");
+		UserSQl();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
 	}
@@ -69,23 +70,43 @@ public class DashboardView extends Permission implements BasePerminterface {
 		
 		try {
 			res = FetchAll(sql);
-			Map<String, Map<String,String>> file = new HashMap<>();
-			for (Map<String, Object> map : res) {
-				Map<String, String> Item = new HashMap<>();
-				Item.put("name", map.get("name").toString());
-				Item.put("type", "item");
-				Item.put("id",  map.get("id").toString());
-				Item.put("qaction",  qaction+"");	
-				file.put(map.get("id").toString(), Item);				
-			}
-			Mongo.put("children", file);
-			String JsonTree = JSON.toJSONString(Mongo);
-			setRoot(RootName, JsonTree);
+						
+			SetTree(res, RootName, qaction);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 		
+	}
+	
+	private void UserSQl() {
+		String sql = "select id,sql,name from "+DB_HOR_PRE+"usersql";
+		List<Map<String, Object>> res;
+		
+		try {
+			res = FetchAll(sql);
+			if(res!=null){
+				SetTree(res, "UserSQl", 4);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void SetTree(List<Map<String, Object>> res, String RootName, int qaction) {
+		Map<String, Map<String,String>> file = new HashMap<>();
+		for (Map<String, Object> map : res) {
+			Map<String, String> Item = new HashMap<>();
+			Item.put("name", map.get("name").toString());
+			Item.put("type", "item");
+			Item.put("id",  map.get("id").toString());
+			Item.put("qaction",  qaction+"");	
+			file.put(map.get("id").toString(), Item);				
+		}
+		Mongo.put("children", file);
+		String JsonTree = JSON.toJSONString(Mongo);
+		setRoot(RootName, JsonTree);
 	}
 
 	@Override

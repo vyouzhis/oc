@@ -131,15 +131,21 @@ public class MGDB extends PObject {
 	}
 
 	public void JsonWhere(String json) {
+
 		DBWhere = (BasicDBObject) JSON.parse(json);
+
 	}
 
 	public void JsonColumn(String json) {
+
 		DBColumn = (BasicDBObject) JSON.parse(json);
+
 	}
 
 	public void JsonSort(String json) {
+
 		DBSort = (BasicDBObject) JSON.parse(json);
+
 	}
 
 	public Integer FetchCont() {
@@ -152,12 +158,12 @@ public class MGDB extends PObject {
 	public List<Object> Distinct(String field) {
 		String f = field.replace("\"", "");
 		f = f.replace("'", "");
-		List<Object> list = DBLink.distinct(f,DBWhere);
+		List<Object> list = DBLink.distinct(f, DBWhere);
 		return list;
 	}
 
 	public Boolean FetchList() {
-		echo(DBWhere);
+
 		dbCursor = DBLink.find(DBWhere, DBColumn).sort(DBSort).limit(DBLimit)
 				.skip(DBOffset);
 		if (dbCursor == null) {
@@ -255,7 +261,7 @@ public class MGDB extends PObject {
 		BasicDBObject data = (BasicDBObject) JSON.parse(json);
 		DBLink.insert(data);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<String> UpdateTipList(List<String> newList) {
 		DBCollection dbc = db.getCollection("TipList");

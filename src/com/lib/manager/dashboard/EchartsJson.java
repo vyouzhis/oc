@@ -110,6 +110,17 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			String sql = String.format(format,
 					Integer.valueOf(id.get("id").toString()));
+			if(id.get("qaction").equals("4")){
+				String usql = "select sql from hor_usersql where id="+id.get("id").toString()+" LIMIT 1";
+				Map<String, Object> ures;
+				
+				ures = FetchOne(usql);
+				if(ures!=null){
+					sql = ures.get("sql").toString();
+					sql = Myreplace(sql);
+					//echo("sql:"+sql);
+				}
+			}
 			try {
 				res = FetchAll(sql);
 				if (res != null && res.size() > 0) {
@@ -157,8 +168,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			return "";
 
 		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-
+		news = news.replace("&quot;", "\"");				
+		news = news.replace("&apos;", "\'");
+		news = news.replace(";", "");
+		
 		return news;
 	}
 

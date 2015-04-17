@@ -23,6 +23,16 @@
       <!-- /.page-header --> 
       <div class="row"> 
       	<div class="col-xs-12 well bigger-175 blue">
+      	<#if error??>
+						<div class="alert alert-danger">
+							<button data-dismiss="alert" class="close" type="button">
+								<i class="icon-remove"></i>
+							</button>
+							<strong> <i class="icon-remove"></i> Oh Bug!
+							</strong> ${error!""}. <br />
+						</div>
+						</#if>
+						
 					<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
 						db.<input type="text" autocomplete="off" value='${def_collention!""}' id="db_collection" name="db_collection" class="db-search-input" placeholder="Collection ..." /> 
 				         <ul class="typeahead dropdown-menu" style="top: 28px; left: 0px; display: none;"> 
@@ -64,7 +74,7 @@
        <div class="col-xs-12"> 
         
         <div class="table-header">
-          Results for ${error!""}
+          		结果:
         </div> 
         <h5><span id="json_result" name="json_result"></span></h5> 
        <!-- /row --> 
