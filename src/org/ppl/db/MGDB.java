@@ -100,8 +100,13 @@ public class MGDB extends PObject {
 
 	}
 
+	public void Close() {
+		mongoClient.close();
+	}
+	
 	public Boolean SetCollection(String col) {
 		DBLink = db.getCollection(col);
+		
 		if (DBLink == null) {
 			return false;
 		}

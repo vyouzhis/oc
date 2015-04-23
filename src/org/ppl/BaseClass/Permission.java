@@ -93,8 +93,11 @@ public class Permission extends BaseTheme {
 	}
 
 	private void common() {
-		Header header = new Header();		
+		//echo(_Lang("name"));
+		Header header = new Header();
+		header.SetTitle(_Lang("name"));
 		header.filter();
+		
 		header_html = header.getHtml();
 		
 		

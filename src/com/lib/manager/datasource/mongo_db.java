@@ -11,6 +11,7 @@ import org.ppl.db.MGDB;
 import org.ppl.etc.UrlClassList;
 
 import com.alibaba.fastjson.JSON;
+import com.mongodb.MongoException;
 import com.sun.mail.auth.MD4;
 
 public class mongo_db extends Permission implements BasePerminterface {
@@ -82,7 +83,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
+		mgdb.Close();
 		setRoot("fetch_query", fetch_query);
 		super.View();
 	}
@@ -109,38 +110,37 @@ public class mongo_db extends Permission implements BasePerminterface {
 				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime)"
 				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
 		String sql = String.format(format, project_name, db_collection,
-				fetch_query, where_query, field_query, sort_query, now, stime, stime);
+				fetch_query, where_query, field_query, sort_query, now, stime,
+				stime);
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
 		try {
 			long id = insert(sql);
-			//echo("id:"+id);
+			// echo("id:"+id);
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private int getLastTime(String col) {
 		mgdb.DBEnd();
 		int ltime = 0;
-		String field = "{\"SERVER.REQUEST_TIME\":1}";
+		String field = "{\"ctime\":1}";
 		mgdb.SetCollection(col);
 		mgdb.JsonColumn(field);
 		mgdb.JsonSort(field);
 		mgdb.setLimit(1);
 		boolean s = mgdb.FetchList();
-		if(s){
+		if (s) {
 			List<Map<String, Object>> res = mgdb.GetValue();
-			
-			Map<String, Object> times = (Map<String, Object>) res.get(0).get("SERVER");
-			
-			ltime = Integer.valueOf(times.get("REQUEST_TIME").toString());
+
+			ltime = (int) res.get(0).get("ctime");
+
 		}
-		
+
 		return ltime;
 	}
 
@@ -152,9 +152,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 		if (id != null && id.matches("[0-9]+")) {
 			eid = Integer.valueOf(id);
 		}
-		echo("where:"+where_query);
-		
-		if (db_collection == null || db_collection.length()==0) {
+		echo("where:" + where_query);
+
+		if (db_collection == null || db_collection.length() == 0) {
 			String format = "select * from " + DB_HOR_PRE
 					+ "mongodbrule  where id=%d limit 1";
 			String sql = String.format(format, eid);
@@ -244,13 +244,19 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private void CollectionList() {
-
-		Set<String> clist = mgdb.CollectionList();
+		
+		Set<String> clist = null;
+		try{
+			clist = mgdb.CollectionList();
+		}catch (MongoException e) {
+			// TODO: handle exception
+		}
+		if(clist==null)return;
 		if(clist.size()<1) return;  
 		String clists = "";
 		String def_col = "";
 		for (String s : clist) {
-			if (s.equals("system.indexes"))
+			if (s.equals("system.indexes") || s.equals("system.profile"))
 				continue;
 			def_col = s;
 			clists += "\"" + s + "\",";
@@ -321,9 +327,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 				mgdb.JsonWhere(where_query);
 			} catch (Exception e) {
 				// TODO: handle exception
-				error = e.getMessage();				
+				error = e.getMessage();
 			}
-			
+
 		}
 		if (field_query.length() > 2) {
 			mgdb.JsonColumn(field_query);
@@ -348,7 +354,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		} else {
 			error = mgdb.getErrorMsg();
 		}
-		if(error.length()>1){
+		if (error.length() > 1) {
 			setRoot("error", error);
 		}
 		TipList(field);

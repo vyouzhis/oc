@@ -17,7 +17,7 @@ public class mclt extends BaseCronThread {
 	@Override
 	public int minute() {
 		// TODO Auto-generated method stub
-		return 5;
+		return 30;
 	}
 
 	@Override

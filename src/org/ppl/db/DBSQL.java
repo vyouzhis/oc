@@ -16,8 +16,7 @@ import org.ppl.etc.globale_config;
 public class DBSQL extends BaseLang {
 
 	public static DBSQL dataSource = null;
-	// private Connection ConDB = null;
-	// private int ConId = -1;
+	private Connection ConDB = null;
 	private Statement stmt = null;
 	protected String DB_NAME = mConfig.GetValue("db.name");
 	protected String DB_PRE = mConfig.GetValue("db.rule.ext");
@@ -25,13 +24,13 @@ public class DBSQL extends BaseLang {
 	protected String DB_WEB_PRE = mConfig.GetValue("db.web.ext");
 
 	private String ErrorMsg = "";
-	
+
 	public DBSQL() {
 
 	}
 
-	public void SetCon() {
-
+	public void SetCon(Connection extDB) {		
+		ConDB = extDB;
 	}
 
 	public void end() {
@@ -44,15 +43,17 @@ public class DBSQL extends BaseLang {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void free() {
 		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
 		hcp.free();
 	}
 
 	public void rollback() {
-		long tid = myThreadId();
-		Connection ConDB = globale_config.GDB.get(tid);
+		if (ConDB == null) {
+			long tid = myThreadId();
+			ConDB = globale_config.GDB.get(tid);
+		}
 		try {
 			if (ConDB != null) {
 				ConDB.rollback();
@@ -94,14 +95,18 @@ public class DBSQL extends BaseLang {
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
-		long tid = myThreadId();
+		if (ConDB == null) {
+			long tid = myThreadId();
+			ConDB = globale_config.GDB.get(tid);
+			
+		}
+		
 		String clearSQL = sql;
 		if (myConfig.GetValue("database.driverClassName").equals(
 				"org.postgresql.Driver")) {
 			clearSQL = sql.replace("`", "");
 		}
-		Connection ConDB = globale_config.GDB.get(tid);
-
+		
 		if (ConDB == null) {
 			echo("con sql:" + clearSQL);
 			return null;
@@ -129,7 +134,6 @@ public class DBSQL extends BaseLang {
 			fetlist = query(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			setErrorMsg(e.getMessage().toString());
 		}
 		if (fetlist != null && fetlist.size() > 0) {
@@ -174,14 +178,17 @@ public class DBSQL extends BaseLang {
 
 	private long exec(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
-		long tid = myThreadId();
+		if (ConDB == null) {
+			long tid = myThreadId();
+			ConDB = globale_config.GDB.get(tid);
+		}
+		
 		String clearSQL = sql;
 		if (myConfig.GetValue("database.driverClassName").equals(
 				"org.postgresql.Driver")) {
 			clearSQL = sql.replace("`", "");
 		}
-
-		Connection ConDB = globale_config.GDB.get(tid);
+		
 		if (ConDB == null) {
 			echo("con sql:" + clearSQL);
 			return -1;
@@ -198,8 +205,10 @@ public class DBSQL extends BaseLang {
 	}
 
 	public void CommitDB() {
-		long tid = myThreadId();
-		Connection ConDB = globale_config.GDB.get(tid);
+		if (ConDB == null) {
+			long tid = myThreadId();
+			ConDB = globale_config.GDB.get(tid);
+		}
 		try {
 			ConDB.commit();
 		} catch (SQLException e) {

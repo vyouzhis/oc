@@ -29,8 +29,8 @@ public class DataDig extends DBSQL {
 		}
 
 		int rule = Integer.valueOf(o.get("id").toString());
-		//int now = time();
-		int now=1421025243; //test end time
+		int now = time();
+		//int now=1421025243; //test end time
 		int start = Integer.valueOf(o.get("etime").toString());
 
 		// Greater than 1 hour
@@ -85,7 +85,7 @@ public class DataDig extends DBSQL {
 			// 3600 1 hour
 			lt = start + 3600;
 			add.put("$lt", lt);
-			jo.put("SERVER.REQUEST_TIME", add);
+			jo.put("ctime", add);
 			// echo(jo);
 			String json = JSON.toJSONString(jo);
 			mgdb.JsonWhere(json);
@@ -107,6 +107,7 @@ public class DataDig extends DBSQL {
 			start = lt;
 
 		}
+		mgdb.Close();
 		// echo(sql_val);
 		String val_link = "";
 		for (String mk : sql_val.keySet()) {
@@ -115,7 +116,7 @@ public class DataDig extends DBSQL {
 		}
 
 		String sql = format + val_link.substring(0, val_link.length() - 1);
-		echo(sql);
+		//echo(sql);
 
 		try {
 			update(sql);
@@ -133,5 +134,7 @@ public class DataDig extends DBSQL {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 	}
 }

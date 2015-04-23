@@ -22,6 +22,7 @@ import org.ppl.io.TimeClass;
 public class PObject {
 	protected String stdClass = null;
 	private String BindName = null;
+	protected Config UserCoreConfig = new Config(globale_config.Mysql);
 	protected Config myConfig = new Config(globale_config.DBCONFIG);
 	protected Config mConfig = new Config(globale_config.Config);
 	protected Config uConfig = new Config(globale_config.UrlMap);

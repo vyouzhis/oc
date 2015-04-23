@@ -71,8 +71,10 @@ public class mdlt extends BaseCronThread {
 		
 		if(res==null || res.size()==0){ 
 			echo(mgdb.getErrorMsg());
+			mgdb.Close();
 			return;		
 		}
+		mgdb.Close();
 		m = o;
 		String format = "{%s:{\"$regex\":\"%s\"}}";
 		String query = "";

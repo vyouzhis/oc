@@ -227,6 +227,23 @@ CREATE TABLE IF NOT EXISTS hor_usersql
   id SERIAL,
   sql text NOT NULL,
   name character varying NOT NULL,
+  dtype integer NOT NULL DEFAULT 0,
+  modify_time timestamp without time zone DEFAULT now()
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+ CREATE TABLE hor_dbsource
+(
+  id serial NOT NULL,
+  name character varying NOT NULL,
+  dcname character varying NOT NULL,
+  url character varying not null,
+  username character varying not null,
+  password character varying not null,  
+  ctime integer NOT NULL,
   modify_time timestamp without time zone DEFAULT now()
 )
 WITH (

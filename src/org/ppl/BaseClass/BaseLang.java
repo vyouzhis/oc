@@ -49,13 +49,19 @@ public abstract class BaseLang extends PObject implements BaseLangInterface {
 	
 	private String find(String key, String stdsName) {
 		//System.out.println("name:"+stdName+" key:"+key);
-		Injector injector = globale_config.injector;
-		LibLang libLan = (LibLang) injector.getInstance(Key.get(
-				LibLang.class, Names.named(stdsName)));
+		String lan = "";
 		
-		String lan = libLan._Lang(key);
-		if(lan==null) return "lang key:"+key+" is not exist!";
+		Injector injector = globale_config.injector;
+		try {
+			LibLang libLan = (LibLang) injector.getInstance(Key.get(
+					LibLang.class, Names.named(stdsName)));
+			lan = libLan._Lang(key);						
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return lan;
+		
 	}
 	
 	

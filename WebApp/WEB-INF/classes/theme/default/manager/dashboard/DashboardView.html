@@ -30,8 +30,10 @@
 					<div class="row">
 
 						<div class="col-xs-9">
-							<div class="page-header">
-								<div class="dropdown">							
+							
+							<div id="custom-container" style="height: 360px;" class="well"></div>
+							<div class="col-xs-10 well ">
+								<div class="dropdown col-xs-4">							
 									<a data-toggle="dropdown" class="dropdown-toggle" href="#">
 										图形选择 &nbsp;
 										<i class="icon-caret-down bigger-110 width-auto"></i>										
@@ -41,24 +43,27 @@
 											<a onclick="graph(1)" href="javascript:void(0)">折线/柱状图</a>
 										</li>				
 										<li>
-											<a onclick="graph(2)" href="javascript:void(0)">饼图</a>
+											<a onclick="graph(2)" href="javascript:void(0)" >饼图</a>																						
 										</li>
 									</ul>
 										
 								</div>
-
-							</div>
-							<div id="custom-container" style="height: 360px;"></div>
-							<div class="col-xs-4 well ">
+					       		
 					       		<div class="col-xs-4">
-					       			<spa>图形:</spa>
-					       		</div>
-					       		<div class="col-xs-8">
 						       		<div id="graph" name="graph" class="chart_1 chart_line">
+						       		<input id="graph_type" type="text" value="1" name="graph_type" style="display:none;">
 						       		<span id="graph_name" name="graph_name" class="chart_text ">折线/柱状图</span>
 						       		</div>	
 						       	</div>
+						       	<div class="col-xs-4 ">
+					       			<h5 class="bigger lighter">
+										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
+											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>更新数据
+										</a>
+									</h5>
+					       		</div>
 					       	</div>
+					       	
 						</div>
 						<div class="col-xs-3">
 
@@ -66,12 +71,8 @@
 							<div class="widget-box">
 
 								<div class="widget-header header-color-blue2">
-									<h5 class="bigger lighter">
-										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
-											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>更新数据
-										</a>
-									</h5>
-
+									
+									<h3>列表</h3>
 									<div class="widget-toolbar">
 										<a data-action="collapse" href="#"> <i
 											class="icon-chevron-up"></i>
@@ -294,19 +295,14 @@
 
 				function refresh() {
 					var o = $('#tree1').tree('selectedItems');
-					//var ids=[];
-					//var i=0;
-					//for(key in o) {
-						//console.log( o[key].id );
-						//ids[i++] = o[key].id;						
-					//}
-					
-					var selectedItems = JSON.stringify(o);
-					console.log( JSON.stringify(o) );
+										
+					var selectedItems = escape(JSON.stringify(o));
+					console.log( graph_name );
 					$.ajax({
 						  url: "${json_url}?jsoncallback=?",
+						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
-						  data:{"ids":selectedItems},
+						  data:{"ids":selectedItems,  "graph_type":$("#graph_type").val()},
 						  success: function(result){
 							  console.log("success"+result);
 						  },
@@ -334,6 +330,7 @@
 				}
 				
 				function graph (t) {
+					$("#graph_type").val(t);
 					var clazz = "chart_line";
 					switch (t) {
 						case 1:

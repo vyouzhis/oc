@@ -91,8 +91,17 @@ public class PorG  {
 
 			String paramName = parameterNames.nextElement();
 			String[] paramValues = request.getParameterValues(paramName);
-
+			
 			String pres = Check(paramValues[0]);
+			
+			try {
+				pres = new String(pres.getBytes("iso8859-1"),
+						"UTF-8");				
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			sporg.put(paramName, pres);
 		}
 		if (contentType != null
@@ -150,9 +159,9 @@ public class PorG  {
 	}
 
 	private String Check(String value) {
-		value = value.replace("'", "&apos;");
+		//value = value.replace("'", "&apos;");
 		//value = value.replaceAll("&", "&amp;");
-		value = value.replace("\"", "&quot;");
+		//value = value.replace("\"", "&quot;");
 		//value = value.replace("\t", "&nbsp;&nbsp;");
 		//value = value.replace(" ", "&nbsp;");
 		//value = value.replace("<", "&lt;");

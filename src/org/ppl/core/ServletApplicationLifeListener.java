@@ -76,7 +76,7 @@ public class ServletApplicationLifeListener extends PObject implements
 		
 		String packs = mConfig.GetValue("base.packs");
 		if (packs==null) {
-			echo("error !");
+			echo("error InitPackList !");
 			System.exit(-1);
 			return;
 		}

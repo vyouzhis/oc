@@ -16,7 +16,9 @@ public class LibLang extends PObject implements BaseLangInterface {
 	public String _Lang(String key) {
 		// TODO Auto-generated method stub
 		LangConfig();
-		return CLang.GetValue(key);
+		String lan = CLang.GetValue(key);
+		if(lan==null || lan.length()==0)return "lang key:"+key+" is not exist!";
+		return lan;
 	}
 
 	public void LangConfig() {

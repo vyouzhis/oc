@@ -12,7 +12,7 @@
 
 			${menu!""}
 			<div class="main-content">
-			<div class="breadcrumbs" id="breadcrumbs">
+				<div class="breadcrumbs" id="breadcrumbs">
 					<script type="text/javascript">
 						try {
 							ace.settings.check('breadcrumbs', 'fixed')
@@ -37,32 +37,51 @@
 							</strong> ${ErrorMsg!""}. <br />
 						</div>
 						</#if>
-						<div class="well">
-						<form id="target" name="target" enctype="multipart/form-data" action='${action_url!""}' method="POST" class="form-inline">
-							<label for="sqledit">SQL:</label>
-							<textarea  id="sql_script" name="sql_script"
-								class="form-control limited">${sql_edit!""}</textarea>
-							<h3 class="header smaller lighter blue">
-								[<a href="javascript:void(0)" onclick="sqlForm()">查询</a>] <small>[<a href="">All
-										Checkboxes, Radio</a>]
-								</small>
-							</h3>
-							<pre class="sql">
+						<div class="col-xs-4"></div>
+						<div class="dropdown col-xs-4">
+							<a id="select_db" name="select_db" data-toggle="dropdown" class="dropdown-toggle" href="#">
+								数据库选择 &nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>
+							</a>
+							
+							<ul class="dropdown-menu dropdown-info">
+								<li><a id="db_1" name="db_1" onclick="graph(1)" href="javascript:void(0)">默认</a>
+								</li>
+								<li><a id="db_2" name="db_2" onclick="graph(2)" href="javascript:void(0)">MT4</a>
+								</li>
+							</ul>
+
+						</div>
+						<div class="well col-xs-12">
+							<form id="target" name="target" enctype="multipart/form-data"
+								action='${action_url!""}' method="POST" class="form-inline">
+								<input id="dbtype" type="text" value="${dbtype!1}" name="dbtype" style="display:none;">
+								<label for="sqledit">SQL:</label>
+								<textarea id="sql_script" name="sql_script"
+									class="form-control limited">${sql_edit!""}</textarea>
+
+								<h3 class="header smaller lighter blue">
+									[<a href="javascript:void(0)" onclick="sqlForm()">查询</a>] <small>
+									</small>
+								</h3>
+							
+								<pre class="sql">
 								${sql_edit!""}	
-							</pre>
-						</form>
+								</pre>
+							</form>
 						</div>
 						<#if create_sql??>
 						<div class="col-xs-4 well">
-							<form enctype="multipart/form-data" action='${create_url!""}' method="POST" class="form-inline" id="project_action" >
+							<form enctype="multipart/form-data" action='${create_url!""}'
+								method="POST" class="form-inline" id="project_action">
 								<div class="form-group">
 									<label for="form-field-gplus"
 										class="col-sm-2 control-label no-padding-right">名称：</label>
 									<div class="col-sm-9">
-										<input class="hide" type="text" id="sql" name="sql" value='${create_sql!""}' />
-										<span class="input-group-btn"> <span class="input-icon">
-												<input type="text" id="name" name="name" placeholder="..." />
-												<i class="icon-save bigger-160 red"></i>
+										<input class="hide" type="text" id="sql" name="sql"
+											value='${create_sql!""}' /> <span class="input-group-btn">
+											<span class="input-icon"> <input type="text" id="name"
+												name="name" placeholder="..." /> <i
+												class="icon-save bigger-160 red"></i>
 										</span>
 											<button type="submit" class="btn btn-sm btn-default">
 												<i class="icon-ok bigger-110"></i> 保存
@@ -75,7 +94,7 @@
 						</#if>
 						<div class="col-xs-12">
 							<h3 class="header smaller lighter blue">
-								结果 <small>[<a href="">All Checkboxes, Radio</a>]
+								结果 <small>
 								</small>
 							</h3>
 						</div>
@@ -85,23 +104,17 @@
 									id="sample-table-1">
 									<thead>
 										<tr>
-											<#if Key_Title??>
-											<#list Key_Title as value>
-											<th class="center">${value}</th>
-											</#list>
-											</#if>
+											<#if Key_Title??> <#list Key_Title as value>
+											<th class="center">${value}</th> </#list> </#if>
 										</tr>
 									</thead>
 									<tbody>
-									    <#if List_Data??>
-									    <#list List_Data as item>
+										<#if List_Data??> <#list List_Data as item>
 										<tr>
-										    <#list Key_Title as value> 
-											<td class="center">${item[value]}</td>
-											</#list>											
+											<#list Key_Title as value>
+											<td class="center">${item[value]}</td> </#list>
 										</tr>
-										</#list>
-										</#if>
+										</#list> </#if>
 									</tbody>
 								</table>
 							</div>
@@ -112,7 +125,8 @@
 				</div>
 			</div>
 			<!-- /.main-container -->
-			<script src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
+			<script
+				src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script>
 			<script src="${static_js_uri}/jquery.snippet.min.js"
 				type="text/javascript"></script>
 			<script src="${static_js_uri}/jquery.format.js"></script>
@@ -125,29 +139,257 @@
 						showNum : true
 					});
 				});
-				
-				function sqlForm(){
-					$("#sql_script").format({method: 'sql'});  
-					
-					$( "#target" ).submit();
+
+				function graph (t) {				
+					$("#select_db").html($("#db_"+t).text()+'&nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>');
+					$("#dbtype").val(t);
 				}
 				
+				function sqlForm() {
+					$("#sql_script").format({
+						method : 'sql'
+					});
+					
+					$("#target").submit();
+				}
+
 				jQuery(function($) {
 					var completes = [
-										{ // emoji strategy
-									      sqlkey : ['A','ABORT','ABS','ABSOLUTE','ACCESS','ACTION','ADA','ADD','ADMIN','AFTER','AGGREGATE','ALIAS','ALL','ALLOCATE','ALSO','ALTER','ALWAYS','ANALYSE','ANALYZE','AND','ANY','ARE','ARRAY','AS','ASC','ASENSITIVE','ASSERTION','ASSIGNMENT','ASYMMETRIC','AT','ATOMIC','ATTRIBUTE','ATTRIBUTES','AUTHORIZATION','AVG','BACKWARD','BEFORE','BEGIN','BERNOULLI','BETWEEN','BIGINT','BINARY','BIT','BITVAR','BIT_LENGTH','BLOB','BOOLEAN','BOTH','BREADTH','BY','C','CACHE','CALL','CALLED','CARDINALITY','CASCADE','CASCADED','CASE','CAST','CATALOG','CATALOG_NAME','CEIL','CEILING','CHAIN','CHAR','CHARACTER','CHARACTERISTICS','CHARACTERS','CHARACTER_LENGTH','CHARACTER_SET_CATALOG','CHARACTER_SET_NAME','CHARACTER_SET_SCHEMA','CHAR_LENGTH','CHECK','CHECKED','CHECKPOINT','CLASS','CLASS_ORIGIN','CLOB','CLOSE','CLUSTER','COALESCE','COBOL','COLLATE','COLLATION','COLLATION_CATALOG','COLLATION_NAME','COLLATION_SCHEMA','COLLECT','COLUMN','COLUMN_NAME','COMMAND_FUNCTION','COMMAND_FUNCTION_CODE','COMMENT','COMMIT','COMMITTED','COMPLETION','CONDITION','CONDITION_NUMBER','CONNECT','CONNECTION','CONNECTION_NAME','CONSTRAINT','CONSTRAINTS','CONSTRAINT_CATALOG','CONSTRAINT_NAME','CONSTRAINT_SCHEMA','CONSTRUCTOR','CONTAINS','CONTINUE','CONVERSION','CONVERT','COPY','CORR','CORRESPONDING','COUNT','COVAR_POP','COVAR_SAMP','CREATE','CREATEDB','CREATEROLE','CREATEUSER','CROSS','CSV','CUBE','CUME_DIST','CURRENT','CURRENT_DATE','CURRENT_DEFAULT_TRANSFORM_GROUP','CURRENT_PATH','CURRENT_ROLE','CURRENT_TIME','CURRENT_TIMESTAMP','CURRENT_TRANSFORM_GROUP_FOR_TYPE','CURRENT_USER','CURSOR','CURSOR_NAME','CYCLE','DATA','DATABASE','DATE','DATETIME_INTERVAL_CODE','DATETIME_INTERVAL_PRECISION','DAY','DEALLOCATE','DEC','DECIMAL','DECLARE','DEFAULT','DEFAULTS','DEFERRABLE','DEFERRED','DEFINED','DEFINER','DEGREE','DELETE','DELIMITER','DELIMITERS','DENSE_RANK','DEPTH','DEREF','DERIVED','DESC','DESCRIBE','DESCRIPTOR','DESTROY','DESTRUCTOR','DETERMINISTIC','DIAGNOSTICS','DICTIONARY','DISABLE','DISCONNECT','DISPATCH','DISTINCT','DO','DOMAIN','DOUBLE','DROP','DYNAMIC','DYNAMIC_FUNCTION','DYNAMIC_FUNCTION_CODE','EACH','ELEMENT','ELSE','ENABLE','ENCODING','ENCRYPTED','END','END-EXEC','EQUALS','ESCAPE','EVERY','EXCEPT','EXCEPTION','EXCLUDE','EXCLUDING','EXCLUSIVE','EXEC','EXECUTE','EXISTING','EXISTS','EXP','EXPLAIN','EXTERNAL','EXTRACT','FALSE','FETCH','FILTER','FINAL','FIRST','FLOAT','FLOOR','FOLLOWING','FOR','FORCE','FOREIGN','FORTRAN','FORWARD','FOUND','FREE','FREEZE','FROM','FULL','FUNCTION','FUSION','G','GENERAL','GENERATED','GET','GLOBAL','GO','GOTO','GRANT','GRANTED','GREATEST','GROUP','GROUPING','HANDLER','HAVING','HEADER','HIERARCHY','HOLD','HOST','HOUR','IDENTITY','IGNORE','ILIKE','IMMEDIATE','IMMUTABLE','IMPLEMENTATION','IMPLICIT','IN','INCLUDING','INCREMENT','INDEX','INDICATOR','INFIX','INHERIT','INHERITS','INITIALIZE','INITIALLY','INNER','INOUT','INPUT','INSENSITIVE','INSERT','INSTANCE','INSTANTIABLE','INSTEAD','INT','INTEGER','INTERSECT','INTERSECTION','INTERVAL','INTO','INVOKER','IS','ISNULL','ISOLATION','ITERATE','JOIN','K','KEY','KEY_MEMBER','KEY_TYPE','LANCOMPILER','LANGUAGE','LARGE','LAST','LATERAL','LEADING','LEAST','LEFT','LENGTH','LESS','LEVEL','LIKE','LIMIT','LISTEN','LN','LOAD','LOCAL','LOCALTIME','LOCALTIMESTAMP','LOCATION','LOCATOR','LOGIN','LOCK','LOWER','M','MAP','MATCH','MATCHED','MAX','MAXVALUE','MEMBER','MERGE','MESSAGE_LENGTH','MESSAGE_OCTET_LENGTH','MESSAGE_TEXT','METHOD','MIN','MINUTE','MINVALUE','MOD','MODE','MODIFIES','MODIFY','MODULE','MONTH','MORE','MOVE','MULTISET','MUMPS','NAME','NAMES','NATIONAL','NATURAL','NCHAR','NCLOB','NESTING','NEW','NEXT','NO','NOCREATEDB','NOCREATEROLE','NOCREATEUSER','NOINHERIT','NOLOGIN','NONE','NORMALIZE','NORMALIZED','NOSUPERUSER','NOT','NOTHING','NOTIFY','NOTNULL','NOWAIT','NULL','NULLABLE','NULLIF','NULLS','NUMBER','NUMERIC','OBJECT','OCTETS','OCTET_LENGTH','OF','OFF','OFFSET','OIDS','OLD','ON','ONLY','OPEN','OPERATION','OPERATOR','OPTION','OPTIONS','OR','ORDER','ORDERING','ORDINALITY','OTHERS','OUT','OUTER','OUTPUT','OVER','OVERLAPS','OVERLAY','OVERRIDING','OWNER','PAD','PARAMETER','PARAMETERS','PARAMETER_MODE','PARAMETER_NAME','PARAMETER_ORDINAL_POSITION','PARAMETER_SPECIFIC_CATALOG','PARAMETER_SPECIFIC_NAME','PARAMETER_SPECIFIC_SCHEMA','PARTIAL','PARTITION','PASCAL','PASSWORD','PATH','PERCENTILE_CONT','PERCENTILE_DISC','PERCENT_RANK','PLACING','PLI','POSITION','POSTFIX','POWER','PRECEDING','PRECISION','PREFIX','PREORDER','PREPARE','PREPARED','PRESERVE','PRIMARY','PRIOR','PRIVILEGES','PROCEDURAL','PROCEDURE','PUBLIC','QUOTE','RANGE','RANK','READ','READS','REAL','RECHECK','RECURSIVE','REF','REFERENCES','REFERENCING','REGR_AVGX','REGR_AVGY','REGR_COUNT','REGR_INTERCEPT','REGR_R2','REGR_SLOPE','REGR_SXX','REGR_SXY','REGR_SYY','REINDEX','RELATIVE','RELEASE','RENAME','REPEATABLE','REPLACE','RESET','RESTRICT','RESULT','RETURN','RETURNED_CARDINALITY','RETURNED_LENGTH','RETURNED_OCTET_LENGTH','RETURNED_SQLSTATE','RETURNS','REVOKE','RIGHT','ROLE','ROLLBACK','ROLLUP','ROUTINE','ROUTINE_CATALOG','ROUTINE_NAME','ROUTINE_SCHEMA','ROW','ROWS','ROW_COUNT','ROW_NUMBER','RULE','SAVEPOINT','SCALE','SCHEMA','SCHEMA_NAME','SCOPE','SCOPE_CATALOG','SCOPE_NAME','SCOPE_SCHEMA','SCROLL','SEARCH','SECOND','SECTION','SECURITY','SELECT','SELF','SENSITIVE','SEQUENCE','SERIALIZABLE','SERVER_NAME','SESSION','SESSION_USER','SET','SETOF','SETS','SHARE','SHOW','SIMILAR','SIMPLE','SIZE','SMALLINT','SOME','SOURCE','SPACE','SPECIFIC','SPECIFICTYPE','SPECIFIC_NAME','SQL','SQLCODE','SQLERROR','SQLEXCEPTION','SQLSTATE','SQLWARNING','SQRT','STABLE','START','STATE','STATEMENT','STATIC','STATISTICS','STDDEV_POP','STDDEV_SAMP','STDIN','STDOUT','STORAGE','STRICT','STRUCTURE','STYLE','SUBCLASS_ORIGIN','SUBLIST','SUBMULTISET','SUBSTRING','SUM','SUPERUSER','SYMMETRIC','SYSID','SYSTEM','SYSTEM_USER','TABLE','TABLESAMPLE','TABLESPACE','TABLE_NAME','TEMP','TEMPLATE','TEMPORARY','TERMINATE','THAN','THEN','TIES','TIME','TIMESTAMP','TIMEZONE_HOUR','TIMEZONE_MINUTE','TO','TOAST','TOP_LEVEL_COUNT','TRAILING','TRANSACTION','TRANSACTIONS_COMMITTED','TRANSACTIONS_ROLLED_BACK','TRANSACTION_ACTIVE','TRANSFORM','TRANSFORMS','TRANSLATE','TRANSLATION','TREAT','TRIGGER','TRIGGER_CATALOG','TRIGGER_NAME','TRIGGER_SCHEMA','TRIM','TRUE','TRUNCATE','TRUSTED','TYPE','UESCAPE','UNBOUNDED','UNCOMMITTED','UNDER','UNENCRYPTED','UNION','UNIQUE','UNKNOWN','UNLISTEN','UNNAMED','UNNEST','UNTIL','UPDATE','UPPER','USAGE','USER','USER_DEFINED_TYPE_CATALOG','USER_DEFINED_TYPE_CODE','USER_DEFINED_TYPE_NAME','USER_DEFINED_TYPE_SCHEMA','USING','VACUUM','VALID','VALIDATOR','VALUE','VALUES','VARCHAR','VARIABLE','VARYING','VAR_POP','VAR_SAMP','VERBOSE','VIEW','VOLATILE','WHEN','WHENEVER','WHERE','WIDTH_BUCKET','WINDOW','WITH','WITHIN','WITHOUT','WORK','WRITE','YEAR','ZONE'],
-								    	  match: /\b([a-zA-Z._]{1,})$/,
-								          search: function (term, callback) {
-								            callback($.map(this.sqlkey, function (element) {
-								                return element.indexOf(term.toUpperCase()) === 0 ? element : null;
-								            }));
-								        },
-								        index: 1,
-								        replace: function (element) {
-								            return [element+' ',  ''];
-								        }
-								    },								    								    								  
-								];	
+							{ // emoji strategy
+								sqlkey : [ 'A', 'ABORT', 'ABS', 'ABSOLUTE',
+										'ACCESS', 'ACTION', 'ADA', 'ADD',
+										'ADMIN', 'AFTER', 'AGGREGATE', 'ALIAS',
+										'ALL', 'ALLOCATE', 'ALSO', 'ALTER',
+										'ALWAYS', 'ANALYSE', 'ANALYZE', 'AND',
+										'ANY', 'ARE', 'ARRAY', 'AS', 'ASC',
+										'ASENSITIVE', 'ASSERTION',
+										'ASSIGNMENT', 'ASYMMETRIC', 'AT',
+										'ATOMIC', 'ATTRIBUTE', 'ATTRIBUTES',
+										'AUTHORIZATION', 'AVG', 'BACKWARD',
+										'BEFORE', 'BEGIN', 'BERNOULLI',
+										'BETWEEN', 'BIGINT', 'BINARY', 'BIT',
+										'BITVAR', 'BIT_LENGTH', 'BLOB',
+										'BOOLEAN', 'BOTH', 'BREADTH', 'BY',
+										'C', 'CACHE', 'CALL', 'CALLED',
+										'CARDINALITY', 'CASCADE', 'CASCADED',
+										'CASE', 'CAST', 'CATALOG',
+										'CATALOG_NAME', 'CEIL', 'CEILING',
+										'CHAIN', 'CHAR', 'CHARACTER',
+										'CHARACTERISTICS', 'CHARACTERS',
+										'CHARACTER_LENGTH',
+										'CHARACTER_SET_CATALOG',
+										'CHARACTER_SET_NAME',
+										'CHARACTER_SET_SCHEMA', 'CHAR_LENGTH',
+										'CHECK', 'CHECKED', 'CHECKPOINT',
+										'CLASS', 'CLASS_ORIGIN', 'CLOB',
+										'CLOSE', 'CLUSTER', 'COALESCE',
+										'COBOL', 'COLLATE', 'COLLATION',
+										'COLLATION_CATALOG', 'COLLATION_NAME',
+										'COLLATION_SCHEMA', 'COLLECT',
+										'COLUMN', 'COLUMN_NAME',
+										'COMMAND_FUNCTION',
+										'COMMAND_FUNCTION_CODE', 'COMMENT',
+										'COMMIT', 'COMMITTED', 'COMPLETION',
+										'CONDITION', 'CONDITION_NUMBER',
+										'CONNECT', 'CONNECTION',
+										'CONNECTION_NAME', 'CONSTRAINT',
+										'CONSTRAINTS', 'CONSTRAINT_CATALOG',
+										'CONSTRAINT_NAME', 'CONSTRAINT_SCHEMA',
+										'CONSTRUCTOR', 'CONTAINS', 'CONTINUE',
+										'CONVERSION', 'CONVERT', 'COPY',
+										'CORR', 'CORRESPONDING', 'COUNT',
+										'COVAR_POP', 'COVAR_SAMP', 'CREATE',
+										'CREATEDB', 'CREATEROLE', 'CREATEUSER',
+										'CROSS', 'CSV', 'CUBE', 'CUME_DIST',
+										'CURRENT', 'CURRENT_DATE',
+										'CURRENT_DEFAULT_TRANSFORM_GROUP',
+										'CURRENT_PATH', 'CURRENT_ROLE',
+										'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+										'CURRENT_TRANSFORM_GROUP_FOR_TYPE',
+										'CURRENT_USER', 'CURSOR',
+										'CURSOR_NAME', 'CYCLE', 'DATA',
+										'DATABASE', 'DATE',
+										'DATETIME_INTERVAL_CODE',
+										'DATETIME_INTERVAL_PRECISION', 'DAY',
+										'DEALLOCATE', 'DEC', 'DECIMAL',
+										'DECLARE', 'DEFAULT', 'DEFAULTS',
+										'DEFERRABLE', 'DEFERRED', 'DEFINED',
+										'DEFINER', 'DEGREE', 'DELETE',
+										'DELIMITER', 'DELIMITERS',
+										'DENSE_RANK', 'DEPTH', 'DEREF',
+										'DERIVED', 'DESC', 'DESCRIBE',
+										'DESCRIPTOR', 'DESTROY', 'DESTRUCTOR',
+										'DETERMINISTIC', 'DIAGNOSTICS',
+										'DICTIONARY', 'DISABLE', 'DISCONNECT',
+										'DISPATCH', 'DISTINCT', 'DO', 'DOMAIN',
+										'DOUBLE', 'DROP', 'DYNAMIC',
+										'DYNAMIC_FUNCTION',
+										'DYNAMIC_FUNCTION_CODE', 'EACH',
+										'ELEMENT', 'ELSE', 'ENABLE',
+										'ENCODING', 'ENCRYPTED', 'END',
+										'END-EXEC', 'EQUALS', 'ESCAPE',
+										'EVERY', 'EXCEPT', 'EXCEPTION',
+										'EXCLUDE', 'EXCLUDING', 'EXCLUSIVE',
+										'EXEC', 'EXECUTE', 'EXISTING',
+										'EXISTS', 'EXP', 'EXPLAIN', 'EXTERNAL',
+										'EXTRACT', 'FALSE', 'FETCH', 'FILTER',
+										'FINAL', 'FIRST', 'FLOAT', 'FLOOR',
+										'FOLLOWING', 'FOR', 'FORCE', 'FOREIGN',
+										'FORTRAN', 'FORWARD', 'FOUND', 'FREE',
+										'FREEZE', 'FROM', 'FULL', 'FUNCTION',
+										'FUSION', 'G', 'GENERAL', 'GENERATED',
+										'GET', 'GLOBAL', 'GO', 'GOTO', 'GRANT',
+										'GRANTED', 'GREATEST', 'GROUP',
+										'GROUPING', 'HANDLER', 'HAVING',
+										'HEADER', 'HIERARCHY', 'HOLD', 'HOST',
+										'HOUR', 'IDENTITY', 'IGNORE', 'ILIKE',
+										'IMMEDIATE', 'IMMUTABLE',
+										'IMPLEMENTATION', 'IMPLICIT', 'IN',
+										'INCLUDING', 'INCREMENT', 'INDEX',
+										'INDICATOR', 'INFIX', 'INHERIT',
+										'INHERITS', 'INITIALIZE', 'INITIALLY',
+										'INNER', 'INOUT', 'INPUT',
+										'INSENSITIVE', 'INSERT', 'INSTANCE',
+										'INSTANTIABLE', 'INSTEAD', 'INT',
+										'INTEGER', 'INTERSECT', 'INTERSECTION',
+										'INTERVAL', 'INTO', 'INVOKER', 'IS',
+										'ISNULL', 'ISOLATION', 'ITERATE',
+										'JOIN', 'K', 'KEY', 'KEY_MEMBER',
+										'KEY_TYPE', 'LANCOMPILER', 'LANGUAGE',
+										'LARGE', 'LAST', 'LATERAL', 'LEADING',
+										'LEAST', 'LEFT', 'LENGTH', 'LESS',
+										'LEVEL', 'LIKE', 'LIMIT', 'LISTEN',
+										'LN', 'LOAD', 'LOCAL', 'LOCALTIME',
+										'LOCALTIMESTAMP', 'LOCATION',
+										'LOCATOR', 'LOGIN', 'LOCK', 'LOWER',
+										'M', 'MAP', 'MATCH', 'MATCHED', 'MAX',
+										'MAXVALUE', 'MEMBER', 'MERGE',
+										'MESSAGE_LENGTH',
+										'MESSAGE_OCTET_LENGTH', 'MESSAGE_TEXT',
+										'METHOD', 'MIN', 'MINUTE', 'MINVALUE',
+										'MOD', 'MODE', 'MODIFIES', 'MODIFY',
+										'MODULE', 'MONTH', 'MORE', 'MOVE',
+										'MULTISET', 'MUMPS', 'NAME', 'NAMES',
+										'NATIONAL', 'NATURAL', 'NCHAR',
+										'NCLOB', 'NESTING', 'NEW', 'NEXT',
+										'NO', 'NOCREATEDB', 'NOCREATEROLE',
+										'NOCREATEUSER', 'NOINHERIT', 'NOLOGIN',
+										'NONE', 'NORMALIZE', 'NORMALIZED',
+										'NOSUPERUSER', 'NOT', 'NOTHING',
+										'NOTIFY', 'NOTNULL', 'NOWAIT', 'NULL',
+										'NULLABLE', 'NULLIF', 'NULLS',
+										'NUMBER', 'NUMERIC', 'OBJECT',
+										'OCTETS', 'OCTET_LENGTH', 'OF', 'OFF',
+										'OFFSET', 'OIDS', 'OLD', 'ON', 'ONLY',
+										'OPEN', 'OPERATION', 'OPERATOR',
+										'OPTION', 'OPTIONS', 'OR', 'ORDER',
+										'ORDERING', 'ORDINALITY', 'OTHERS',
+										'OUT', 'OUTER', 'OUTPUT', 'OVER',
+										'OVERLAPS', 'OVERLAY', 'OVERRIDING',
+										'OWNER', 'PAD', 'PARAMETER',
+										'PARAMETERS', 'PARAMETER_MODE',
+										'PARAMETER_NAME',
+										'PARAMETER_ORDINAL_POSITION',
+										'PARAMETER_SPECIFIC_CATALOG',
+										'PARAMETER_SPECIFIC_NAME',
+										'PARAMETER_SPECIFIC_SCHEMA', 'PARTIAL',
+										'PARTITION', 'PASCAL', 'PASSWORD',
+										'PATH', 'PERCENTILE_CONT',
+										'PERCENTILE_DISC', 'PERCENT_RANK',
+										'PLACING', 'PLI', 'POSITION',
+										'POSTFIX', 'POWER', 'PRECEDING',
+										'PRECISION', 'PREFIX', 'PREORDER',
+										'PREPARE', 'PREPARED', 'PRESERVE',
+										'PRIMARY', 'PRIOR', 'PRIVILEGES',
+										'PROCEDURAL', 'PROCEDURE', 'PUBLIC',
+										'QUOTE', 'RANGE', 'RANK', 'READ',
+										'READS', 'REAL', 'RECHECK',
+										'RECURSIVE', 'REF', 'REFERENCES',
+										'REFERENCING', 'REGR_AVGX',
+										'REGR_AVGY', 'REGR_COUNT',
+										'REGR_INTERCEPT', 'REGR_R2',
+										'REGR_SLOPE', 'REGR_SXX', 'REGR_SXY',
+										'REGR_SYY', 'REINDEX', 'RELATIVE',
+										'RELEASE', 'RENAME', 'REPEATABLE',
+										'REPLACE', 'RESET', 'RESTRICT',
+										'RESULT', 'RETURN',
+										'RETURNED_CARDINALITY',
+										'RETURNED_LENGTH',
+										'RETURNED_OCTET_LENGTH',
+										'RETURNED_SQLSTATE', 'RETURNS',
+										'REVOKE', 'RIGHT', 'ROLE', 'ROLLBACK',
+										'ROLLUP', 'ROUTINE', 'ROUTINE_CATALOG',
+										'ROUTINE_NAME', 'ROUTINE_SCHEMA',
+										'ROW', 'ROWS', 'ROW_COUNT',
+										'ROW_NUMBER', 'RULE', 'SAVEPOINT',
+										'SCALE', 'SCHEMA', 'SCHEMA_NAME',
+										'SCOPE', 'SCOPE_CATALOG', 'SCOPE_NAME',
+										'SCOPE_SCHEMA', 'SCROLL', 'SEARCH',
+										'SECOND', 'SECTION', 'SECURITY',
+										'SELECT', 'SELF', 'SENSITIVE',
+										'SEQUENCE', 'SERIALIZABLE',
+										'SERVER_NAME', 'SESSION',
+										'SESSION_USER', 'SET', 'SETOF', 'SETS',
+										'SHARE', 'SHOW', 'SIMILAR', 'SIMPLE',
+										'SIZE', 'SMALLINT', 'SOME', 'SOURCE',
+										'SPACE', 'SPECIFIC', 'SPECIFICTYPE',
+										'SPECIFIC_NAME', 'SQL', 'SQLCODE',
+										'SQLERROR', 'SQLEXCEPTION', 'SQLSTATE',
+										'SQLWARNING', 'SQRT', 'STABLE',
+										'START', 'STATE', 'STATEMENT',
+										'STATIC', 'STATISTICS', 'STDDEV_POP',
+										'STDDEV_SAMP', 'STDIN', 'STDOUT',
+										'STORAGE', 'STRICT', 'STRUCTURE',
+										'STYLE', 'SUBCLASS_ORIGIN', 'SUBLIST',
+										'SUBMULTISET', 'SUBSTRING', 'SUM',
+										'SUPERUSER', 'SYMMETRIC', 'SYSID',
+										'SYSTEM', 'SYSTEM_USER', 'TABLE',
+										'TABLESAMPLE', 'TABLESPACE',
+										'TABLE_NAME', 'TEMP', 'TEMPLATE',
+										'TEMPORARY', 'TERMINATE', 'THAN',
+										'THEN', 'TIES', 'TIME', 'TIMESTAMP',
+										'TIMEZONE_HOUR', 'TIMEZONE_MINUTE',
+										'TO', 'TOAST', 'TOP_LEVEL_COUNT',
+										'TRAILING', 'TRANSACTION',
+										'TRANSACTIONS_COMMITTED',
+										'TRANSACTIONS_ROLLED_BACK',
+										'TRANSACTION_ACTIVE', 'TRANSFORM',
+										'TRANSFORMS', 'TRANSLATE',
+										'TRANSLATION', 'TREAT', 'TRIGGER',
+										'TRIGGER_CATALOG', 'TRIGGER_NAME',
+										'TRIGGER_SCHEMA', 'TRIM', 'TRUE',
+										'TRUNCATE', 'TRUSTED', 'TYPE',
+										'UESCAPE', 'UNBOUNDED', 'UNCOMMITTED',
+										'UNDER', 'UNENCRYPTED', 'UNION',
+										'UNIQUE', 'UNKNOWN', 'UNLISTEN',
+										'UNNAMED', 'UNNEST', 'UNTIL', 'UPDATE',
+										'UPPER', 'USAGE', 'USER',
+										'USER_DEFINED_TYPE_CATALOG',
+										'USER_DEFINED_TYPE_CODE',
+										'USER_DEFINED_TYPE_NAME',
+										'USER_DEFINED_TYPE_SCHEMA', 'USING',
+										'VACUUM', 'VALID', 'VALIDATOR',
+										'VALUE', 'VALUES', 'VARCHAR',
+										'VARIABLE', 'VARYING', 'VAR_POP',
+										'VAR_SAMP', 'VERBOSE', 'VIEW',
+										'VOLATILE', 'WHEN', 'WHENEVER',
+										'WHERE', 'WIDTH_BUCKET', 'WINDOW',
+										'WITH', 'WITHIN', 'WITHOUT', 'WORK',
+										'WRITE', 'YEAR', 'ZONE' ],
+								match : /\b([a-zA-Z._]{1,})$/,
+								search : function(term, callback) {
+									callback($.map(this.sqlkey, function(
+											element) {
+										return element.indexOf(term
+												.toUpperCase()) === 0 ? element
+												: null;
+									}));
+								},
+								index : 1,
+								replace : function(element) {
+									return [ element + ' ', '' ];
+								}
+							}, ];
 					$('#sql_script').textcomplete(completes);
 				});
 			</script>
