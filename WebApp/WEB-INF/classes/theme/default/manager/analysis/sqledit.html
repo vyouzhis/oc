@@ -40,21 +40,27 @@
 						<div class="col-xs-4"></div>
 						<div class="dropdown col-xs-4">
 							<a id="select_db" name="select_db" data-toggle="dropdown" class="dropdown-toggle" href="#">
-								数据库选择 &nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>
+								${dbs!"数据选择"} &nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>
 							</a>
 							
 							<ul class="dropdown-menu dropdown-info">
-								<li><a id="db_1" name="db_1" onclick="graph(1)" href="javascript:void(0)">默认</a>
+								<li><a id="db_0" name="db_0" onclick="graph(0)" href="javascript:void(0)">默认</a>
 								</li>
-								<li><a id="db_2" name="db_2" onclick="graph(2)" href="javascript:void(0)">MT4</a>
+								<#if dblist??>
+								<#list dblist as item>
+								<li><a id="db_${item.id}" name="db_${item.id}" onclick="graph(${item.id})" href="javascript:void(0)">${item.title}</a>
 								</li>
+								</#list>
+								</#if>
 							</ul>
 
 						</div>
+						
 						<div class="well col-xs-12">
 							<form id="target" name="target" enctype="multipart/form-data"
 								action='${action_url!""}' method="POST" class="form-inline">
-								<input id="dbtype" type="text" value="${dbtype!1}" name="dbtype" style="display:none;">
+								<input id="dbid" type="text" value="${dbid!0}" name="dbid" style="display:none;">
+								<input id="db_name" type="text" value='${db_name!""}' name="db_name" style="display:none;">
 								<label for="sqledit">SQL:</label>
 								<textarea id="sql_script" name="sql_script"
 									class="form-control limited">${sql_edit!""}</textarea>
@@ -63,10 +69,11 @@
 									[<a href="javascript:void(0)" onclick="sqlForm()">查询</a>] <small>
 									</small>
 								</h3>
-							
+								<#if create_sql??>
 								<pre class="sql">
 								${sql_edit!""}	
 								</pre>
+								</#if>
 							</form>
 						</div>
 						<#if create_sql??>
@@ -79,6 +86,10 @@
 									<div class="col-sm-9">
 										<input class="hide" type="text" id="sql" name="sql"
 											value='${create_sql!""}' /> <span class="input-group-btn">
+											
+											<input class="hide" type="text" id="save_id" name="save_id"
+											value='${dbid!0}' /> <span class="input-group-btn">
+											
 											<span class="input-icon"> <input type="text" id="name"
 												name="name" placeholder="..." /> <i
 												class="icon-save bigger-160 red"></i>
@@ -112,7 +123,7 @@
 										<#if List_Data??> <#list List_Data as item>
 										<tr>
 											<#list Key_Title as value>
-											<td class="center">${item[value]}</td> </#list>
+											<td><#if item[value]??>  ${item[value]} </#if> </td> </#list>
 										</tr>
 										</#list> </#if>
 									</tbody>
@@ -140,9 +151,12 @@
 					});
 				});
 
-				function graph (t) {				
-					$("#select_db").html($("#db_"+t).text()+'&nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>');
-					$("#dbtype").val(t);
+				function graph (t) {	
+					var val = $("#db_"+t).text();
+					$("#select_db").html(val+'&nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>');
+					$("#dbid").val(t);
+					$("#db_name").val(val);
+					$("#save_id").val(t);
 				}
 				
 				function sqlForm() {

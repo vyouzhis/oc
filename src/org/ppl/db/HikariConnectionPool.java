@@ -109,14 +109,15 @@ public class HikariConnectionPool extends PObject {
 			long tid = myThreadId();
 			Connection con = globale_config.GDB.get(tid);
 			if (con != null) {
-				
 				try {
-					con.commit();
-				} catch (SQLException e) {
+					if(!con.isClosed()){
+						con.commit();
+					}
+				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					e1.printStackTrace();
 				}
-				
+												
 				ConList.add(con);
 				globale_config.GDB.put(tid, null);
 			}

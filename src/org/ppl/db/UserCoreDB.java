@@ -17,26 +17,23 @@ public class UserCoreDB extends DBSQL {
 			return false;
 
 		try {
-			c = createConnection(UserCoreConfig.GetValue("database.driverClassName"),
-					UserCoreConfig.GetValue("database.url"),
-					UserCoreConfig.GetValue("database.username"),
-					UserCoreConfig.GetValue("database.password"));
+			c = createConnection(driverClassName, dbUrl, dbUser, dbPwd);
 			c.setAutoCommit(true);
 			SetCon(c);
 			return true;
 
 		} catch (Exception e) {
-			
+
 			setErrorMsg(e.getMessage());
 		}
 		return false;
 	}
-	
+
 	public void DBEnd() {
 		end();
-		
-		try {			
-			//c.commit();
+
+		try {
+			// c.commit();
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

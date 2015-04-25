@@ -9,6 +9,8 @@ import java.util.Map;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
+import org.ppl.db.UserCoreDB;
+import org.ppl.io.DesEncrypter;
 
 import com.alibaba.fastjson.JSON;
 import com.github.abel533.echarts.axis.CategoryAxis;
@@ -75,7 +77,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						Tool.saveAsImage);
 
 		option.calculable(true);
-		
+
 		option.legend().y(Y.bottom);
 		// .formatter("{a} <br/>{b} : ({c}%)");
 
@@ -114,7 +116,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		option.yAxis(categoryAxis);
 
 		option.tooltip().trigger(Trigger.axis);
-		
+
 		boolean Xbool = true;
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
@@ -128,7 +130,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
 			option.legend(id.get("name").toString());
-			
+
 			List<Map<String, Object>> list = pieList.get(m);
 			m++;
 
@@ -161,7 +163,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	}
 
 	private String JsonPie() {
-		option.tooltip().trigger(Trigger.item).formatter("{b} <br/> {c} ({d}%)");
+		option.tooltip().trigger(Trigger.item)
+				.formatter("{b} <br/> {c} ({d}%)");
 		List<List<Map<String, Object>>> pieList = getEcharts();
 
 		if (pieList == null || pieList.size() == 0)
@@ -179,7 +182,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			for (Map<String, Object> key : list) {
 				Map<String, Object> m = new HashMap<>();
 				m.put("value", key.get("volume"));
-				m.put("name", key.get("dial"));
+				m.put("name", key.get("dial").toString());
 				// legendTitle.add(key.get("dial").toString());
 				option.legend(key.get("dial").toString());
 				pie.data(m);
@@ -195,20 +198,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		return option.toString();
 	}
 
-		
 	@SuppressWarnings("unchecked")
 	private void PaserJson() {
-	
+
 		String json_id = Escape.unescape(porg.getKey("ids"));
-		
+
 		json_id = Myreplace(json_id);
 		if (json_id.length() < 2) {
 			return;
 		}
 		JsonIds = JSON.parseObject(json_id, List.class);
-		
+
 	}
-	
+
 	private List<List<Map<String, Object>>> getEcharts() {
 		List<List<Map<String, Object>>> ret = new ArrayList<>();
 
@@ -216,7 +218,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				+ DB_HOR_PRE
 				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
 
-		List<Map<String, Object>> res;
+		List<Map<String, Object>> res=null;
 
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
@@ -225,7 +227,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			String sql = String.format(format,
 					Integer.valueOf(id.get("id").toString()));
 			if (id.get("qaction").equals("4")) {
-				String usql = "select sql from hor_usersql where id="
+				String usql = "select sql,dtype from hor_usersql where id="
 						+ id.get("id").toString() + " LIMIT 1";
 				Map<String, Object> ures;
 
@@ -234,17 +236,80 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					sql = ures.get("sql").toString();
 					sql = Myreplace(sql);
 				}
-			}
-			try {
-				res = FetchAll(sql);
-				ret.add(res);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					int dtype =  Integer.valueOf(ures.get("dtype").toString());
+					if(dtype ==0){
+						res = FetchAll(sql);
+					}else{
+						res = CustomDB(sql, dtype);
+					}
+					if(res!=null){
+						ret.add(res);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			} else {
+
+				try {
+
+					res = FetchAll(sql);
+					ret.add(res);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
 		return ret;
+	}
+	
+	private List<Map<String, Object>> CustomDB(String sql, int id) {
+		List<Map<String, Object>> res = null;
+		UserCoreDB ucdb = new UserCoreDB();
+		
+		
+		String format = "select * from "+DB_HOR_PRE+"dbsource where id=%d limit 1";
+		String dsql = String.format(format, id);
+		
+		Map<String, Object> dres ;
+		
+		dres = FetchOne(dsql);
+		if(dres==null)return null;
+		
+		ucdb.setDriverClassName(dres.get("dcname").toString());
+		ucdb.setDbUrl(dres.get("url").toString());
+		ucdb.setDbUser(dres.get("username").toString());
+		String pwd = dres.get("password").toString();
+		
+		try {
+			DesEncrypter de = new DesEncrypter();
+			pwd = de.decrypt(pwd);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		ucdb.setDbPwd(pwd);
+		
+		
+		if (ucdb.Init() == false) {			
+			setRoot("ErrorMsg", ucdb.getErrorMsg());
+		} else {
+			try {
+				res = ucdb.FetchAll(sql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				setRoot("ErrorMsg", e.getMessage().toString());
+			}
+
+			ucdb.DBEnd();
+		}
+		return res;
 	}
 
 	private String Myreplace(String old) {

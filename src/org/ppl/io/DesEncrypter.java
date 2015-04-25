@@ -1,19 +1,28 @@
 package org.ppl.io;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class DesEncrypter {
 	Cipher ecipher;
 	Cipher dcipher;
 
 	public DesEncrypter() throws Exception {
-		SecretKey key = KeyGenerator.getInstance("DES").generateKey();
-		ecipher = Cipher.getInstance("DES");
-		dcipher = Cipher.getInstance("DES");
-		ecipher.init(Cipher.ENCRYPT_MODE, key);
-		dcipher.init(Cipher.DECRYPT_MODE, key);
+		SecretKey key;
+
+		String complex = new String("9#82jdkeo!2DcASg");
+		byte[] keyBytes = complex.getBytes();
+		key = new SecretKeySpec(keyBytes, "AES");
+
+		ecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		dcipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		byte[] iv = { 2, 0, 1, 2, 6, 3, 8, 9, 2, 7, 3, 4, 1, 1, 9, 5 };
+		IvParameterSpec ivspec = new IvParameterSpec(iv);
+
+		ecipher.init(Cipher.ENCRYPT_MODE, key, ivspec);
+		dcipher.init(Cipher.DECRYPT_MODE, key, ivspec);
 	}
 
 	@SuppressWarnings("restriction")

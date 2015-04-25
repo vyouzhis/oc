@@ -5,13 +5,11 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
 import org.ppl.BaseClass.LibThread;
-import org.ppl.Module.ModuleBind;
 import org.ppl.etc.Config;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 import org.ppl.io.TimeClass;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
@@ -57,8 +55,7 @@ public class CronThread extends LibThread {
 						
 			for (String key:cronMap.keySet()) {
 				//System.out.print("KEY:"+key);
-				Injector injector = Guice
-						.createInjector(new ModuleBind());
+				Injector injector = globale_config.injector;
 				BaseCronThread cron = (BaseCronThread) injector
 						.getInstance(Key.get(BaseCronThread.class,
 								Names.named(key)));
@@ -83,7 +80,7 @@ public class CronThread extends LibThread {
 				}
 				else {
 					cron.free();
-					System.out.println("continue key:"+key);
+					System.out.println("continue key:"+key+" sleepTime:"+sleepTime);
 					continue;
 				}
 				

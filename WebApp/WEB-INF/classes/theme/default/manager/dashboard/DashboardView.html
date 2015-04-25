@@ -297,7 +297,7 @@
 					var o = $('#tree1').tree('selectedItems');
 										
 					var selectedItems = escape(JSON.stringify(o));
-					console.log( graph_name );
+					console.log( JSON.stringify(o) );
 					$.ajax({
 						  url: "${json_url}?jsoncallback=?",
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
