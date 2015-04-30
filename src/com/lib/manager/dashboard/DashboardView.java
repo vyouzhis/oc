@@ -63,7 +63,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void getMongoDBList(int qaction, String RootName) {
-		String sql = "SELECT id,name FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" order by id desc;";
+		String sql = "SELECT id,name FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" and snap=0 order by id desc;";
 		Mongo = new HashMap<String, Map<String,Map<String,String>>>();
 		
 		List<Map<String, Object>> res;

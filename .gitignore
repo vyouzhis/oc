@@ -1,9 +1,12 @@
 *.class
 .classpath
 .project
+.svn
+
 
 .settings/
 target/
+build
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
