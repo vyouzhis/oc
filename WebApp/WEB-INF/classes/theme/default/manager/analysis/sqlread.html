@@ -68,8 +68,9 @@
 									class="form-control limited">${sql_edit!""}</textarea>
 								</div>
 								<div class="col-xs-5">
+								<h3>视图:</h3>
 								<div class="col-xs-12">
-									<label for="sqledit">视图:</label>
+									
 									<select id="form-field-select-1" >
 										<#if ListView??>
 										<#list ListView as item>
@@ -78,9 +79,10 @@
 										</#if>
 									</select>
 								</div>
+								<h3>规则:</h3>
 								<div class="col-xs-12">
-									<label for="sqledit">网站规则:</label>
-									<select id="form-field-select-1" >
+									
+									<select id="form-field-select-2" >
 										<#if ListRule??>
 										<#list ListRule as item>
 										<option value="">${item.id}_${item.name}</option>
@@ -89,12 +91,12 @@
 									</select>
 								</div>
 								<#if create_sql??>
+								<h3>名称：</h3>
 								<div class="col-xs-12">
 									<form enctype="multipart/form-data" action='${create_url!""}'
 										method="POST" class="form-inline" id="project_action">
 										<div class="form-group">
-											<label for="form-field-gplus"
-												class="col-sm-2 control-label no-padding-right">名称：</label>
+											
 											<div class="col-sm-9">
 												<input class="hide" type="text" id="sql" name="sql"
 													value='${create_sql!""}' /> <span class="input-group-btn">
