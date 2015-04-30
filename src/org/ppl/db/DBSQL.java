@@ -144,17 +144,17 @@ public class DBSQL extends BaseLang {
 	}
 
 	public long update(String sql) throws SQLException {
-		return exec(sql, true);
+		return exec(sql, false);
 	}
 
 	public long insert(String sql) throws SQLException {
 		long numRowsUpdated = -1;
-		exec(sql, true);
-		ResultSet rs = stmt.getGeneratedKeys();
-
-		if (rs.next()) {
-			numRowsUpdated = rs.getLong(1);
-		}
+		exec(sql, false);
+//		ResultSet rs = stmt.getGeneratedKeys();
+//
+//		if (rs.next()) {
+//			numRowsUpdated = rs.getLong(1);
+//		}
 
 		return numRowsUpdated;
 	}

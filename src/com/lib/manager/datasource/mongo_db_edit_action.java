@@ -78,6 +78,8 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 		field_query = Myreplace(field_query);
 		sort_query = Myreplace(sort_query);
 		
+		int snap_id = Integer.valueOf(porg.getKey("snap_id"));
+		
 		String eid = porg.getKey("eid");
 		int id = 0;
 		if(eid!=null && eid.matches("[0-9]+")){
@@ -85,9 +87,9 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 		}
 		
 		String format = "UPDATE "+DB_HOR_PRE+"mongodbrule SET " +
-				" name='%s', collention='%s', qaction='%s', query='%s', field='%s', sort='%s'" +
+				" name='%s', collention='%s', qaction='%s', query='%s', field='%s', sort='%s', snap=%d" +
 				" WHERE id=%d;";
-		String sql = String.format(format, project_name, db_collection, fetch_query, where_query, field_query, sort_query, id);
+		String sql = String.format(format, project_name, db_collection, fetch_query, where_query, field_query, sort_query,snap_id , id);
 		
 		UrlClassList ucl = UrlClassList.getInstance();
 		try {

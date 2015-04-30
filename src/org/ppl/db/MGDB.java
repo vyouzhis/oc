@@ -65,6 +65,8 @@ public class MGDB extends PObject {
 
 	private int DBOffset = 0;
 	private int DBLimit = 30;
+	
+	private int ColumnNumber = 0;
 
 	// private int DESC = 1;
 	// private int ASC = -1;
@@ -168,7 +170,7 @@ public class MGDB extends PObject {
 	}
 
 	public Boolean FetchList() {
-
+		
 		dbCursor = DBLink.find(DBWhere, DBColumn).sort(DBSort).limit(DBLimit)
 				.skip(DBOffset);
 		if (dbCursor == null) {
@@ -200,16 +202,37 @@ public class MGDB extends PObject {
 
 		return res;
 	}
+	
+	public void loopList(Object res, List<Object> mList) {
+		if (res instanceof DBObject) {
+
+			DBObject s = (DBObject) res;
+			for (String k : s.keySet()) {
+				if(k.equals("_id"))continue;
+				loopList(s.get(k), mList);
+			}
+		} else {
+			mList.add(res);
+		}
+
+	}
 
 	public List<Map<String, Object>> GetValue() {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		int l = 0;
 		try {
 			while (dbCursor.hasNext()) {
 				DBObject obj = dbCursor.next();
 				Map<String, Object> ColMap = new HashMap<String, Object>();
-
+				
+				l = 0;
+				
 				for (String key : obj.keySet()) {
 					ColMap.put(key, obj.get(key));
+					l++;
+				}
+				if(l > ColumnNumber){
+					ColumnNumber = l;
 				}
 
 				list.add(ColMap);
@@ -342,6 +365,15 @@ public class MGDB extends PObject {
 
 	public void setErrorMsg(String errorMsg) {
 		ErrorMsg = errorMsg;
+	}
+
+	public int getColumnNumber() {
+		// remove _id;
+		return ColumnNumber - 1;
+	}
+
+	public void setColumnNumber(int columnNumber) {
+		ColumnNumber = columnNumber;
 	}
 
 }

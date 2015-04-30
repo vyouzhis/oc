@@ -65,6 +65,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
+		setRoot("snap_id", 0);
 		CollectionList();
 		switch (rmc.get(1).toString()) {
 		case "read":
@@ -85,6 +86,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		}
 		mgdb.Close();
 		setRoot("fetch_query", fetch_query);
+		
 		super.View();
 	}
 
@@ -102,26 +104,38 @@ public class mongo_db extends Permission implements BasePerminterface {
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-
-		int now = time();
-		int stime = getLastTime(db_collection);
-		String format = "INSERT INTO "
-				+ DB_HOR_PRE
-				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime)"
-				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d)";
-		String sql = String.format(format, project_name, db_collection,
-				fetch_query, where_query, field_query, sort_query, now, stime,
-				stime);
-
+		int snap = 0;
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
+		
+		
+		if(porg.getKey("snap_id").equals("1")){
+			snap = 1;
+		}
+		
+		int now = time();
+		int stime = getLastTime(db_collection);
+		if(stime==0){
+			TipMessage(url, _CLang("error_null"));
+			return;
+		}
+		String format = "INSERT INTO "
+				+ DB_HOR_PRE
+				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime, snap)"
+				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d, %d)";
+		String sql = String.format(format, project_name, db_collection,
+				fetch_query, where_query, field_query, sort_query, now, stime,
+				stime, snap);
+
+		
+		//echo(sql);
 		try {
-			long id = insert(sql);
+			insert(sql);
 			// echo("id:"+id);
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			TipMessage(url, e.getMessage());
 		}
 	}
 
@@ -136,8 +150,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 		boolean s = mgdb.FetchList();
 		if (s) {
 			List<Map<String, Object>> res = mgdb.GetValue();
-
-			ltime = (int) res.get(0).get("ctime");
+			if(res!=null){
+				ltime = (int) res.get(0).get("ctime");
+			}
 
 		}
 
@@ -152,7 +167,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		if (id != null && id.matches("[0-9]+")) {
 			eid = Integer.valueOf(id);
 		}
-		echo("where:" + where_query);
+		//echo("where:" + where_query);
 
 		if (db_collection == null || db_collection.length() == 0) {
 			String format = "select * from " + DB_HOR_PRE
@@ -165,6 +180,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 				db_collection = res.get("collention").toString();
 				mgdb.SetCollection(db_collection);
+				setRoot("def_collention", db_collection);
 				String fq = res.get("qaction").toString();
 				if (fq != null && fq.matches("[0-9]+")) {
 					fetch_query = Integer.valueOf(fq);
@@ -173,9 +189,12 @@ public class mongo_db extends Permission implements BasePerminterface {
 				field_query = res.get("field").toString();
 				sort_query = res.get("sort").toString();
 				project_name = res.get("name").toString();
+				
+				setRoot("snap_id", res.get("snap").toString());
 			}
 		}
 
+		
 		setRoot("project_name", project_name);
 
 		if (where_query.length() < 3) {

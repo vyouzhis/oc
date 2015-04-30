@@ -78,7 +78,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		option.calculable(true);
 
-		option.legend().y(Y.bottom);
+		option.legend().y(Y.bottom).x("function(){alert('ok');}");
 		// .formatter("{a} <br/>{b} : ({c}%)");
 
 	}

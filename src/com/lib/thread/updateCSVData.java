@@ -108,7 +108,7 @@ public class updateCSVData extends BaseRapidThread{
 						l++;
 					}
 					values += rule+"),"; 
-					echo("values ---");
+					//echo("values ---");
 				}
 				csvReader.close();
 			} catch (FileNotFoundException e) {
@@ -140,7 +140,7 @@ public class updateCSVData extends BaseRapidThread{
 		values = clear(values);
 		String format_class = "INSERT INTO "+DB_HOR_PRE+"class (%s) VALUES %s ;";
 		Sql = String.format(format_class, field, values);
-		echo(Sql);
+		
 		try {
 			dbcreate(Sql);
 		} catch (SQLException e) {

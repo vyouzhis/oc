@@ -64,8 +64,24 @@
 	  <form enctype="multipart/form-data" action='${create_url}?db_collection=${def_collention!""}&fetch_query=${fetch_query!1}&where_query=${where_query!""}&field_query=${field_query!""}&sort_query=${sort_query!""}&eid=${eid!0}' method="POST" class="form-inline" id="project_action" >
         <div class="form-group"> 
          <label for="form-field-gplus" class="col-sm-3 control-label no-padding-right">名称：</label> 
-         <div class="col-sm-9"> 
-          <span class="input-group-btn"> <span class="input-icon"> <input type="text" value='${project_name!""}' id="project_name" name="project_name" placeholder="..." /> <i class="icon-save bigger-160 red"></i> </span> <button type="submit" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button> </span> 
+         <div class="col-sm-12"> 
+	          <span class="input-group-btn">
+	           <span class="input-icon">
+	            <input type="text" value='${project_name!""}' id="project_name" name="project_name" placeholder="..." /> 
+	            <i class="icon-save bigger-160 red"></i> 
+	           </span> 
+	           <select data-trigger="hover" data-toggle="tooltip" data-original-title="Tooltip goes here" id="snap_id" name="snap_id" >
+               	<option value="0" <#if (snap_id)?number==0 > selected="selected" </#if>  > 实时数据</option>	               	
+               	<!-- <option value="1">findOne</option>  -->
+				<option value="1" <#if (snap_id)?number==1 > selected="selected" </#if> >二次分析</option>							
+				
+               </select>
+	               
+	          
+				
+	          <button type="submit" class="btn btn-sm btn-default">
+	          <i class="icon-ok bigger-110"></i> 保存 </button> 
+	         </span> 
          </div> 
         </div> 
         </form>

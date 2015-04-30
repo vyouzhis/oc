@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.v4.runtime.tree.Tree;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Page;
@@ -12,18 +14,17 @@ import org.ppl.db.UserCoreDB;
 import org.ppl.etc.UrlClassList;
 import org.ppl.io.DesEncrypter;
 
-public class sqledit extends Permission implements BasePerminterface {
-	private List<String> rmc;
-	private int Limit = 10;
-	private int page = 0;
 
-	public sqledit() {
+public class sqlread extends Permission implements BasePerminterface {
+	private List<String> rmc;
+
+	public sqlread() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
-
+		InAction();
 		setRoot("fun", this);
 	}
 
@@ -34,16 +35,12 @@ public class sqledit extends Permission implements BasePerminterface {
 			return;
 
 		rmc = porg.getRmc();
-	    echo(rmc);
 		if (rmc.size() != 2) {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
-		if (porg.getKey("p")!=null && porg.getKey("p").matches("\\d+")) {
-			page = Integer.parseInt(porg.getKey("p"));
-		}
-		
+		ListTip("name", "mongodbrule","ListRule");
+		ListTip("title,view_name", "classinfo","ListView");
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
@@ -65,54 +62,29 @@ public class sqledit extends Permission implements BasePerminterface {
 		super.View();
 	}
 
-	@Override
 	public void read(Object arg) {
 		
-        int offset=0;	
-		if(page!=0){
-			offset = (page-1)*Limit;
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("action_url", ucl.read(SliceName(stdClass)));
+		setRoot("create_url", ucl.create(SliceName(stdClass)));
+		dbList();
+		String sql = porg.getKey("sql_script");
+
+		if (sql != null) {
+			setRoot("sql_edit", "\r\n" + sql.replace("&apos;", "\'"));
+			sql = Myreplace(sql);
+
+			setRoot("create_sql", unescapeHtml(sql));
+			SqlView(sql);
+			
+			if(porg.getKey("db_name")!=null){
+				setRoot("dbs", porg.getKey("db_name"));
+				setRoot("db_name", porg.getKey("db_name"));
+			}
 		}
-		
-		String format = "select * from "+DB_HOR_PRE+"usersql order by id desc  limit %d offset %d";
-		String sql = String.format(format, Limit, offset);
-		
-		List<Map<String, Object>> res;
-		
-		try {
-			res = FetchAll(sql);
-			setRoot("csv_list", res);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		SetPage();		
 			
 	}
 	
-	private void SetPage() {
-		Page p = new Page();
-		UrlClassList ucl = UrlClassList.getInstance();
-
-		int t = Tol();
-		
-		String page_html = p.s_page(ucl.read(SliceName(stdClass)), t, page,
-				Limit, "");
-		
-		setRoot("Page", page_html);
-		setRoot("edit_url", ucl.read("sqlread"));
-		//setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
-		//setRoot("new_csv_url", ucl.read("csvDb"));
-	}
-	
-	private int Tol() {
-		String sql ="select count(*) as count from "+DB_HOR_PRE+"usersql limit 1";
-		Map<String, Object> res;
-		res = FetchOne(sql);
-		if(res!=null)return Integer.valueOf( res.get("count").toString());
-		return 0;
-	}
-
 	private void SqlView(String o) {
 		String sql = o;
 		List<Map<String, Object>> res;
@@ -248,8 +220,7 @@ public class sqledit extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
-
-
+			
 	}
 
 	@Override
@@ -290,5 +261,21 @@ public class sqledit extends Permission implements BasePerminterface {
 		return news;
 
 	}
-
+	
+	private void ListTip(String n, String m, String l) {
+		String sql = "select id,"+n+" from "+DB_HOR_PRE+m+" order by id desc";
+		
+		List<Map<String, Object>> res;
+		
+		try {
+			res = FetchAll(sql);
+			if(res!=null){
+				setRoot(l, res);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }
