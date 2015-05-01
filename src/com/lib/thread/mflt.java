@@ -14,6 +14,12 @@ import com.lib.plug.echarts.DataDig;
  *
  */
 public class mflt extends BaseCronThread  {
+	
+	public mflt() {
+		// TODO Auto-generated constructor stub
+		String className = this.getClass().getCanonicalName();
+		super.GetSubClassName(className);
+	}
 
 	@Override
 	public int minute() {
@@ -57,7 +63,7 @@ public class mflt extends BaseCronThread  {
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return true;
+		return getStop();
 	}
 
 }

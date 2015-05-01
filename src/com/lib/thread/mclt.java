@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
+
 import com.lib.plug.echarts.DataDig;
 
 /**
@@ -14,6 +15,12 @@ import com.lib.plug.echarts.DataDig;
  */
 public class mclt extends BaseCronThread {
 
+	public mclt() {
+		// TODO Auto-generated constructor stub
+		String className = this.getClass().getCanonicalName();
+		super.GetSubClassName(className);
+	}
+	
 	@Override
 	public int minute() {
 		// TODO Auto-generated method stub
@@ -56,7 +63,7 @@ public class mclt extends BaseCronThread {
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return true;
+		return getStop();
 	}
 
 }

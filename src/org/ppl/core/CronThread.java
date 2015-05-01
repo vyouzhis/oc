@@ -60,7 +60,7 @@ public class CronThread extends LibThread {
 						.getInstance(Key.get(BaseCronThread.class,
 								Names.named(key)));
 				boolean isStop = cron.isStop();
-				if(isStop == false) {
+				if(isStop == true) {
 					cron.free();
 					continue;
 				}
@@ -80,7 +80,7 @@ public class CronThread extends LibThread {
 				}
 				else {
 					cron.free();
-					System.out.println("continue key:"+key+" sleepTime:"+sleepTime);
+					System.out.println("continue key:"+key+" sleepTime:"+sleepTime+" day:"+day+" hour:"+hour+" now:"+now);
 					continue;
 				}
 				

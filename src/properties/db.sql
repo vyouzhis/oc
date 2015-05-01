@@ -126,6 +126,18 @@ CREATE TABLE IF NOT EXISTS  role_log (
 ) ;
 
 
+DROP TABLE IF EXISTS role_thread;
+CREATE TABLE IF NOT EXISTS  role_thread (
+  id SERIAL,
+  name character varying NOT NULL,
+  minute integer NOT NULL DEFAULT 0,
+  hour integer NOT NULL DEFAULT 0,
+  day integer NOT NULL DEFAULT 0,
+  isstop integer NOT NULL DEFAULT 0,
+  ctime int NOT NULL DEFAULT '0' ,  
+   PRIMARY KEY (id)   
+) ;
+
 DROP TABLE IF EXISTS hor_mongodbrule;
 CREATE TABLE IF NOT EXISTS hor_mongodbrule (
   id integer NOT NULL DEFAULT nextval('hor_rule_id_seq'::regclass),

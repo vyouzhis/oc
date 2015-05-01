@@ -36,6 +36,7 @@ public class RapidThread extends LibThread {
 					while (globale_config.RapidListQueue.get(key).size() > 0) {
 
 						Object o = globale_config.RapidListQueue.get(key).pop();
+						if(rapid.Stop()==true)continue;
 						rapid.mailbox(o);
 						rapid.Run();
 					}

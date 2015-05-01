@@ -1,5 +1,7 @@
 package org.ppl.BaseClass;
 
+import java.util.Map;
+
 import org.ppl.db.DBSQL;
 import org.ppl.db.HikariConnectionPool;
 
@@ -14,4 +16,19 @@ public abstract class BaseCronThread extends DBSQL{
 	public abstract int day();
 	public abstract void Run();
 	public abstract boolean isStop();
+	public boolean getStop() {
+		
+		String format = "select * from role_thread where name='%s'";
+		String sql = String.format(format, SliceName(stdClass));
+		echo(sql);
+		Map<String, Object> res;
+		
+		res = FetchOne(sql);
+		if(res!=null){
+			if (Integer.valueOf(res.get("isstop").toString()) == 1) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
