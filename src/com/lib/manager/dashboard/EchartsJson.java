@@ -22,6 +22,7 @@ import com.github.abel533.echarts.code.Trigger;
 import com.github.abel533.echarts.code.Y;
 import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.json.GsonOption;
+import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
 import com.google.inject.matcher.Matcher;
@@ -136,24 +137,45 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			List<Map<String, Object>> list = pieList.get(m);
 			m++;
 
-			Line line = new Line();
-			line.smooth(true).name(id.get("name").toString()).itemStyle()
-					.normal().lineStyle();
-			Map<String, String> mkline = new HashMap<>();
-			mkline.put("type", "average");
-			mkline.put("name", _CLang("line_markLine"));
-			line.markLine().data(mkline);
-			for (Map<String, Object> key : list) {
+			if (JsonIds.size() == 1) {
+				Bar bar = new Bar();
+				bar.name(id.get("name").toString()).itemStyle()
+						.normal().lineStyle();
+				Map<String, String> mkline = new HashMap<>();
+				mkline.put("type", "average");
+				mkline.put("name", _CLang("line_markLine"));
+				bar.markLine().data(mkline);
+				for (Map<String, Object> key : list) {
 
-				if (Xbool) {
-					valueAxis.data(key.get("dial").toString());
+					if (Xbool) {
+						valueAxis.data(key.get("dial").toString());
+					}
+					bar.data(key.get("volume"));
 				}
-				line.data(key.get("volume"));
+
+				Xbool = false;
+
+				option.series(bar);
+			} else {
+				Line line = new Line();
+				line.smooth(true).name(id.get("name").toString()).itemStyle()
+						.normal().lineStyle();
+				Map<String, String> mkline = new HashMap<>();
+				mkline.put("type", "average");
+				mkline.put("name", _CLang("line_markLine"));
+				line.markLine().data(mkline);
+				for (Map<String, Object> key : list) {
+
+					if (Xbool) {
+						valueAxis.data(key.get("dial").toString());
+					}
+					line.data(key.get("volume"));
+				}
+
+				Xbool = false;
+
+				option.series(line);
 			}
-
-			Xbool = false;
-
-			option.series(line);
 
 		}
 		if (JsonIds.size() == 1) {
@@ -175,24 +197,24 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		Line line = new Line();
 		line.smooth(true).name(_MLang("mom")).itemStyle().normal().lineStyle();
-	
+
 		float front = 0;
 		float x = 0;
 		float m;
 		for (Map<String, Object> key : list) {
-			
+
 			x = Float.valueOf(key.get("volume").toString());
-			
-			if (front == 0){
+
+			if (front == 0) {
 				m = 100;
-			}else{
+			} else {
 				m = (x - front) / front * 100;
-				echo("front:" + front+" x:"+x +" m:"+m);				
+				echo("front:" + front + " x:" + x + " m:" + m);
 			}
-			
+
 			line.data(m);
 			front = x;
-			
+
 		}
 
 		option.series(line);
