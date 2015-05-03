@@ -24,6 +24,7 @@ import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
+import com.google.inject.matcher.Matcher;
 
 public class EchartsJson extends Permission implements BasePerminterface {
 	private List<String> rmc;
@@ -79,7 +80,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		option.calculable(true);
 
 		option.legend().y(Y.bottom);
-		//.x("function(){alert('ok');}");
+		// .x("function(){alert('ok');}");
 		// .formatter("{a} <br/>{b} : ({c}%)");
 
 	}
@@ -155,12 +156,46 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			option.series(line);
 
 		}
+		if (JsonIds.size() == 1) {
+			mom();
+		}
 		option.xAxis(valueAxis);
 
 		if (Xbool) {
 			return "";
 		}
 		return option.toString();
+	}
+
+	// month-on-month
+	private void mom() {
+		option.legend(_MLang("mom"));
+		List<List<Map<String, Object>>> pieList = getEcharts();
+		List<Map<String, Object>> list = pieList.get(0);
+
+		Line line = new Line();
+		line.smooth(true).name(_MLang("mom")).itemStyle().normal().lineStyle();
+	
+		float front = 0;
+		float x = 0;
+		float m;
+		for (Map<String, Object> key : list) {
+			
+			x = Float.valueOf(key.get("volume").toString());
+			
+			if (front == 0){
+				m = 100;
+			}else{
+				m = (x - front) / front * 100;
+				echo("front:" + front+" x:"+x +" m:"+m);				
+			}
+			
+			line.data(m);
+			front = x;
+			
+		}
+
+		option.series(line);
 	}
 
 	private String JsonPie() {
@@ -219,7 +254,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				+ DB_HOR_PRE
 				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
 
-		List<Map<String, Object>> res=null;
+		List<Map<String, Object>> res = null;
 
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
@@ -238,21 +273,20 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					sql = Myreplace(sql);
 				}
 				try {
-					int dtype =  Integer.valueOf(ures.get("dtype").toString());
-					if(dtype ==0){
+					int dtype = Integer.valueOf(ures.get("dtype").toString());
+					if (dtype == 0) {
 						res = FetchAll(sql);
-					}else{
+					} else {
 						res = CustomDB(sql, dtype);
 					}
-					if(res!=null){
+					if (res != null) {
 						ret.add(res);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
+
 			} else {
 
 				try {
@@ -268,25 +302,26 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		return ret;
 	}
-	
+
 	private List<Map<String, Object>> CustomDB(String sql, int id) {
 		List<Map<String, Object>> res = null;
 		UserCoreDB ucdb = new UserCoreDB();
-		
-		
-		String format = "select * from "+DB_HOR_PRE+"dbsource where id=%d limit 1";
+
+		String format = "select * from " + DB_HOR_PRE
+				+ "dbsource where id=%d limit 1";
 		String dsql = String.format(format, id);
-		
-		Map<String, Object> dres ;
-		
+
+		Map<String, Object> dres;
+
 		dres = FetchOne(dsql);
-		if(dres==null)return null;
-		
+		if (dres == null)
+			return null;
+
 		ucdb.setDriverClassName(dres.get("dcname").toString());
 		ucdb.setDbUrl(dres.get("url").toString());
 		ucdb.setDbUser(dres.get("username").toString());
 		String pwd = dres.get("password").toString();
-		
+
 		try {
 			DesEncrypter de = new DesEncrypter();
 			pwd = de.decrypt(pwd);
@@ -294,11 +329,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		ucdb.setDbPwd(pwd);
-		
-		
-		if (ucdb.Init() == false) {			
+
+		if (ucdb.Init() == false) {
 			setRoot("ErrorMsg", ucdb.getErrorMsg());
 		} else {
 			try {

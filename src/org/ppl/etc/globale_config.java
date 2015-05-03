@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import com.google.inject.Injector;
+import com.lib.plug.echarts.echarts;
 
 public class globale_config {
 	public static globale_config config = null;
@@ -53,5 +54,7 @@ public class globale_config {
 
 		return config;
 	}
+	
+
 
 }

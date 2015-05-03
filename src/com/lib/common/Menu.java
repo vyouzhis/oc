@@ -6,13 +6,11 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BaseModule;
 import org.ppl.BaseClass.Permission;
-import org.ppl.Module.ModuleBind;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
@@ -20,11 +18,20 @@ import com.google.inject.name.Names;
 public class Menu extends BaseModule {
 	private String className = null;
 	private JSONObject RoleJson;
-
+	static Menu source;
+	
 	public Menu() {
 		// TODO Auto-generated constructor stub
 		className = this.getClass().getCanonicalName();
 		GetSubClassName(className);
+	}
+	
+	public static Menu getInstance() {
+		if (source == null) {
+			source = new Menu();
+		}
+
+		return source;
 	}
 
 	@Override

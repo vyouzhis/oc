@@ -28,7 +28,7 @@ public class HikariConnectionPool extends PObject {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
-
+						
 		LoadDBLib();
 
 		HikariConfig config = new HikariConfig();

@@ -22,12 +22,13 @@ import org.ppl.io.TimeClass;
 public class PObject {
 	protected String stdClass = null;
 	private String BindName = null;
-	protected Config UserCoreConfig = new Config(globale_config.Mysql);
-	protected Config myConfig = new Config(globale_config.DBCONFIG);
-	protected Config mConfig = new Config(globale_config.Config);
-	protected Config uConfig = new Config(globale_config.UrlMap);
-	protected Config mgConfig = new Config(globale_config.Mongo);
-	protected Config mailConfig = new Config(globale_config.Mail);
+	
+	protected static final Config UserCoreConfig = new Config(globale_config.Mysql);
+	protected static final Config myConfig = new Config(globale_config.DBCONFIG);
+	protected static final Config mConfig = new Config(globale_config.Config);
+	protected static final Config uConfig = new Config(globale_config.UrlMap);
+	protected static final Config mgConfig = new Config(globale_config.Mongo);
+	protected static final Config mailConfig = new Config(globale_config.Mail);
 
 	protected SessionAction SessAct = SessionAction.getInstance();
 	protected CookieAction cookieAct = CookieAction.getInstance();

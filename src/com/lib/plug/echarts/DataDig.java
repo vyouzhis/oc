@@ -29,6 +29,7 @@ public class DataDig extends DBSQL {
 		}
 
 		int rule = Integer.valueOf(o.get("id").toString());
+		
 		int now = time();
 		// int now=1421025243; //test end time
 		int start = Integer.valueOf(o.get("etime").toString());
@@ -60,7 +61,7 @@ public class DataDig extends DBSQL {
 			jo = (Map<String, Object>) JSON.parse(m);
 		} catch (Exception e) {
 			// TODO: handle exception
-			echo(m);
+			//echo(m);
 			return;
 		}
 		if (jo == null)

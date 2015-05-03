@@ -38,103 +38,94 @@
 						</div>
 						</#if>
 						<div class="col-xs-4"></div>
-						<div class="dropdown col-xs-4">
-							<a id="select_db" name="select_db" data-toggle="dropdown" class="dropdown-toggle" href="#">
-								${dbs!"数据选择"} &nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>
-							</a>
-							
-							<ul class="dropdown-menu dropdown-info">
-								<li><a id="db_0" name="db_0" onclick="graph(0)" href="javascript:void(0)">默认</a>
-								</li>
-								<#if dblist??>
-								<#list dblist as item>
-								<li><a id="db_${item.id}" name="db_${item.id}" onclick="graph(${item.id})" href="javascript:void(0)">${item.title}</a>
-								</li>
-								</#list>
-								</#if>
-							</ul>
 
-						</div>
-						
+
 						<div class="well col-xs-12">
-							<form id="target" name="target" enctype="multipart/form-data"
-								action='${action_url!""}' method="POST" class="form-inline">
-								<input id="dbid" type="text" value="${dbid!0}" name="dbid" style="display:none;">
-								<input id="db_name" type="text" value='${db_name!""}' name="db_name" style="display:none;">
-								<div class="row">
-								<div class="col-xs-7">
-								<label for="sqledit">SQL:</label>
-								<textarea rows="10" id="sql_script" name="sql_script"
-									class="form-control limited">${sql_edit!""}</textarea>
-								</div>
-								<div class="col-xs-5">
+							<div class="col-xs-6">
+								<form id="target" name="target" enctype="multipart/form-data"
+									action='${action_url!""}' method="POST" class="form-inline">
+									<input id="dbid" type="text" value="${dbid!0}" name="dbid" style="display: none;"> 
+										<label for="sqledit">SQL:</label>
+									<textarea rows="10" id="sql_script" name="sql_script"
+										class="form-control limited">${sql_edit!""}</textarea>
+
+
+									<h3 class="header smaller lighter blue">
+										[<a href="javascript:void(0)" onclick="sqlForm()">查询</a>] <small>
+										</small>
+									</h3>
+									<#if create_sql??>
+									<pre class="sql">
+								${sql_edit!""}	
+								</pre>
+									</#if>
+								</form>
+							</div>
+							<div class="col-xs-5">
 								<h3>视图:</h3>
 								<div class="col-xs-12">
-									
-									<select id="form-field-select-1" >
-										<#if ListView??>
+
+									<select id="form-field-select-1"> <#if ListView??>
 										<#list ListView as item>
 										<option value="">${item.view_name}_${item.title}</option>
-										</#list>
-										</#if>
+										</#list> </#if>
 									</select>
 								</div>
 								<h3>规则:</h3>
 								<div class="col-xs-12">
-									
-									<select id="form-field-select-2" >
-										<#if ListRule??>
+
+									<select id="form-field-select-2"> <#if ListRule??>
 										<#list ListRule as item>
-										<option value="">${item.id}_${item.name}</option>
-										</#list>
+										<option value="">${item.id}_${item.name}</option> </#list>
 										</#if>
 									</select>
 								</div>
+								<h3>数据源:</h3>
+								<div class="dropdown col-xs-12">
+								<select id="select_db" name="select_db"> 
+										<option <#if (dbid)?number==0 > selected="selected" </#if>  value="0">默认</option>
+										<#if dblist??> <#list dblist as item>
+										
+										<option  <#if (dbid)?number==item.id > selected="selected" </#if>  value="${item.id}">${item.title}</option> 
+										</#list>
+										</#if>
+									</select>
+																											
+								</div>
+
 								<#if create_sql??>
 								<h3>名称：</h3>
 								<div class="col-xs-12">
 									<form enctype="multipart/form-data" action='${create_url!""}'
 										method="POST" class="form-inline" id="project_action">
 										<div class="form-group">
-											
+
 											<div class="col-sm-9">
 												<input class="hide" type="text" id="sql" name="sql"
 													value='${create_sql!""}' /> <span class="input-group-btn">
-													
+
 													<input class="hide" type="text" id="save_id" name="save_id"
 													value='${dbid!0}' /> <span class="input-group-btn">
-													
-													<span class="input-icon"> <input type="text" id="name"
-														name="name" placeholder="..." /> <i
-														class="icon-save bigger-160 red"></i>
-												</span>
-													<button type="submit" class="btn btn-sm btn-default">
-														<i class="icon-ok bigger-110"></i> 保存
-													</button>
+
+														<span class="input-icon"> <input type="text"
+															id="name" name="name" placeholder="..." /> <i
+															class="icon-save bigger-160 red"></i>
+													</span>
+														<button type="submit" class="btn btn-sm btn-default">
+															<i class="icon-ok bigger-110"></i> 保存
+														</button>
 												</span>
 											</div>
 										</div>
 									</form>
 								</div>
 								</#if>
-								</div>
-								</div>
-								<h3 class="header smaller lighter blue">
-									[<a href="javascript:void(0)" onclick="sqlForm()">查询</a>] <small>
-									</small>
-								</h3>
-								<#if create_sql??>
-								<pre class="sql">
-								${sql_edit!""}	
-								</pre>
-								</#if>
-							</form>
+							</div>
 						</div>
-						
+
 						<div class="col-xs-12">
 							<h3 class="header smaller lighter blue">
-								结果 <small>
-								</small>
+								结果 <small> </small>
 							</h3>
 						</div>
 						<div class="col-xs-12">
@@ -151,7 +142,7 @@
 										<#if List_Data??> <#list List_Data as item>
 										<tr>
 											<#list Key_Title as value>
-											<td><#if item[value]??>  ${item[value]} </#if> </td> </#list>
+											<td><#if item[value]??> ${item[value]} </#if></td> </#list>
 										</tr>
 										</#list> </#if>
 									</tbody>
@@ -179,14 +170,7 @@
 					});
 				});
 
-				function graph (t) {	
-					var val = $("#db_"+t).text();
-					$("#select_db").html(val+'&nbsp; <i class="icon-caret-down bigger-110 width-auto"></i>');
-					$("#dbid").val(t);
-					$("#db_name").val(val);
-					$("#save_id").val(t);
-				}
-				
+
 				function sqlForm() {
 					$("#sql_script").format({
 						method : 'sql'
@@ -196,6 +180,16 @@
 				}
 
 				jQuery(function($) {
+					$("#select_db").change(function(){
+						var t = $(this).val();
+						console.log(t);
+						
+						$("#dbid").val(t);  // select
+						//$("#db_name").val(val);
+						$("#save_id").val(t);  //save 
+						
+					});
+					
 					var completes = [
 							{ // emoji strategy
 								sqlkey : [ 'A', 'ABORT', 'ABS', 'ABSOLUTE',

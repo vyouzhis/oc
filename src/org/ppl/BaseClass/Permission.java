@@ -124,10 +124,10 @@ public class Permission extends BaseTheme {
 	}
 
 	public String menu() {
-		Menu m = new Menu();
+		Menu m = Menu.getInstance();
 		m.filter();
 		String html = m.getHtml();
-
+		
 		return html;
 	}
 

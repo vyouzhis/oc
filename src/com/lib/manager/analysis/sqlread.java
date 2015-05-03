@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.antlr.v4.runtime.tree.Tree;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
-import org.ppl.common.Page;
 import org.ppl.db.UserCoreDB;
 import org.ppl.etc.UrlClassList;
 import org.ppl.io.DesEncrypter;
@@ -17,6 +14,7 @@ import org.ppl.io.DesEncrypter;
 
 public class sqlread extends Permission implements BasePerminterface {
 	private List<String> rmc;
+	private int dbid = 0;
 
 	public sqlread() {
 		// TODO Auto-generated constructor stub
@@ -41,6 +39,14 @@ public class sqlread extends Permission implements BasePerminterface {
 		}
 		ListTip("name", "mongodbrule","ListRule");
 		ListTip("title,view_name", "classinfo","ListView");
+		
+		
+		if (porg.getKey("dbid") != null
+				&& porg.getKey("dbid").toString().matches("[0-9]+")) {
+			dbid = Integer.valueOf(porg.getKey("dbid"));
+		}
+		setRoot("dbid", dbid);
+		
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
@@ -59,6 +65,7 @@ public class sqlread extends Permission implements BasePerminterface {
 			return;
 		}
 
+		
 		super.View();
 	}
 
@@ -76,11 +83,7 @@ public class sqlread extends Permission implements BasePerminterface {
 
 			setRoot("create_sql", unescapeHtml(sql));
 			SqlView(sql);
-			
-			if(porg.getKey("db_name")!=null){
-				setRoot("dbs", porg.getKey("db_name"));
-				setRoot("db_name", porg.getKey("db_name"));
-			}
+
 		}
 			
 	}
@@ -98,12 +101,7 @@ public class sqlread extends Permission implements BasePerminterface {
 		if (sql.toLowerCase().matches("(.*)limit(.*)") == false) {
 			sql += " LIMIT 20";
 		}
-		int dbid = 0;
-		if (porg.getKey("dbid") != null
-				&& porg.getKey("dbid").toString().matches("[0-9]+")) {
-			dbid = Integer.valueOf(porg.getKey("dbid"));
-		}
-		setRoot("dbid", dbid);
+		
 		try {
 			if (dbid == 0) {
 				res = FetchAll(sql);

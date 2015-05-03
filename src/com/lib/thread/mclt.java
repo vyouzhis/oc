@@ -20,7 +20,7 @@ public class mclt extends BaseCronThread {
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 	}
-	
+
 	@Override
 	public int minute() {
 		// TODO Auto-generated method stub
@@ -43,21 +43,34 @@ public class mclt extends BaseCronThread {
 	public void Run() {
 		// TODO Auto-generated method stub
 		int offset = 0;
-		String sql = "select id,collention,query, etime,istop from "+DB_HOR_PRE+"mongodbrule where qaction=3 order by id limit 10 offset "
-				+ offset;
 		List<Map<String, Object>> res;
 		DataDig dd = DataDig.getInstance();
-		try {
-			res = FetchAll(sql);
-			if (res != null) {
-				for (int i = 0; i < res.size(); i++) {					
-					dd.Operation(res.get(i));
-				}				
+
+		String sql = "select id,collention,query, etime,istop from "
+				+ DB_HOR_PRE
+				+ "mongodbrule where qaction=3 order by id limit 10 offset ";
+		boolean  f = true;
+		while (f) {
+			sql += offset;
+
+			try {
+				res = FetchAll(sql);
+				if (res != null && res.size()>0) {
+					for (int i = 0; i < res.size(); i++) {
+						dd.Operation(res.get(i));
+					}
+					offset += 10;
+				} else {
+					f=false;
+				}
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
 		}
+
 	}
 
 	@Override

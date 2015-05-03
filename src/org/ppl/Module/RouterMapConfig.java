@@ -220,7 +220,7 @@ public class RouterMapConfig extends PObject {
 		String uri = null;
 		
 		ucl = UrlClassList.getInstance();
-		
+		//echo("uConfig size:"+uConfig.getKey().size());
 		if (ucl.getUcls() == null) {
 			for (Object um : uConfig.getKey()) {
 				uri = um.toString();
