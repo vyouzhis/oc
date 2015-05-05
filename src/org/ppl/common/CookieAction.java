@@ -39,7 +39,9 @@ public class CookieAction{
 	
 	public void SetCookie(String key, String val, int timeOut) {		
 		Cookie userCookie = new Cookie(key, val);
-		userCookie.setMaxAge(timeOut); //Store cookie for 1 year
+		userCookie.setMaxAge(timeOut); //Store cookie for timeOut second
+		userCookie.setPath(Path);	
+	
 		response.addCookie(userCookie);		
 	}
 	

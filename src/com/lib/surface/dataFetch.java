@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -19,11 +20,13 @@ import org.ppl.plug.wryip.IPLocation;
 import org.ppl.plug.wryip.IPSeeker;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.uuid.Generators;
 
 public class dataFetch extends BaseSurface {
 	private HttpServletResponse response;
 	private MGDB mgdb = new MGDB();
-	private Map<String, Object> BiData = new HashMap<>();
+	private Map<String, Object> BiData = new HashMap<String, Object>();
+	private String uuid = null;
 	protected String Col = mConfig.GetValue("db.mon.col");
 	protected String IpCol = mConfig.GetValue("db.mon.ipcol");
 
@@ -37,7 +40,8 @@ public class dataFetch extends BaseSurface {
 
 	@Override
 	public void Show() {
-
+		SetUUid();
+		
 		OutPutGif();
 
 		GetData();
@@ -79,7 +83,7 @@ public class dataFetch extends BaseSurface {
 	public void GetData() {
 
 		// 保存到Mongodb
-
+		
 		Map<String, String> porg_new = porg.getAllpg();
 
 		if (porg_new == null) {
@@ -114,11 +118,26 @@ public class dataFetch extends BaseSurface {
 		BiData.put("ctime", time()); // create time
 
 		IPtoAddr();
+		
+		
 		String json = JSON.toJSONString(BiData);
 		mgdb.SetCollection(Col);
 		mgdb.Insert(json);
 	}
 
+	private void SetUUid() {
+		uuid = cookieAct.GetCookie("uuid");
+		if(uuid==null){
+			UUID uid = Generators.randomBasedGenerator().generate();
+			uuid = uid.toString();
+			cookieAct.SetCookie("uuid", uuid, 63072000);//63072000=2*365*24*60*60;即2年。
+			BiData.put("uuid",uuid);
+		}else{
+			BiData.put("uuid", uuid);
+		}
+	}
+	
+	
 	private void IPtoAddr() {
 		String city = "";
 		IPSeeker seeker = null;

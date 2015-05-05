@@ -242,9 +242,16 @@
 			<version>3.3</version>
 		</dependency>
 		<!-- csv end -->
+
+		<!-- generatoruuid -->
+		<dependency>
+		  <groupId>com.fasterxml.uuid</groupId>
+		  <artifactId>java-uuid-generator</artifactId>
+		  <version>3.1.3</version>
+		</dependency>
+		<!-- generatoruuid end -->
 	</dependencies>
-
-
+	
 	<repositories>
 		<repository>
 			<id>Apache Nexus</id>
