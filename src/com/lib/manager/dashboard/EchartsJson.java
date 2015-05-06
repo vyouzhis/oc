@@ -351,7 +351,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		echo("pwd:"+pwd);
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
