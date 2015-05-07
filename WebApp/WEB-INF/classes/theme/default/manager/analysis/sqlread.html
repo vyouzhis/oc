@@ -62,26 +62,36 @@
 								</form>
 							</div>
 							<div class="col-xs-5">
-								<h3>视图:</h3>
-								<div class="col-xs-12">
-
+								
+								<div class="col-xs-6">
+									<h3>视图:</h3>
 									<select id="form-field-select-1"> <#if ListView??>
 										<#list ListView as item>
 										<option value="">${item.view_name}_${item.title}</option>
 										</#list> </#if>
 									</select>
 								</div>
-								<h3>规则:</h3>
-								<div class="col-xs-12">
-
+								
+								<div class="col-xs-6">
+									<h3>规则:</h3>
 									<select id="form-field-select-2"> <#if ListRule??>
 										<#list ListRule as item>
 										<option value="">${item.id}_${item.name}</option> </#list>
 										</#if>
 									</select>
 								</div>
+								
+								<div class="col-xs-6">
+									<h3>模板:</h3>
+									<select id="form-field-select-2"> <#if ListRule??>
+										<#list ListRule as item>
+										<option value="">${item.id}_${item.name}</option> </#list>
+										</#if>
+									</select>
+								</div>
+								
+								<div class="dropdown col-xs-6">
 								<h3>数据源:</h3>
-								<div class="dropdown col-xs-12">
 								<select id="select_db" name="select_db"> 
 										<option <#if (dbid)?number==0 > selected="selected" </#if>  value="0">默认</option>
 										<#if dblist??> <#list dblist as item>
