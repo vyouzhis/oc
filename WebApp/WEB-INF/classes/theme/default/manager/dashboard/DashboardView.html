@@ -45,6 +45,9 @@
 										<li>
 											<a onclick="graph(2)" href="javascript:void(0)" >饼图</a>																						
 										</li>
+										<li>
+											<a onclick="graph(3)" href="javascript:void(0)" >标准地图</a>																						
+										</li>
 									</ul>
 										
 								</div>
@@ -372,6 +375,9 @@
 							 $("#graph_name").text("饼图");
 							clazz = "chart_pie";
 						break;
+						case 3:
+							 $("#graph_name").text("标准地图");
+							clazz = "chart_map";
 						default:
 							// default statements
 					}

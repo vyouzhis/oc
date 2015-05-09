@@ -61,7 +61,7 @@
 									</#if>
 								</form>
 							</div>
-							<div class="col-xs-5">
+							<div class="col-xs-6">
 								
 								<div class="col-xs-6">
 									<h3>视图:</h3>
@@ -82,12 +82,19 @@
 								</div>
 								
 								<div class="col-xs-6">
-									<h3>模板:</h3>
-									<select id="form-field-select-2"> <#if ListRule??>
-										<#list ListRule as item>
-										<option value="">${item.id}_${item.name}</option> </#list>
-										</#if>
-									</select>
+									<h3>SQL:</h3>
+									<div class="radio">
+										<label>
+											<input type="radio" class="ace" checked name="form-field-radio">
+											<span class="lbl">编写SQL</span>
+										</label>
+									</div>
+									<div class="radio">
+										<label>
+											<input type="radio" class="ace" name="form-field-radio">
+											<span class="lbl">编写模板</span>
+										</label>
+									</div>
 								</div>
 								
 								<div class="dropdown col-xs-6">
@@ -102,6 +109,7 @@
 									</select>
 																											
 								</div>
+							
 
 								<#if create_sql??>
 								<h3>名称：</h3>
@@ -130,6 +138,31 @@
 									</form>
 								</div>
 								</#if>
+							</div>
+							
+							<div class="col-xs-6">
+								<table class="table table-striped table-bordered table-hover" id="sample-table-1">
+									<thead>
+										<tr>
+											
+											<th>变量</th>
+											<th>类型</th>
+											<th class="hidden-480">参数</th>
+
+											
+										</tr>
+									</thead>
+
+									<tbody id="sqlparams" name="sqlparams">
+										<tr>
+											<td class="center">												
+											</td>
+											<td>												
+											</td>
+											<td>$45</td>											
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 
@@ -201,6 +234,30 @@
 					});
 					
 					var completes = [
+							{ 
+								  sqltem : ['params'],
+								  match: /:(\w*)$/,
+							    search: function (term, callback) {
+							      callback($.map(this.sqltem, function (element) {
+							          return element.indexOf(term) === 0 ? element : null;
+							      }));
+							     },
+							    index: 1,
+							    replace: function (element) {
+							    	var html_par = $("#sqlparams").html();
+							    	var html_new = "<tr>"+
+											"<td class='center'>"+element+										
+											"</td>"+
+											"<td>"+												
+											"</td>"+
+											"<td>$45</td>"+											
+											"</tr>";
+											console.log(html_new);	
+										$("#sqlparams").html(html_par+html_new);
+							    	
+							      return [':'+element+':',  ''];
+							    }
+							},
 							{ // emoji strategy
 								sqlkey : [ 'A', 'ABORT', 'ABS', 'ABSOLUTE',
 										'ACCESS', 'ACTION', 'ADA', 'ADD',
@@ -422,7 +479,7 @@
 										'WHERE', 'WIDTH_BUCKET', 'WINDOW',
 										'WITH', 'WITHIN', 'WITHOUT', 'WORK',
 										'WRITE', 'YEAR', 'ZONE' ],
-								match : /\b([a-zA-Z._]{1,})$/,
+								match : /\b([a-zA-Z._]{2,})$/,
 								search : function(term, callback) {
 									callback($.map(this.sqlkey, function(
 											element) {
@@ -435,7 +492,9 @@
 								replace : function(element) {
 									return [ element + ' ', '' ];
 								}
-							}, ];
+							}, 
+							
+							];
 					$('#sql_script').textcomplete(completes);
 				});
 			</script>

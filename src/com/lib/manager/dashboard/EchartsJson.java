@@ -104,6 +104,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			case 2:
 				EJson = JsonPie();
 				break;
+			case 3:
+				EJson = JsonMap();
 			default:
 				break;
 			}
@@ -248,6 +250,43 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			// option.legend().data(legendTitle);
 			option.series(pie);
+
+		}
+		// option.legend().data(data);
+		// option.xAxis(valueAxis);
+
+		return option.toString();
+	}
+	
+	private String JsonMap() {
+		option.tooltip().trigger(Trigger.item)
+				.formatter("{b} <br/> {c} ({d}%)");
+		List<List<Map<String, Object>>> pieList = getEcharts();
+
+		if (pieList == null || pieList.size() == 0)
+			return "";
+		// List<String> legendTitle = null;
+		int l = 0;
+		for (Map<String, String> id : JsonIds) {
+			if (!id.get("id").toString().matches("[0-9]+"))
+				continue;
+
+			List<Map<String, Object>> list = pieList.get(l);
+			l++;
+			//Pie pie = new Pie();
+			com.github.abel533.echarts.series.Map map = new com.github.abel533.echarts.series.Map();
+			// legendTitle = new ArrayList<>();
+			for (Map<String, Object> key : list) {
+				Map<String, Object> m = new HashMap<>();
+				m.put("value", key.get("volume"));
+				m.put("name", key.get("dial").toString());
+				// legendTitle.add(key.get("dial").toString());
+				option.legend(key.get("dial").toString());
+				map.data(m);
+			}
+
+			// option.legend().data(legendTitle);
+			option.series(map);
 
 		}
 		// option.legend().data(data);

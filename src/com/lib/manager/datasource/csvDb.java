@@ -85,7 +85,7 @@ public class csvDb extends Permission implements BasePerminterface {
 		ThreadMail.put("view_name", porg.getKey("view_name"));
 		ThreadMail.put("csv_file", file);
 		ThreadMail.put("rule", rule);
-		
+		echo(ThreadMail);
 		TellPostMan("updateCSVData", ThreadMail);
 	}
 
@@ -103,7 +103,8 @@ public class csvDb extends Permission implements BasePerminterface {
 		String sql = String.format(format, name, view_name, idesc, now);
 
 		try {
-			long id = insert(sql);
+			long id = insert(sql, true);
+			echo(id);
 			CommitDB();
 			if (id != -1) {
 				CreateView(id);

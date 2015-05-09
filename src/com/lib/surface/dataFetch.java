@@ -43,7 +43,7 @@ public class dataFetch extends BaseSurface {
 		SetUUid();
 		
 		OutPutGif();
-
+		//TellPostMan(ThreadName, message);
 		GetData();
 		//close mongodb 
 		mgdb.Close();

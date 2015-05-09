@@ -42,7 +42,8 @@
 	               	<option value="0" <#if fetch_query==0> selected="selected" </#if>  >find</option>	               	
 	               	<!-- <option value="1">findOne</option>  -->
 					<option value="2" <#if fetch_query==2> selected="selected" </#if> >distinct</option>							
-					<option value="3" <#if fetch_query==3> selected="selected" </#if> >count</option>
+					<option value="3" <#if fetch_query==3> selected="selected" </#if> >count</option>		
+					<option value="4" <#if fetch_query==4> selected="selected" </#if> >group</option>
 	               </select>.(
 					<textarea id="where_query" name="where_query">{}</textarea>
 					,<textarea id="field_query" name="field_query">{}</textarea>

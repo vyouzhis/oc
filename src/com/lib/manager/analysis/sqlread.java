@@ -39,8 +39,7 @@ public class sqlread extends Permission implements BasePerminterface {
 		}
 		ListTip("name", "mongodbrule","ListRule");
 		ListTip("title,view_name", "classinfo","ListView");
-		
-		
+				
 		if (porg.getKey("dbid") != null
 				&& porg.getKey("dbid").toString().matches("[0-9]+")) {
 			dbid = Integer.valueOf(porg.getKey("dbid"));
