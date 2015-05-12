@@ -25,7 +25,6 @@ import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
-import com.google.inject.matcher.Matcher;
 
 public class EchartsJson extends Permission implements BasePerminterface {
 	private List<String> rmc;
