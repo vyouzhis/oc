@@ -83,7 +83,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void UserSQl() {
-		String sql = "select id,sql,name from "+DB_HOR_PRE+"usersql";
+		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where input_data=0";
 		List<Map<String, Object>> res;
 		
 		try {
@@ -105,6 +105,13 @@ public class DashboardView extends Permission implements BasePerminterface {
 			Item.put("type", "item");
 			Item.put("id",  map.get("id").toString());
 			Item.put("qaction",  qaction+"");	
+			if(map.containsKey("sql_type")){
+				Item.put("sql_type", map.get("sql_type").toString());
+			}
+			if(map.containsKey("sqltmp")){
+				Item.put("sqltmp", map.get("sqltmp").toString());
+			}
+			
 			file.put(map.get("id").toString(), Item);				
 		}
 		Mongo.put("children", file);

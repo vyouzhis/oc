@@ -213,5 +213,13 @@ public class PObject {
 			return false;
 		}
 	}
+	
+	public int toInt(Object o) {
+		if(o!= null && o.toString().matches("[0-9]+")){
+			return Integer.valueOf(o.toString());
+		}else {
+			return 0;
+		}
+	}
 
 }
