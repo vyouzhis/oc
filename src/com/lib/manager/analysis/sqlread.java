@@ -20,7 +20,6 @@ public class sqlread extends Permission implements BasePerminterface {
 	public sqlread() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
-		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
 
@@ -34,7 +33,7 @@ public class sqlread extends Permission implements BasePerminterface {
 			return;
 
 		rmc = porg.getRmc();
-	    echo(rmc);
+	    
 		if (rmc.size() != 2) {
 			Msg(_CLang("error_role"));
 			return;
