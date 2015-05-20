@@ -298,7 +298,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private void PaserJson() {
 
 		String json_id = Escape.unescape(porg.getKey("ids"));
-
+		
 		json_id = Myreplace(json_id);
 		if (json_id.length() < 2) {
 			return;
@@ -307,9 +307,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<List<Map<String, Object>>> getEcharts() {
 		List<List<Map<String, Object>>> ret = new ArrayList<>();
-
+		int qaction = 0;
 		String format = "select rule,volume,dial from "
 				+ DB_HOR_PRE
 				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
@@ -317,23 +318,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Map<String, Object>> res = null;
 
 		for (Map<String, String> id : JsonIds) {
-			if (!id.get("id").toString().matches("[0-9]+"))
+			qaction = toInt(id.get("qaction"));
+			int dtype = 0;
+			if (qaction == 0)
 				continue;
 
-			String sql = String.format(format,
-					Integer.valueOf(id.get("id").toString()));
-			if (id.get("qaction").equals("4")) {
-				String usql = "select sql,dtype from hor_usersql where id="
-						+ id.get("id").toString() + " LIMIT 1";
+			String sql = String.format(format, toInt(id.get("id")));
+						
+			if (qaction == 4) {
+				
+				String usql = "select sql,dtype from "+DB_HOR_PRE+"usersql where id="
+						+ toInt(id.get("id")) + " LIMIT 1";
 				Map<String, Object> ures;
-
+				
 				ures = FetchOne(usql);
+				
 				if (ures != null) {
 					sql = ures.get("sql").toString();
 					sql = Myreplace(sql);
+					dtype = toInt(ures.get("dtype"));
 				}
 				try {
-					int dtype = Integer.valueOf(ures.get("dtype").toString());
+					
 					if (dtype == 0) {
 						res = FetchAll(sql);
 					} else {
@@ -347,7 +353,42 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					e.printStackTrace();
 				}
 
-			} else {
+			}else if (qaction == 5) {
+				int tid = toInt(id.get("id"));
+				String tsql = "select t.sqltmp,u.sql,u.dtype from "+DB_HOR_PRE+"sqltmp t, "+DB_HOR_PRE+"usersql u where t.sid=u.id and t.id="+tid+" limit 1";
+				
+				Map<String, Object> tres ;
+				tres = FetchOne(tsql);
+				//echo(tsql);
+				if(tres==null)continue;
+				
+				tsql = tres.get("sql").toString();
+				String tJson = tres.get("sqltmp").toString();
+				dtype = toInt(tres.get("dtype"));
+				Map<String,String> tList = JSON.parseObject(tJson, Map.class);
+				
+				for (String key:tList.keySet()) {
+					
+					tsql = tsql.replace("@" + key + "@", tList.get(key));
+				}
+				tsql = Myreplace(tsql);
+				//echo("dtype:"+dtype);
+				try {
+					
+					if (dtype == 0) {
+						res = FetchAll(tsql);
+					} else {
+						res = CustomDB(tsql, dtype);
+					}
+					if(res!=null){			
+						ret.add(res);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}			
+			else {
 
 				try {
 
@@ -389,7 +430,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		echo("pwd:"+pwd);
+		//echo("pwd:"+sql);
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {

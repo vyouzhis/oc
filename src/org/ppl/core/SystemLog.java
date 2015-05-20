@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.ppl.io.TimeClass;
 
+import com.alibaba.fastjson.JSON;
+
 public class SystemLog extends PObject {
 
 	/**
@@ -16,8 +18,8 @@ public class SystemLog extends PObject {
 	public String Log(int uid) {
 		
 		String format = "INSERT INTO `" + mConfig.GetValue("db.rule.ext")
-				+ "log` " + "(`lid`, `uid`, `action`, `ip`, `ctime`)"
-				+ " VALUES ('%s', '%d', '%s', '%s', '%d');";
+				+ "log` " + "(`lid`, `uid`, `action`, `ip`, `ctime`, data)"
+				+ " VALUES ('%s', '%d', '%s', '%s', '%d','%s');";
 
 		TimeClass tc = TimeClass.getInstance();
 		int now = (int) tc.time();
@@ -38,7 +40,9 @@ public class SystemLog extends PObject {
 			a = act.get(action);
 		}
 		
-		String sql = String.format(format, lib, uid, a,ip, now);
+		String data = JSON.toJSONString(porg.getAllpg());
+		
+		String sql = String.format(format, lib, uid, a,ip, now, data);
 		
 		return sql;
 	}

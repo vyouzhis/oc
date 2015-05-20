@@ -1,4 +1,4 @@
-package com.lib.manager.datasource;
+package com.lib.manager.analysis;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.common.Page;
 import org.ppl.etc.UrlClassList;
 
-public class csvDb_List extends Permission implements BasePerminterface {
+public class viewDb_List extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private int Limit = 10;
 	private int page = 0;
 
-	public csvDb_List() {
+	public viewDb_List() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;

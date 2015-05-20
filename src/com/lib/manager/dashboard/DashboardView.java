@@ -60,6 +60,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		getMongoDBList(3, "webSite");
 		getMongoDBList(2, "webDistinct");
 		UserSQl();
+		TmpSQl();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
 		cardioid();
@@ -83,13 +84,28 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void UserSQl() {
-		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where input_data=0";
+		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=0";
 		List<Map<String, Object>> res;
 		
 		try {
 			res = FetchAll(sql);
 			if(res!=null){
 				SetTree(res, "UserSQl", 4);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void TmpSQl() {
+		String sql = "select id,name from "+DB_HOR_PRE+"sqltmp order by id desc;";
+		List<Map<String, Object>> res;
+		
+		try {
+			res = FetchAll(sql);
+			if(res!=null){
+				SetTree(res, "TmpSQl", 5);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

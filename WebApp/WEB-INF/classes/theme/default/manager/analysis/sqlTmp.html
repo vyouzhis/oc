@@ -1,218 +1,228 @@
 
-<body> 
-  ${navbar!""}
-  <div class="main-container" id="main-container"> 
-   <script type="text/javascript">
-				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
-			</script> 
-   <div class="main-container-inner"> 
-    
-    ${menu!""}
-     <div class="main-content"> 
-     <div class="breadcrumbs" id="breadcrumbs"> 
-      <script type="text/javascript">
-							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-						</script> 
-      <ul class="breadcrumb"> 
-       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
-       <li class="active">${name}</li> 
-      </ul> 
-      <!-- #nav-search --> 
-     </div> 
-     <div class="page-content"> 
-      <!-- /.page-header --> 
-      <div class="row"> 
-      <div class="col-sm-10 col-sm-offset-1">
-										<div class="widget-box transparent invoice-box">
-											<div class="widget-header widget-header-large">
-												<h3 class="grey lighter pull-left position-relative">
-													<i class="icon-leaf green"></i>
-													Customer Invoice
-												</h3>
+<body>
+	${navbar!""}
+	<div class="main-container" id="main-container">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('main-container', 'fixed')
+			} catch (e) {
+			}
+		</script>
+		<div class="main-container-inner">
 
-												
+			${menu!""}
+			<div class="main-content">
+				<div class="breadcrumbs" id="breadcrumbs">
+					<script type="text/javascript">
+						try {
+							ace.settings.check('breadcrumbs', 'fixed')
+						} catch (e) {
+						}
+					</script>
+					<ul class="breadcrumb">
+						<li><i class="icon-home home-icon"></i> <a href="#">首页</a></li>
+						<li class="active">${name}</li>
+					</ul>
+					<!-- #nav-search -->
+				</div>
+				<div class="page-content">
+					<!-- /.page-header -->
+					<div class="row">
+					
+						<div class="col-sm-10 col-sm-offset-1">
+							<div class="widget-box transparent invoice-box">
+								
+								<div class="widget-body">
+									<div class="widget-main padding-24">
+										<div class="row">
+											<div class="col-sm-6">	
+											<form id="search" name="search" enctype="multipart/form-data"
+													action='${search_url!""}' method="POST" class="form-inline">										
+												<div class="row">
+												<h3 class="header smaller lighter blue"><i class="icon-laptop"></i>列表</h3>
+													<ul class="list-unstyled spaced">
+														<li><i class="icon-book blue"></i> 模板列表</li>
+
+														<li><i class="icon-caret-right blue"></i> <select
+															id="list_ids" name="list_ids">
+																<option value="0"></option>
+																<#if ListTmp??>
+																<#list ListTmp as item>
+																<option value="${item.id}" <#if (lid)?number==item.id > selected="selected" </#if>>${item.name}</option>
+																</#list>
+																</#if>
+														</select></li>
+														<li>
+															<i class="icon-search nav-search-icon blue"></i>
+																		<a href="javascript:void(0)" onclick="sqlForm()">查询</a>
+														</li>
+														
+													</ul>
+												</div>
+												</form>
 											</div>
+											<!-- /span -->
+											<#if tmpLists??>
+											<div class="col-sm-6">
+												<h3 class="header smaller lighter blue"><i class="icon-folder-open-alt"></i>操作</h3>
 
-											<div class="widget-body">
-												<div class="widget-main padding-24">
-													<div class="row">
-														<div class="col-sm-6">
-															<div class="row">
-																<div class="col-xs-11 label label-lg label-info arrowed-in arrowed-right">
-																	<b>Company Info</b>
-																</div>
-															</div>
-
-															<div class="row">
-																<ul class="list-unstyled spaced">
-																	<li>
-																		<i class="icon-caret-right blue"></i>
-																		Street, City
-																	</li>
-
-																	<li>
-																		<i class="icon-caret-right blue"></i>
-																		Zip Code
-																	</li>
-
-																	<li>
-																		<i class="icon-caret-right blue"></i>
-																		State, Country
-																	</li>
-
-																	<li>
-																		<i class="icon-caret-right blue"></i>
-																		Phone:
-																		<b class="red">111-111-111</b>
-																	</li>
-
-																	<li class="divider"></li>
-
-																	<li>
-																		<i class="icon-caret-right blue"></i>
-																		Paymant Info
-																	</li>
-																</ul>
-															</div>
-														</div><!-- /span -->
-
-														<div class="col-sm-6">
-															<div class="row">
-																<div class="col-xs-11 label label-lg label-success arrowed-in arrowed-right">
-																	<b>Customer Info</b>
-																</div>
-															</div>
-
-															<div>
-																<ul class="list-unstyled  spaced">
-																	<li>
-																		<i class="icon-caret-right green"></i>
-																		Street, City
-																	</li>
-
-																	<li>
-																		<i class="icon-caret-right green"></i>
-																		Zip Code
-																	</li>
-
-																	<li>
-																		<i class="icon-caret-right green"></i>
-																		State, Country
-																	</li>
-
-																	<li class="divider"></li>
-
-																	<li>
-																		<i class="icon-caret-right green"></i>
-																		Contact Info
-																	</li>
-																</ul>
-															</div>
-														</div><!-- /span -->
-													</div><!-- row -->
-
-													<div class="space"></div>
-
-													<div>
-														<table class="table table-striped table-bordered">
-															<thead>
-																<tr>
-																	<th class="center">变量</th>
-																	<th>类型</th>
-																	<th class="hidden-xs">参数</th>
-																	<th class="hidden-480">备注</th>
-																	
-																</tr>
-															</thead>
-
-															<tbody>
-																<tr>
-																	<td class="center">1</td>
-																	<td>
-																		<a href="#">google.com</a>
-																	</td>
-																	<td class="hidden-xs">
-																		1 year domain registration
-																	</td>
-																	<td class="hidden-480"> --- </td>
-																	
-																</tr>
-																<tr>
-																	<td class="center">1</td>
-																	<td>
-																		<a href="#">google.com</a>
-																	</td>
-																	<td class="hidden-xs">
-																		1 year domain registration
-																	</td>
-																	<td class="hidden-480"> --- </td>
-																	
-																</tr>
-																
-															</tbody>
-														</table>
-													</div>
-													<div>
-														<table class="table table-striped table-bordered">
-															<thead>
-																<tr>
-																	<th class="center">变量</th>
-																	<th>类型</th>
-																	<th class="hidden-xs">参数</th>
-																	<th class="hidden-480">备注</th>
-																	
-																</tr>
-															</thead>
-
-															<tbody>
-																<tr>
-																	<td class="center">1</td>
-																	<td>
-																		<a href="#">google.com</a>
-																	</td>
-																	<td class="hidden-xs">
-																		1 year domain registration
-																	</td>
-																	<td class="hidden-480"> --- </td>
-																	
-																</tr>
-																<tr>
-																	<td class="center">1</td>
-																	<td>
-																		<a href="#">google.com</a>
-																	</td>
-																	<td class="hidden-xs">
-																		1 year domain registration
-																	</td>
-																	<td class="hidden-480"> --- </td>
-																	
-																</tr>
-																
-															</tbody>
-														</table>
-													</div>
-
-													<div class="hr hr8 hr-double hr-dotted"></div>
-
+												<div>
+													<ul class="list-unstyled  spaced">
+														
+														<li> <a
+															href="javascript:void(0);" onclick="addTmp()"><i class="icon-edit green"></i>&nbsp;&nbsp;增加语句</a>
+														</li>
 													
 
-													<div class="space-6"></div>
-													<div class="well">
-														Thank you for choosing Ace Company products.
-					We believe you will be satisfied by our services.
-													</div>
+													</ul>
 												</div>
 											</div>
+											</#if>
+											<!-- /span -->
 										</div>
+										<!-- row -->
+
+										<div class="space"></div>
+										<h3 class="header smaller lighter blue"><i class="pink icon-dashboard bigger-110"></i>列表</h3>
+										<div id="tmp_list" name="tmp_list">
+											<#if tmpLists??>
+											<#list tmpLists as item>
+											<div class="well">
+											<div class="row form-horizontal">
+
+												<label for="form-field-4"
+													class="col-sm-2 control-label no-padding-right">名称:</label>
+												<div class="col-sm-3">
+													<input type="text" placeholder="name" id="form-field-4"
+														class="input-sm" value="${item.name}"> 
+													<a href="javascript:void(0);" class="btn btn-sm btn-success" ><i class="icon-save  green"></i>&nbsp;&nbsp;保存</a>
+													<div class="space-2"></div>
+
+												</div>																																				
+											</div>
+											<table class="table table-striped table-bordered ">
+												<thead>
+													<tr>
+														<th class="center">变量</th>
+														<th>类型</th>
+														<th class="hidden-xs">参数</th>
+														<th class="hidden-480">备注</th>
+
+													</tr>
+												</thead>
+												<tbody>
+												<#assign jsonList = item.sqltmp>
+												<#assign tmpL = jsonList?eval>
+												
+												<#list tmpL?keys as key>
+													<tr>
+														<td class="center">${key}</td>
+														<td><select name="field_${key}" id="field_${key}"><option
+																	title="4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295">INT</option>
+																<option title="变长（0-65,535）字符串，最大有效长度取决于最大行大小">VARCHAR</option>
+																<option
+																	title="最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数">TEXT</option>
+																<option
+																	title="日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间">DATE</option>
+																<option title="TINYINT(1) 的别名，零值表示假，非零值表示真">BOOLEAN</option>
+																<option
+																	title="单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38">FLOAT</option></select>
+														</td>
+														<td><input type="text" value="${tmpL[key]}" name="${key}"
+															id="${key}"></td>
+														<td><input type="text" value="说明" name="desc_${key}"
+															id="desc_${key}"></td>
+													</tr>	
+												</#list>
+																						
+												</tbody>
+											</table>
+										</div>
+											</#list>
+											</#if>
+										</div>
+										
+										<div class="hr hr8 hr-double hr-dotted"></div>
+
 									</div>
-		
-     </div> 
-     <!-- /.row --> 
-    <!-- /.main-content --> 
-   
-    <!-- /#ace-settings-container --> 
-   </div> 
-   <!-- /.main-container-inner --> 
-   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
-  </div> 
-  <!-- /.main-container --> 
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- /.row -->
+					<!-- /.main-content -->
+
+					<!-- /#ace-settings-container -->
+				</div>
+				<!-- /.main-container-inner -->
+				<a href="#" id="btn-scroll-up"
+					class="btn-scroll-up btn btn-sm btn-inverse"> <i
+					class="icon-double-angle-up icon-only bigger-110"></i>
+				</a>
+			</div>
+			<!-- /.main-container -->
+			<script  type="text/javascript">
+			
+			function sqlForm() {
+				
+				var listId = $( "#list_ids option:selected" ).val();
+				
+				$("#search").attr("action", '${search_url!""}'+"?id="+listId); 
+				$("#search").submit();
+			}
+			
+			var id=1;
+			function addTmp(){
+				var listId = $( "#list_ids option:selected" ).val();
+				//console.log(id);
+				if(listId==0){					
+					alert("请选择!");
+				}else{
+					var tmp = "<form enctype='multipart/form-data' action='${create_url!''}?lid=${lid}' method='POST' class='form-inline'><div class='well'>"+
+					"<div class='row form-horizontal'>"+
+					"<label for='form-field-4' class='col-sm-2 control-label no-padding-right'>名称</label>"+
+					"<div class='col-sm-3'>"+
+						"<input type='text' placeholder='name' id='tmp_name' name='tmp_name' class='input-sm'>&nbsp;&nbsp;"+ 
+						"<button type='submit' class='btn btn-sm btn-success' ><i class='icon-save  green'></i>保存</a>"+
+						"<div class='space-2'></div>"+
+
+					"</div>"+																																				
+				"</div>"+
+
+				"<table class='table table-striped table-bordered '>"+
+					"<thead>"+
+						"<tr>"+
+							"<th class='center'>变量</th>"+
+							"<th>类型</th>"+
+							"<th class='hidden-xs'>参数</th>"+
+							"<th class='hidden-480'>备注</th>"+
+
+						"</tr>"+
+					"</thead>"+
+					"<tbody>"+
+						<#if JsonList??>
+						<#list JsonList as jitem>
+						"<tr>"+
+							"<td class='center'>${jitem[0]}</td>"+
+							"<td>"+"<select name='field_${jitem[0]}' id='field_${jitem[0]}'><option title='4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295'>INT</option>"+
+									"<option title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>"+
+									"<option title='最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数'>TEXT</option>"+
+									"<option title='日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间'>DATE</option>"+
+									"<option title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>"+
+									"<option title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option></select>"+
+							"</td>"+
+							"<td><input type='text' value='${jitem[1]}' name='${jitem[0]}' id='${jitem[0]}'></td>"+
+							"<td><input type='text' readonly value='说明' name='desc_${jitem[0]}' id='desc_${jitem[0]}'>"+"</td>"+
+						"</tr>"+				
+						</#list>
+						</#if>
+					"</tbody>"+
+				"</table>"+
+			"</div> </form>";
+					id++;
+					var tlist = $("#tmp_list").html();
+					$("#tmp_list").html(tmp+tlist);
+				}
+			}
+			</script>

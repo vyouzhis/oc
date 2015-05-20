@@ -2,6 +2,7 @@ package com.lib.manager.analysis;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -235,7 +236,6 @@ public class sqledit extends Permission implements BasePerminterface {
 		usql = usql.replace("\t", " ");
 		usql = usql.replace("\n", " ");
 		usql = usql.replace("'", "&apos;");
-		// echo(usql);
 
 		if (jsonTmp == null)
 			jsonTmp = "";
@@ -247,18 +247,28 @@ public class sqledit extends Permission implements BasePerminterface {
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview)values('%s','%s', %d, %d, '%s', %d, '%s');";
 		String sql = String.format(format, name, usql, save_id, sql_type,
 				jsonTmp, is_get_data, nview);
-		echo(sql);
+		//echo(sql);
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String msg = _CLang("ok_save");
 		try {
-			insert(sql);
-
+			long id = insert(sql, true);
+			
+			if(id>0 && sql_type==0 && is_get_data==1 && nview.length()>0){
+				//后台运行获取数据
+				Map<String, Object> mail = new HashMap<>();
+				mail.put("id", id);
+				mail.put("sql", usql);
+				mail.put("view", nview);
+				mail.put("sql_type", sql_type);
+				TellPostMan("updateSQLView", mail);
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			// e.printStackTrace();
 			msg = e.getMessage();
 		}
+		
+		
 
 		TipMessage(ucl.read(SliceName(stdClass)), msg);
 	}

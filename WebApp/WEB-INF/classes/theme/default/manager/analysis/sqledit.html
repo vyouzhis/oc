@@ -99,7 +99,7 @@
 											<span class="lbl">编写模板</span>
 										</label>
 									</div>
-									<div class="radio">
+									<div class="radio" id="importData" name="importData">
 										<label>
 											<input type="checkbox" class="ace" name="get_data" id="get_data" value="1" />
 											<span class="lbl">导入数据</span>
@@ -294,8 +294,18 @@
 						var t = $(this).val();
 						if(t==0){
 							$("#sqltmp_args").attr("class", "col-xs-12 col-sm-6 hide");
+							$("#importData").attr("class", "radio");
+							if ($('#get_data:checked').val() !== undefined){
+								//console.log("0");
+								$("#sql_view").attr("class", "col-xs-12 col-sm-6");
+							}else{
+								//console.log("1");
+								$("#sql_view").attr("class", "col-xs-12 col-sm-6 hide");
+							}
 						}else{
 							$("#sqltmp_args").attr("class", "col-xs-12 col-sm-6");
+							$("#importData").attr("class", "radio hide");
+							$("#sql_view").attr("class", "col-xs-12 col-sm-6 hide");
 						}											
 					});
 					

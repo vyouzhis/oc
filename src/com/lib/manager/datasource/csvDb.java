@@ -19,7 +19,7 @@ public class csvDb extends Permission implements BasePerminterface {
 		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
-		InAction();
+		//InAction();
 		setRoot("fun", this);
 	}
 
@@ -85,7 +85,7 @@ public class csvDb extends Permission implements BasePerminterface {
 		ThreadMail.put("view_name", porg.getKey("view_name"));
 		ThreadMail.put("csv_file", file);
 		ThreadMail.put("rule", rule);
-		echo(ThreadMail);
+		//echo(ThreadMail);
 		TellPostMan("updateCSVData", ThreadMail);
 	}
 

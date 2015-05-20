@@ -1,9 +1,9 @@
-package com.lang.manager.datasource;
+package com.lang.manager.analysis;
 
 import org.ppl.BaseClass.LibLang;
 
-public class _csvDb_List extends LibLang{
-	public _csvDb_List() {
+public class _viewDb_List extends LibLang{
+	public _viewDb_List() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		GetSubClassName(className);
