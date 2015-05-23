@@ -1,6 +1,7 @@
 package com.lib.manager.datasource;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +36,9 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
-		if (porg.getKey("p")!=null && porg.getKey("p").matches("\\d+")) {
-			page = Integer.parseInt(porg.getKey("p"));
-		}
-
+	
+		page = toInt(porg.getKey("p"));
+	
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
@@ -66,10 +65,16 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 		String format = "select * from "+DB_HOR_PRE+"mongodbrule order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 		
-		List<Map<String, Object>> res;
+		List<Map<String, Object>> res, tmp;
 
 		try {
-			res = FetchAll(sql);
+			res = new ArrayList<>();
+			while (true) {
+				tmp = FetchAll(sql);				
+				res.addAll(tmp);				
+				if(isFetchFinal())break;
+			}
+			
 			setRoot("purge_list", res);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -98,7 +103,8 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 		String sql ="select count(*) as count from "+DB_HOR_PRE+"mongodbrule limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
-		if(res!=null)return Integer.valueOf( res.get("count").toString());
+		echo(res);
+		if(res!=null)return toInt( res.get("count"));
 		return 0;
 	}
 

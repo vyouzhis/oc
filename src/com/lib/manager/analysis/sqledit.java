@@ -154,7 +154,7 @@ public class sqledit extends Permission implements BasePerminterface {
 	}
 
 	private List<Map<String, Object>> CustomDB(String sql, int id) {
-		List<Map<String, Object>> res = null;
+		List<Map<String, Object>> res = new ArrayList<>();
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
@@ -186,7 +186,13 @@ public class sqledit extends Permission implements BasePerminterface {
 			setRoot("ErrorMsg", ucdb.getErrorMsg());
 		} else {
 			try {
-				res = ucdb.FetchAll(sql);
+				List<Map<String, Object>>  tmp;
+				while (true) {
+					tmp = ucdb.FetchAll(sql);
+					res.addAll(tmp);
+					if(ucdb.isFetchFinal())break;
+				}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				setRoot("ErrorMsg", e.getMessage().toString());
@@ -257,10 +263,11 @@ public class sqledit extends Permission implements BasePerminterface {
 			if(id>0 && sql_type==0 && is_get_data==1 && nview.length()>0){
 				//后台运行获取数据
 				Map<String, Object> mail = new HashMap<>();
-				mail.put("id", id);
+				//mail.put("id", id);
 				mail.put("sql", usql);
 				mail.put("view", nview);
-				mail.put("sql_type", sql_type);
+				mail.put("name", name);
+				mail.put("dtype", save_id);
 				TellPostMan("updateSQLView", mail);
 			}
 		} catch (SQLException e) {

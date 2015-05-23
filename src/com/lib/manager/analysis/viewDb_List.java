@@ -34,7 +34,7 @@ public class viewDb_List extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
+		page = toInt(porg.getKey("p"));
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
@@ -93,6 +93,7 @@ public class viewDb_List extends Permission implements BasePerminterface {
 		setRoot("edit_url", ucl.edit("csvDb"));
 		//setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
 		setRoot("new_csv_url", ucl.read("csvDb"));
+		setRoot("new_sql_url", ucl.read("sqledit"));
 	}
 	
 	private int Tol() {

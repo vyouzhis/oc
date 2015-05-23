@@ -24,7 +24,7 @@
      <div class="row"> 
        <div class="col-xs-12 well"> 
         <form class="form-horizontal id-message-form col-xs-12" method="post"
-									enctype="multipart/form-data" action="${action_url}"> 
+									enctype="multipart/form-data" action='${action_url!""}'> 
          <label class="col-sm-3 control-label no-padding-right">CSV文件:</label> 
          <div class="col-sm-9"> 
           <input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" /> 

@@ -39,7 +39,7 @@ public class PObject {
 			Logger log = Logger.getLogger(stdClass);
 			log.info(o.toString());
 		} else {
-			// System.out.println("stdClass:"+stdClass);
+			// System.out.println("stdClass:"+stdClass);			
 			System.out.println(o);
 		}
 	}

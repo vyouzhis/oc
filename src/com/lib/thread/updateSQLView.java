@@ -8,33 +8,44 @@ import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.db.UserCoreDB;
 import org.ppl.io.DesEncrypter;
 
-public class updateSQLView extends BaseRapidThread{
+public class updateSQLView extends BaseRapidThread {
 	private Map<String, Object> mail = null;
+	private long rule = 0;
+	private String view_field = "";
+	private boolean isvfield = true;
+
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
-		if(mail == null)return;
+//		echo("updateSQLView");
+		if (mail == null)
+			return;
+		String format = "insert INTO hor_classinfo (title,view_name,ctype)values('%s', '%s', 1)";
+		String sql = String.format(format, mail.get("name").toString(), mail
+				.get("view").toString());
+
+		try {
+			rule = insert(sql, true);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//echo(mail);
+		CustomDB(mail.get("sql").toString(), toInt(mail.get("dtype")));
 		
-		List<Map<String, Object>> lres;
-		lres = CustomDB(mail.get("sql").toString(), toInt(mail.get("id")));
+		format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
+				+ "class WHERE rule=%d";
 		
-		if(lres!=null){
-			String field = "";
-			String values = "";
-			String view_field = "";
-			int m=0;
-			for (Map<String, Object> map : lres) {
-				for (String key:map.keySet()) {
-					view_field += "act_v" + Integer.toHexString(m)
-							+ " AS " + key + ", ";
-					field += "act_v" + Integer.toHexString(m) + ", ";
-					
-					values += "(";
-					//values += "'" + s.trim() + "',";
-					//values += rule+"),"; 
-				}
-				
-			}
+		view_field = clear(view_field);
+		sql = String.format(format, mail
+				.get("view").toString(), view_field, rule);
+		
+		try {
+			//echo(sql);
+			insert(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -54,11 +65,11 @@ public class updateSQLView extends BaseRapidThread{
 	@Override
 	public void mailbox(Object o) {
 		// TODO Auto-generated method stub
-		mail = (Map<String, Object>) o;					
+		mail = (Map<String, Object>) o;
 	}
-	
-	private List<Map<String, Object>> CustomDB(String sql, int id) {
-		List<Map<String, Object>> res = null;
+
+	private void CustomDB(String sql, int id) {
+		List<Map<String, Object>> tmp;
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
@@ -66,10 +77,10 @@ public class updateSQLView extends BaseRapidThread{
 		String dsql = String.format(format, id);
 
 		Map<String, Object> dres;
-
+		
 		dres = FetchOne(dsql);
 		if (dres == null)
-			return null;
+			return;
 
 		ucdb.setDriverClassName(dres.get("dcname").toString());
 		ucdb.setDbUrl(dres.get("url").toString());
@@ -83,22 +94,81 @@ public class updateSQLView extends BaseRapidThread{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		//echo("pwd:" + pwd);
 
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
-			
+			echo("init error");
 		} else {
 			try {
-				res = ucdb.FetchAll(sql);
+				while (true) {
+					tmp = ucdb.FetchAll(sql);
+					saveData(tmp);
+					
+					if(ucdb.isFetchFinal())break;
+				}
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				
+				e.printStackTrace();
 			}
 
 			ucdb.DBEnd();
 		}
-		return res;
+
+	}
+
+	private void saveData(List<Map<String, Object>> lres) {
+		if (lres == null)
+			return;
+
+		String field = "";
+		String values = "";
+
+		int m = 0;
+		boolean f = true;
+		for (Map<String, Object> map : lres) {
+			values += "(";
+			for (String key : map.keySet()) {
+				if (f) {
+					field += "act_v" + Integer.toHexString(m) + ", ";
+				}
+
+				if(isvfield){
+					view_field += "act_v" + Integer.toHexString(m) + " AS "
+							+ key + ", ";
+				}
+				m++;
+				values += "'" + map.get(key) + "',";
+
+			}
+			values += rule + "),";
+			f = false;
+			isvfield = false;
+		}
+
+		values = values.substring(0, values.length() - 1);
+		//echo(values);
+
+		String format = "insert INTO " + DB_HOR_PRE + "class (%s)values %s";
+		String sql = String.format(format, field + " rule", values);
+		try {
+			insert(sql);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private String clear(String v) {
+		String s = v.trim();
+		if (s.length() > 1) {
+			return s.substring(0, s.length() - 1);
+		} else {
+			return v;
+		}
 	}
 
 }

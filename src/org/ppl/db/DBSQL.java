@@ -24,12 +24,15 @@ public class DBSQL extends BaseLang {
 	protected String DB_WEB_PRE = mConfig.GetValue("db.web.ext");
 
 	private String ErrorMsg = "";
+	private ResultSet rs = null;
+	private int Cursor = 0;
+	private int MaxLimit = 1000; // max cursor
 
 	public DBSQL() {
 
 	}
 
-	public void SetCon(Connection extDB) {		
+	public void SetCon(Connection extDB) {
 		ConDB = extDB;
 	}
 
@@ -43,7 +46,7 @@ public class DBSQL extends BaseLang {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void free() {
 		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
 		hcp.free();
@@ -63,14 +66,15 @@ public class DBSQL extends BaseLang {
 		}
 	}
 
-	public List<Map<String, Object>> map(ResultSet rs) throws SQLException {
+	public List<Map<String, Object>> map() throws SQLException {
 		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 		Object value = null;
 		try {
 			if (rs != null) {
 				ResultSetMetaData meta = rs.getMetaData();
 				int numColumns = meta.getColumnCount();
-				while (rs.next()) {
+				while (Cursor < MaxLimit && rs.next()) {
+					Cursor++;
 					Map<String, Object> row = new HashMap<String, Object>();
 					for (int i = 1; i <= numColumns; ++i) {
 						String name = meta.getColumnName(i);
@@ -95,31 +99,50 @@ public class DBSQL extends BaseLang {
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
-		if (ConDB == null) {
-			long tid = myThreadId();
-			ConDB = globale_config.GDB.get(tid);
-			
-		}
-		
-		String clearSQL = sql;
-		if (myConfig.GetValue("database.driverClassName").equals(
-				"org.postgresql.Driver")) {
-			clearSQL = sql.replace("`", "");
-		}
-		
-		if (ConDB == null) {
-			echo("con sql:" + clearSQL);
-			return null;
+
+		if (Cursor < MaxLimit) {
+
+			if (ConDB == null) {
+				long tid = myThreadId();
+				ConDB = globale_config.GDB.get(tid);
+
+			}
+
+			String clearSQL = sql;
+			if (myConfig.GetValue("database.driverClassName").equals(
+					"org.postgresql.Driver")) {
+				clearSQL = sql.replace("`", "");
+			}
+
+			if (ConDB == null) {
+				echo("con sql:" + clearSQL);
+				return null;
+			}
+
+			stmt = ConDB.createStatement();
+			rs = stmt.executeQuery(clearSQL);
 		}
 
-		ResultSet rs = null;
-		stmt = ConDB.createStatement();
-		rs = stmt.executeQuery(clearSQL);
-		results = map(rs);
-		rs.close();
-		stmt.close();
+		Cursor = 0;
+		results = map();
+
+		if (Cursor < MaxLimit) {
+
+			rs.close();
+			stmt.close();
+			Cursor = 0;
+		}
 
 		return results;
+	}
+
+	public boolean isFetchFinal() {
+
+		if (Cursor == 0)
+			return true;
+		else {
+			return false;
+		}
 	}
 
 	public List<Map<String, Object>> FetchAll(String sql) throws SQLException {
@@ -150,11 +173,6 @@ public class DBSQL extends BaseLang {
 	public long insert(String sql) throws SQLException {
 		long numRowsUpdated = -1;
 		exec(sql, false);
-//		ResultSet rs = stmt.getGeneratedKeys();
-//
-//		if (rs.next()) {
-//			numRowsUpdated = rs.getLong(1);
-//		}
 
 		return numRowsUpdated;
 	}
@@ -182,13 +200,13 @@ public class DBSQL extends BaseLang {
 			long tid = myThreadId();
 			ConDB = globale_config.GDB.get(tid);
 		}
-		
+
 		String clearSQL = sql;
 		if (myConfig.GetValue("database.driverClassName").equals(
 				"org.postgresql.Driver")) {
 			clearSQL = sql.replace("`", "");
 		}
-		
+
 		if (ConDB == null) {
 			echo("con sql:" + clearSQL);
 			return -1;
@@ -224,5 +242,4 @@ public class DBSQL extends BaseLang {
 	public void setErrorMsg(String errorMsg) {
 		ErrorMsg = errorMsg;
 	}
-
 }

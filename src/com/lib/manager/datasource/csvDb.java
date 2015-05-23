@@ -118,7 +118,7 @@ public class csvDb extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
-
+		//setRoot("action_url", ucl.create(SliceName(stdClass)));
 	}
 
 	@Override
