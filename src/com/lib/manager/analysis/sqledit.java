@@ -78,6 +78,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		dbList();
 		String sql = porg.getKey("sql_script");
 
+		
 		if (sql != null) {
 			sql = sql.trim();
 			if (sql.length() == 0)
@@ -87,6 +88,12 @@ public class sqledit extends Permission implements BasePerminterface {
 
 			setRoot("create_sql", unescapeHtml(sql));
 			SqlView(sql);
+			cookieAct.SetCookie("edit_sql", sql);
+		}else{
+			String esql = cookieAct.GetCookie("edit_sql");
+			if(esql!=null){
+				setRoot("sql_edit", "\r\n" + esql.replace("&apos;", "\'"));
+			}
 		}
 
 	}

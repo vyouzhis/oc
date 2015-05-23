@@ -38,7 +38,8 @@ public class DBSQL extends BaseLang {
 
 	public void end() {
 		try {
-			stmt.close();
+			if(stmt!=null)
+				stmt.close();
 			// c.commit();
 			// c.close();
 		} catch (SQLException e) {

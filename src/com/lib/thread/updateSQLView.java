@@ -37,6 +37,9 @@ public class updateSQLView extends BaseRapidThread {
 				+ "class WHERE rule=%d";
 		
 		view_field = clear(view_field);
+		
+		if(view_field.length()==0)return;
+		
 		sql = String.format(format, mail
 				.get("view").toString(), view_field, rule);
 		
@@ -70,6 +73,9 @@ public class updateSQLView extends BaseRapidThread {
 
 	private void CustomDB(String sql, int id) {
 		List<Map<String, Object>> tmp;
+		int Limit = 900;
+		int offset = 0;
+		String mySQl = Myreplace(sql);
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
@@ -95,18 +101,22 @@ public class updateSQLView extends BaseRapidThread {
 			e1.printStackTrace();
 		}
 		//echo("pwd:" + pwd);
-
+		if (mySQl.toLowerCase().matches("(.*)limit(.*)") == false) {
+			mySQl = mySQl + " LIMIT " + Limit +" offset ";
+		}
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
 			echo("init error");
 		} else {
+			//echo(mySQl);
 			try {
-				while (true) {
-					tmp = ucdb.FetchAll(sql);
-					saveData(tmp);
-					
-					if(ucdb.isFetchFinal())break;
+				while (true) {					
+					tmp = ucdb.FetchAll(mySQl+offset);
+					if(tmp.size()==0)break;
+					saveData(tmp);	
+					offset+=Limit;
+					echo("offset:"+offset);
 				}
 
 			} catch (SQLException e) {
@@ -169,6 +179,19 @@ public class updateSQLView extends BaseRapidThread {
 		} else {
 			return v;
 		}
+	}
+	
+	private String Myreplace(String old) {
+		if (old == null)
+			return "";
+
+		String news = old.replace("&nbsp;", "");
+		news = news.replace("&quot;", "\"");
+		news = news.replace("&apos;", "\'");
+		news = news.replace(";", "");
+		news = news.replace("'", "\'");
+
+		return news;
 	}
 
 }
