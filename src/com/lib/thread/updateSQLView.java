@@ -17,7 +17,6 @@ public class updateSQLView extends BaseRapidThread {
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
-//		echo("updateSQLView");
 		if (mail == null)
 			return;
 		String format = "insert INTO hor_classinfo (title,view_name,ctype)values('%s', '%s', 1)";
@@ -30,7 +29,6 @@ public class updateSQLView extends BaseRapidThread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//echo(mail);
 		CustomDB(mail.get("sql").toString(), toInt(mail.get("dtype")));
 		
 		format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
@@ -75,7 +73,7 @@ public class updateSQLView extends BaseRapidThread {
 		List<Map<String, Object>> tmp;
 		int Limit = 900;
 		int offset = 0;
-		String mySQl = Myreplace(sql);
+		String mySQl = escapeHtml(sql);
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
@@ -181,17 +179,4 @@ public class updateSQLView extends BaseRapidThread {
 		}
 	}
 	
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-		news = news.replace("&apos;", "\'");
-		news = news.replace(";", "");
-		news = news.replace("'", "\'");
-
-		return news;
-	}
-
 }

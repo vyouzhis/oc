@@ -30,19 +30,21 @@ public class CookieAction{
 		TimeOut = mConfig.GetInt("cookie.timeout");
 	}
 
-	public void SetCookie(String key, String val) {		
-		Cookie userCookie = new Cookie(key, val);
-		userCookie.setMaxAge(TimeOut); //Store cookie for 1 year
-		userCookie.setPath(Path);		
-		response.addCookie(userCookie);
+	public void SetCookie(String key, String val) {			
+		CookieFun(key, val, TimeOut);
 	}
 	
-	public void SetCookie(String key, String val, int timeOut) {		
-		Cookie userCookie = new Cookie(key, val);
+	public void SetCookie(String key, String val, int timeOut) {	
+		CookieFun(key, val, timeOut);
+	}
+	
+	private void CookieFun(String key, String val, int timeOut) {
+		String ckey = key.trim();
+		Cookie userCookie = new Cookie(ckey, val);
 		userCookie.setMaxAge(timeOut); //Store cookie for timeOut second
 		userCookie.setPath(Path);	
 	
-		response.addCookie(userCookie);		
+		response.addCookie(userCookie);	
 	}
 	
 	public void DelCookie(String key) {		
@@ -60,16 +62,18 @@ public class CookieAction{
 	}
 
 	public String GetCookie(String key) {
+		String ckey = key.trim();
 		Cookie[] cookies = request.getCookies();
+		
 		if (cookies==null) {
 			return null;
 		}
-		for(Cookie cookie : cookies){
-		    if(key.equals(cookie.getName())){
+		for(Cookie cookie : cookies){			
+		    if(ckey.equals(cookie.getName())){
 		        return cookie.getValue();
 		    }
 		}
-		
+	
 		return null;
 	}
 }

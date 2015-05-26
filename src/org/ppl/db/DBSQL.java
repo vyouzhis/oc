@@ -214,6 +214,7 @@ public class DBSQL extends BaseLang {
 		}
 
 		stmt = ConDB.createStatement();
+		stmt.clearBatch();
 		if (ret) {
 			numRowsUpdated = stmt.executeUpdate(clearSQL,
 					Statement.RETURN_GENERATED_KEYS);

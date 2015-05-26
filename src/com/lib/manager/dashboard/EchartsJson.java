@@ -299,7 +299,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		String json_id = Escape.unescape(porg.getKey("ids"));
 		
-		json_id = Myreplace(json_id);
+		json_id = escapeHtml(json_id);
 		if (json_id.length() < 2) {
 			return;
 		}
@@ -335,7 +335,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				
 				if (ures != null) {
 					sql = ures.get("sql").toString();
-					sql = Myreplace(sql);
+					sql = escapeHtml(sql);
 					dtype = toInt(ures.get("dtype"));
 				}
 				try {
@@ -371,7 +371,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					
 					tsql = tsql.replace("@" + key + "@", tList.get(key));
 				}
-				tsql = Myreplace(tsql);
+				tsql = escapeHtml(tsql);
 				//echo("dtype:"+dtype);
 				try {
 					
@@ -446,18 +446,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			ucdb.DBEnd();
 		}
 		return res;
-	}
-
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-		news = news.replace("&apos;", "\'");
-		news = news.replace(";", "");
-
-		return news;
 	}
 
 	@Override

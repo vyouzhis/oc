@@ -222,4 +222,35 @@ public class PObject {
 		}
 	}
 	
+	public String escapeHtml(String old) {
+		if (old == null)
+			return "";
+
+		String news = old.replace("&nbsp;", "");
+		news = news.replace("&quot;", "\"");
+		news = news.replace("&apos;", "\'");
+		news = news.replace(";", "");
+		news = news.replace("'", "\'");
+		//news = news.replace("%", "%%");
+		news = news.replace("\r", " ");
+		news = news.replace("\t", " ");
+		news = news.replace("\n", " ");
+
+		return news;
+	}
+	
+	public String unescapeHtml(String old) {
+		if (old == null)
+			return "";
+
+		String news = old.replace("\"", "&quot;");
+		news = news.replace("\'", "&apos;");
+		news = news.replace("\r", " ");
+		news = news.replace("\t", " ");
+		news = news.replace("\n", " ");
+		//news = news.replace("%", "%%");
+		return news;
+
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ppl.io.Encrypt;
 import org.ppl.io.TimeClass;
 
 import com.alibaba.fastjson.JSON;
@@ -41,7 +42,8 @@ public class SystemLog extends PObject {
 		}
 		
 		String data = JSON.toJSONString(porg.getAllpg());
-		
+		Encrypt en = Encrypt.getInstance();
+		data = en.Base64_Encode(data);
 		String sql = String.format(format, lib, uid, a,ip, now, data);
 		
 		return sql;

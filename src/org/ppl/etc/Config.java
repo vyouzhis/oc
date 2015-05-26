@@ -36,7 +36,7 @@ public class Config {
 	}
 	
 	public int GetInt(String key) {
-		return Integer.valueOf(p.getProperty(key));
+		return Integer.valueOf(p.getProperty(key).trim());
 	}
 	
 	public Set<Object> getKey() {

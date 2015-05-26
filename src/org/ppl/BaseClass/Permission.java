@@ -60,11 +60,12 @@ public class Permission extends BaseTheme {
 	private void Log() {
 		SystemLog sl = new SystemLog();
 		String sql = sl.Log(aclGetUid());
+		echo("per sql:"+sql);
 		try {
 			update(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			end();
 		}
 	}
 

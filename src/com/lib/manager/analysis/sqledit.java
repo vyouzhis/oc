@@ -76,24 +76,28 @@ public class sqledit extends Permission implements BasePerminterface {
 		setRoot("action_url", ucl.read(SliceName(stdClass)));
 		setRoot("create_url", ucl.create(SliceName(stdClass)));
 		dbList();
-		String sql = porg.getKey("sql_script");
+		String TransferSQL = porg.getKey("sql_script");
+		if (TransferSQL == null) {
+			TransferSQL = "";
+		}
+		TransferSQL = TransferSQL.trim();
+		String RunSQL = escapeHtml(TransferSQL);
+		String HtmlSQL = unescapeHtml(TransferSQL);
 
-		
-		if (sql != null) {
-			sql = sql.trim();
-			if (sql.length() == 0)
-				return;
-			setRoot("sql_edit", "\r\n" + sql.replace("&apos;", "\'"));
-			sql = Myreplace(sql);
+		String esql = cookieAct.GetCookie("edit_sql");
 
-			setRoot("create_sql", unescapeHtml(sql));
-			SqlView(sql);
-			cookieAct.SetCookie("edit_sql", sql);
-		}else{
-			String esql = cookieAct.GetCookie("edit_sql");
-			if(esql!=null){
-				setRoot("sql_edit", "\r\n" + esql.replace("&apos;", "\'"));
-			}
+		if (TransferSQL.length() > 1) {
+
+			esql = HtmlSQL;
+			setRoot("sql_pre", "\r\n" + TransferSQL);
+			setRoot("create_sql", HtmlSQL);
+			cookieAct.SetCookie("edit_sql", RunSQL);
+			
+			SqlView(RunSQL);
+		}
+
+		if (esql != null) {
+			setRoot("sql_edit", esql);
 		}
 
 	}
@@ -106,7 +110,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		String jsonTmp = porg.getKey("jsontmp");
 		if (jsonTmp == null || jsonTmp.length() < 1)
 			return sql;
-		echo(jsonTmp);
+		
 		List<List<String>> jsonList = JSON.parseObject(jsonTmp, List.class);
 		if (jsonList == null)
 			return sql;
@@ -126,12 +130,6 @@ public class sqledit extends Permission implements BasePerminterface {
 		String sql = o;
 		List<Map<String, Object>> res = null;
 
-		sql = sql.replace("\r", " ");
-		sql = sql.replace("\t", " ");
-		sql = sql.replace("\n", " ");
-
-		// echo(sql.toLowerCase().matches("(.*)limit(.*)"));
-
 		if (sql.toLowerCase().matches("(.*)limit(.*)") == false) {
 			sql += " LIMIT 20";
 		}
@@ -139,11 +137,13 @@ public class sqledit extends Permission implements BasePerminterface {
 			sql = tmpSql(sql);
 			setRoot("sql_type", porg.getKey("sql_type"));
 		}
+
 		if (dbid == 0) {
 			try {
 				res = FetchAll(sql);
 			} catch (SQLException e) {
 				setRoot("ErrorMsg", e.getMessage().toString());
+				end();
 			} catch (ArrayIndexOutOfBoundsException e) {
 				// TODO: handle exception
 				setRoot("ErrorMsg", "error sql");
@@ -193,13 +193,14 @@ public class sqledit extends Permission implements BasePerminterface {
 			setRoot("ErrorMsg", ucdb.getErrorMsg());
 		} else {
 			try {
-				List<Map<String, Object>>  tmp;
+				List<Map<String, Object>> tmp;
 				while (true) {
 					tmp = ucdb.FetchAll(sql);
 					res.addAll(tmp);
-					if(ucdb.isFetchFinal())break;
+					if (ucdb.isFetchFinal())
+						break;
 				}
-				
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				setRoot("ErrorMsg", e.getMessage().toString());
@@ -245,10 +246,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		if (name == null || usql == null)
 			return;
 
-		usql = usql.replace("\r", " ");
-		usql = usql.replace("\t", " ");
-		usql = usql.replace("\n", " ");
-		usql = usql.replace("'", "&apos;");
+		usql = unescapeHtml(usql);
 
 		if (jsonTmp == null)
 			jsonTmp = "";
@@ -260,17 +258,18 @@ public class sqledit extends Permission implements BasePerminterface {
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview)values('%s','%s', %d, %d, '%s', %d, '%s');";
 		String sql = String.format(format, name, usql, save_id, sql_type,
 				jsonTmp, is_get_data, nview);
-		//echo(sql);
+		
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String msg = _CLang("ok_save");
 		try {
 			long id = insert(sql, true);
-			
-			if(id>0 && sql_type==0 && is_get_data==1 && nview.length()>0){
-				//后台运行获取数据
+
+			if (id > 0 && sql_type == 0 && is_get_data == 1
+					&& nview.length() > 0) {
+				// 后台运行获取数据
 				Map<String, Object> mail = new HashMap<>();
-				//mail.put("id", id);
+				// mail.put("id", id);
 				mail.put("sql", usql);
 				mail.put("view", nview);
 				mail.put("name", name);
@@ -281,8 +280,6 @@ public class sqledit extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			msg = e.getMessage();
 		}
-		
-		
 
 		TipMessage(ucl.read(SliceName(stdClass)), msg);
 	}
@@ -305,39 +302,12 @@ public class sqledit extends Permission implements BasePerminterface {
 
 	}
 
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-		news = news.replace("&apos;", "\'");
-		news = news.replace(";", "");
-		news = news.replace("'", "\'");
-
-		return news;
-	}
-
-	private String unescapeHtml(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("\"", "&quot;");
-		news = news.replace("\'", "&apos;");
-		news = news.replace("\r", " ");
-		news = news.replace("\t", " ");
-		news = news.replace("\n", " ");
-
-		return news;
-
-	}
-
 	private void ListTip(String n, String m, String l) {
 		String sql = "select id," + n + " from " + DB_HOR_PRE + m
 				+ " order by id desc";
 
 		List<Map<String, Object>> res;
-
+	
 		try {
 			res = FetchAll(sql);
 			if (res != null) {

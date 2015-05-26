@@ -56,8 +56,8 @@
 									</h3>
 									<#if create_sql??>
 									<pre class="sql">
-								${sql_edit!""}	
-								</pre>
+										${sql_pre!""}
+									</pre>
 									</#if>
 								</form>
 							</div>
@@ -254,8 +254,7 @@
 				$("#sql_script").format({
 					method : 'sql'
 				});
-				
-				
+																		
 				function sqlForm() {
 					$("#sql_script").format({
 						method : 'sql'

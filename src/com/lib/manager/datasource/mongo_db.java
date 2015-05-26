@@ -54,10 +54,10 @@ public class mongo_db extends Permission implements BasePerminterface {
 		if (project_name != null) {
 			setRoot("project_name", project_name);
 		}
-		where_query = Myreplace(where_query);
+		where_query = escapeHtml(where_query);
 
-		field_query = Myreplace(field_query);
-		sort_query = Myreplace(sort_query);
+		field_query = escapeHtml(field_query);
+		sort_query = escapeHtml(sort_query);
 
 		mgdb = new MGDB();
 		rmc = porg.getRmc();
@@ -388,16 +388,6 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 			setRoot("field_all", json_field);
 		}
-	}
-
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-
-		return news;
 	}
 
 }

@@ -73,10 +73,10 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 		if(project_name!=null){
 			setRoot("project_name", project_name);
 		}
-		where_query = Myreplace(where_query);
+		where_query = escapeHtml(where_query);
 
-		field_query = Myreplace(field_query);
-		sort_query = Myreplace(sort_query);
+		field_query = escapeHtml(field_query);
+		sort_query = escapeHtml(sort_query);
 		
 		int snap_id = Integer.valueOf(porg.getKey("snap_id"));
 		
@@ -139,13 +139,4 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 		
 	}
 	
-	private String Myreplace(String old) {
-		if(old == null) return "";
-		
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-
-		return news;
-	}
-
 }

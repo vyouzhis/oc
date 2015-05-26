@@ -263,31 +263,4 @@ public class sqlread extends Permission implements BasePerminterface {
 
 	}
 
-	private String Myreplace(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("&nbsp;", "");
-		news = news.replace("&quot;", "\"");
-		news = news.replace("&apos;", "\'");
-		news = news.replace(";", "");
-		news = news.replace("'", "\'");
-
-		return news;
-	}
-
-	private String unescapeHtml(String old) {
-		if (old == null)
-			return "";
-
-		String news = old.replace("\"", "&quot;");
-		news = news.replace("\'", "&apos;");
-		news = news.replace("\r", " ");
-		news = news.replace("\t", " ");
-		news = news.replace("\n", " ");
-
-		return news;
-
-	}
-
 }
