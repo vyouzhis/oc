@@ -63,6 +63,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		TmpSQl();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
+		setRoot("listSQL_url", ucl.read("ListSQL"));
 		cardioid();
 	}
 	
@@ -84,7 +85,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void UserSQl() {
-		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=0";
+		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0";
 		List<Map<String, Object>> res;
 		
 		try {
