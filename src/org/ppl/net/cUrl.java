@@ -130,7 +130,8 @@ public class cUrl {
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				bis = response.getEntity().getContent();
 
-				Header[] gzip = response.getHeaders("Content-Encoding");
+				//Header[] gzip = response.getHeaders("Content-Encoding");
+				Header encoding = response.getEntity().getContentEncoding();
 
 				bao = new ByteArrayOutputStream();
 				int count;
@@ -139,20 +140,26 @@ public class cUrl {
 
 				}
 				bis.close();
+				
+				ByteArrayInputStream bai = new ByteArrayInputStream(
+						bao.toByteArray());
+				if (encoding != null) {
+					if (encoding.getValue().equals("gzip")
+							|| encoding.getValue().equals("zip")
+							|| encoding.getValue().equals(
+									"application/x-gzip-compressed")) {
 
-				if (gzip.length > 0
-						&& gzip[0].getValue().equalsIgnoreCase("gzip")) {
-					GZIPInputStream gzin = new GZIPInputStream(
-							new ByteArrayInputStream(bao.toByteArray()));
-					StringBuffer sb = new StringBuffer();
-					int size;
-					while ((size = gzin.read(buf)) != -1) {
-						sb.append(new String(buf, 0, size, "utf-8"));
+						GZIPInputStream gzin = new GZIPInputStream(bai);
+						StringBuffer sb = new StringBuffer();
+						int size;
+						while ((size = gzin.read(buf)) != -1) {
+							sb.append(new String(buf, 0, size, "utf-8"));
+						}
+						gzin.close();
+						bao.close();
+
+						content = sb.toString();
 					}
-					gzin.close();
-					bao.close();
-
-					content = sb.toString();
 				} else {
 
 					content = bao.toString();
