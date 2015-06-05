@@ -1,0 +1,76 @@
+
+<body> 
+  ${navbar!""}
+  <div class="main-container" id="main-container"> 
+   <script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script> 
+   <div class="main-container-inner"> 
+    
+    ${menu!""}
+     <div class="main-content"> 
+     <div class="breadcrumbs" id="breadcrumbs"> 
+      <script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script> 
+      <ul class="breadcrumb"> 
+       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
+       <li class="active">${name}</li> 
+      </ul> 
+      <!-- #nav-search --> 
+     </div> 
+     <div class="page-content"> 
+      <!-- /.page-header --> 
+      <div class="row"> 
+      	<div class="col-xs-12">
+							<h3 class="header smaller lighter blue">
+								结果 <small>[<a href='${edit_url!""}'>新增</a>]
+								</small>
+							</h3>
+						</div>
+						<div class="col-xs-12">
+							<div class="table-responsive">
+								<table class="table table-striped table-bordered table-hover"
+									id="sample-table-1">
+									<thead>
+										<tr>
+											<th class="center" width="3%">id</th>
+											<th width="10%">名称</th>
+											<th width="70%">sql</th>											
+											<th width="6%" class="hidden-480">创建时间</th>
+											<!--<th width="15%">操作</th>-->
+										
+										</tr>
+									</thead>
+									<tbody>
+										<#if csv_list??>
+										<#list csv_list as item>
+										<tr>
+											<td class="center">
+												${item.id}
+											</td>
+											<td>${item.name}</td>													
+											<td>${item.sql}</td>											
+											<td>${item.modify_time}</td>
+																			
+										</tr>
+										</#list>
+										</#if>
+									</tbody>
+								</table>
+							</div>
+							<!-- /.table-responsive -->
+						</div>
+			<div>
+			${Page!""}
+			</div>
+     </div> 
+     <!-- /.row --> 
+    <!-- /.main-content --> 
+   
+    <!-- /#ace-settings-container --> 
+   </div> 
+   <!-- /.main-container-inner --> 
+   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
+  </div> 
+  <!-- /.main-container --> 

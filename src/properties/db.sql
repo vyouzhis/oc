@@ -75,189 +75,693 @@ CREATE TABLE IF NOT EXISTS `web_article` (
 
 
 ----- postgresql
+--
+-- PostgreSQL database dump
+--
 
-DROP TABLE IF EXISTS role_user_info;
-CREATE TABLE IF NOT EXISTS role_user_info (
-  uid SERIAL ,
-  name varchar NOT NULL  UNIQUE,
-  passwd varchar NOT NULL,
-  cm varchar NOT NULL ,
-  nickname varchar NOT NULL ,
-  email varchar NOT NULL ,
-  ctime int NOT NULL DEFAULT '1' ,
-  etime int  DEFAULT '0' ,  
-  ltime int NOT NULL DEFAULT '1' ,  
-  phone varchar NOT NULL DEFAULT '' ,
-  status int NOT NULL DEFAULT '1' ,  
-  isdelete int DEFAULT '0' ,
-  gid int NOT NULL DEFAULT '0' ,
-  cid int NOT NULL DEFAULT '0' ,
-  error int NOT NULL DEFAULT '0' ,
-  PRIMARY KEY (uid)
-) ;
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
-DROP TABLE IF EXISTS role_group;
-CREATE TABLE IF NOT EXISTS role_group  (
-  id SERIAL,
-  gname varchar NOT NULL DEFAULT '' ,
-  gdesc varchar NOT NULL DEFAULT '' ,
-  position int DEFAULT '1' ,    
-  mainrole text ,  
-  subrole text ,
-  status int NOT NULL DEFAULT '1' ,
-  isdelete int DEFAULT '0' ,
-  uid int NOT NULL DEFAULT '0' ,
-  ctime int NOT NULL ,  
-  etime int NOT NULL ,  
-  PRIMARY KEY (id)
-) ;
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
-DROP TABLE IF EXISTS role_log;
-CREATE TABLE IF NOT EXISTS  role_log (
-  id SERIAL,
-  lid varchar NOT NULL DEFAULT '' , 
-  uid int NOT NULL  , 
-  action int DEFAULT '0' ,
-  ip varchar NOT NULL DEFAULT '' ,   
-  ctime int NOT NULL DEFAULT '0' ,  
-   PRIMARY KEY (id)   
-) ;
+SET search_path = public, pg_catalog;
 
+SET default_tablespace = '';
 
-DROP TABLE IF EXISTS role_thread;
-CREATE TABLE IF NOT EXISTS  role_thread (
-  id SERIAL,
-  name character varying NOT NULL,
-  minute integer NOT NULL DEFAULT 0,
-  hour integer NOT NULL DEFAULT 0,
-  day integer NOT NULL DEFAULT 0,
-  isstop integer NOT NULL DEFAULT 0,
-  ctime int NOT NULL DEFAULT '0' ,  
-   PRIMARY KEY (id)   
-) ;
+SET default_with_oids = false;
 
-DROP TABLE IF EXISTS hor_mongodbrule;
-CREATE TABLE IF NOT EXISTS hor_mongodbrule (
-  id integer NOT NULL DEFAULT nextval('hor_rule_id_seq'::regclass),
-  name character varying NOT NULL,
-  collention character varying NOT NULL,
-  qaction smallint NOT NULL DEFAULT 0::smallint,
-  query text NOT NULL,
-  field text NOT NULL,
-  sort text NOT NULL,
-  ctime integer NOT NULL,
-  stime integer NOT NULL,
-  etime integer NOT NULL DEFAULT 0,
-  istop smallint NOT NULL DEFAULT 0, -- default 0 ,  1 is stop
-  CONSTRAINT hor_rule_pkey PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
+--
+-- Name: hor_class; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_class (
+    rule integer,
+    act_v0 text,
+    act_v1 text,
+    act_v2 text,
+    act_v3 text,
+    act_v4 text,
+    act_v5 text,
+    act_v6 text,
+    act_v7 text,
+    act_v8 text,
+    act_v9 text,
+    act_va text,
+    act_vb text,
+    act_vc text,
+    act_vd text,
+    act_ve text,
+    act_vf text,
+    modify_time timestamp without time zone DEFAULT now(),
+    act_v10 text
 );
-ALTER TABLE hor_mongodbrule
-  OWNER TO vyouzhi;
-COMMENT ON TABLE hor_mongodbrule
-  IS 'name 规则名称
-	collention 集合名
-	qaction 查询方式 
-	query  查询条件
-	field 查询条件
-	sort 排序
-	ctime 创建时间
-	stime 开始时间
-	etime 当前结束时间';
-COMMENT ON COLUMN hor_mongodbrule.istop IS 'default 0 ,  1 is stop';
 
-DROP TABLE IF EXISTS hor_webvisitcount;
-CREATE TABLE IF NOT EXISTS hor_webvisitcount
-(
-  rule integer NOT NULL DEFAULT (0)::smallint,
-  volume integer NOT NULL,
-  val  varcahr NOT NULL DEFAULT "",
-  dial integer NOT NULL DEFAULT 0,
-  modify_time timestamp without time zone DEFAULT now()
-)
-WITH (
-  OIDS=FALSE
+
+ALTER TABLE public.hor_class OWNER TO bi;
+
+--
+-- Name: TABLE hor_class; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON TABLE hor_class IS '外部数据插入，比如CSV
+rule 依赖于 classinfo 的 id 字段';
+
+
+--
+-- Name: el_mt4; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW el_mt4 AS
+ SELECT hor_class.act_v0 AS profit,
+    hor_class.act_v1 AS login,
+    hor_class.act_v2 AS symbol,
+    hor_class.act_v3 AS open_time,
+    hor_class.act_v4 AS "timestamp",
+    hor_class.act_v5 AS volume,
+    hor_class.act_v6 AS close_time
+   FROM hor_class
+  WHERE (hor_class.rule = 77);
+
+
+ALTER TABLE public.el_mt4 OWNER TO bi;
+
+--
+-- Name: game_kfd; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW game_kfd AS
+ SELECT hor_class.act_v0 AS account_name
+   FROM hor_class
+  WHERE (hor_class.rule = 75);
+
+
+ALTER TABLE public.game_kfd OWNER TO bi;
+
+--
+-- Name: game_kfdmt4; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW game_kfdmt4 AS
+ SELECT hor_class.act_v0 AS profit,
+    hor_class.act_v1 AS login,
+    hor_class.act_v2 AS symbol,
+    hor_class.act_v3 AS open_time,
+    hor_class.act_v4 AS "timestamp",
+    hor_class.act_v5 AS volume,
+    hor_class.act_v6 AS close_time
+   FROM hor_class
+  WHERE (hor_class.rule = 76);
+
+
+ALTER TABLE public.game_kfdmt4 OWNER TO bi;
+
+--
+-- Name: game_mt4; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW game_mt4 AS
+ SELECT hor_class.act_v0 AS login,
+    hor_class.act_v1 AS symbol,
+    hor_class.act_v2 AS open_time,
+    hor_class.act_v3 AS "timestamp",
+    hor_class.act_v4 AS volume,
+    hor_class.act_v5 AS close_time
+   FROM hor_class
+  WHERE (hor_class.rule = 73);
+
+
+ALTER TABLE public.game_mt4 OWNER TO bi;
+
+--
+-- Name: hor_classinfo; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_classinfo (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    idesc character varying DEFAULT ''::character varying NOT NULL,
+    ctime integer DEFAULT 1 NOT NULL,
+    view_name character varying(50),
+    ctype integer DEFAULT 0 NOT NULL
 );
-ALTER TABLE hor_webvisitcount
-  OWNER TO vyouzhi;
-COMMENT ON TABLE hor_webvisitcount
-  IS 'rule 规则ID
+
+
+ALTER TABLE public.hor_classinfo OWNER TO bi;
+
+--
+-- Name: TABLE hor_classinfo; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON TABLE hor_classinfo IS 'ctime 创建时间
+etime 这次完成的时间  
+view_name  view 的名称
+ctype  -- 0 -- csv , 1 -- sql';
+
+
+--
+-- Name: COLUMN hor_classinfo.view_name; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_classinfo.view_name IS '保存 view 的名称';
+
+
+--
+-- Name: COLUMN hor_classinfo.ctype; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_classinfo.ctype IS '0 -- csv , 1 -- sql';
+
+
+--
+-- Name: hor_classinfo_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_classinfo_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_classinfo_id_seq OWNER TO bi;
+
+--
+-- Name: hor_classinfo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_classinfo_id_seq OWNED BY hor_classinfo.id;
+
+
+--
+-- Name: hor_dbsource; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_dbsource (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    dcname character varying NOT NULL,
+    url character varying NOT NULL,
+    username character varying NOT NULL,
+    password character varying NOT NULL,
+    ctime integer NOT NULL,
+    modify_time timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.hor_dbsource OWNER TO bi;
+
+--
+-- Name: hor_dbsource_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_dbsource_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_dbsource_id_seq OWNER TO bi;
+
+--
+-- Name: hor_dbsource_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_dbsource_id_seq OWNED BY hor_dbsource.id;
+
+
+--
+-- Name: hor_mongodbrule; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_mongodbrule (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    collention character varying NOT NULL,
+    qaction smallint DEFAULT (0)::smallint NOT NULL,
+    query text NOT NULL,
+    field text NOT NULL,
+    sort text NOT NULL,
+    ctime integer NOT NULL,
+    stime integer NOT NULL,
+    etime integer DEFAULT 0 NOT NULL,
+    istop smallint DEFAULT 0 NOT NULL,
+    snap integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.hor_mongodbrule OWNER TO bi;
+
+--
+-- Name: COLUMN hor_mongodbrule.snap; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_mongodbrule.snap IS '0 -- 可以在报表那儿显示菜单，1 需要二次运算开发';
+
+
+--
+-- Name: hor_mongodbrule_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_mongodbrule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_mongodbrule_id_seq OWNER TO bi;
+
+--
+-- Name: hor_mongodbrule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_mongodbrule_id_seq OWNED BY hor_mongodbrule.id;
+
+
+--
+-- Name: hor_sqltmp; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_sqltmp (
+    id integer NOT NULL,
+    sid integer NOT NULL,
+    name character varying NOT NULL,
+    sqltmp character varying(256) DEFAULT ''::character varying NOT NULL,
+    ctime timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.hor_sqltmp OWNER TO bi;
+
+--
+-- Name: hor_sqltmp_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_sqltmp_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_sqltmp_id_seq OWNER TO bi;
+
+--
+-- Name: hor_sqltmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_sqltmp_id_seq OWNED BY hor_sqltmp.id;
+
+
+--
+-- Name: hor_usersql; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_usersql (
+    id integer NOT NULL,
+    sql text NOT NULL,
+    name character varying NOT NULL,
+    modify_time timestamp without time zone DEFAULT now(),
+    dtype integer DEFAULT 0 NOT NULL,
+    sql_type integer DEFAULT 0 NOT NULL,
+    sqltmp character varying(256) DEFAULT ''::character varying NOT NULL,
+    uview character varying(256) DEFAULT ''::character varying NOT NULL,
+    input_data integer DEFAULT 0 NOT NULL,
+    vtime integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.hor_usersql OWNER TO bi;
+
+--
+-- Name: TABLE hor_usersql; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON TABLE hor_usersql IS 'sql 语句
+name 名称
+modify_time 更新时间
+dtype 数据类型
+sql_type 0 代表一般的SQL 1 是模板
+sqltmp 是记录模板对应的变量值
+uview 记录视图名称
+input_data 0 -- 0 不导入，1 导入数据';
+
+
+--
+-- Name: COLUMN hor_usersql.input_data; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_usersql.input_data IS '0 不导入，1 导入数据';
+
+
+--
+-- Name: COLUMN hor_usersql.vtime; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_usersql.vtime IS 'view 运行完成时间';
+
+
+--
+-- Name: hor_usersql_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_usersql_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_usersql_id_seq OWNER TO bi;
+
+--
+-- Name: hor_usersql_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_usersql_id_seq OWNED BY hor_usersql.id;
+
+
+--
+-- Name: hor_webvisitcount; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_webvisitcount (
+    rule integer DEFAULT (0)::smallint NOT NULL,
+    volume integer NOT NULL,
+    dial integer DEFAULT 0 NOT NULL,
+    modify_time timestamp without time zone DEFAULT now(),
+    val character varying
+);
+
+
+ALTER TABLE public.hor_webvisitcount OWNER TO bi;
+
+--
+-- Name: TABLE hor_webvisitcount; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON TABLE hor_webvisitcount IS 'rule 规则ID
 volume 数量
 dial 刻度盘';
 
--- Index: rul_dial
 
--- DROP INDEX rul_dial;
+--
+-- Name: COLUMN hor_webvisitcount.val; Type: COMMENT; Schema: public; Owner: bi
+--
 
-CREATE INDEX rul_wvcdial
-  ON hor_webvisitcount
-  USING btree
-  (rule, dial);
-  
-  
-  
-CREATE TABLE hor_class
-(
-  rule integer,
-  act_v0 text,
-  act_v1 text,
-  act_v2 text,
-  act_v3 text,
-  act_v4 text,
-  act_v5 text,
-  act_v6 text,
-  act_v7 text,
-  act_v8 text,
-  act_v9 text,
-  act_va text,
-  act_vb text,
-  act_vc text,
-  act_vd text,
-  act_ve text,
-  act_vf text,
-  act_v10 text,
-  modify_time timestamp without time zone DEFAULT now(),
-  CONSTRAINT hor_class_rule_fkey FOREIGN KEY (rule)
-      REFERENCES hor_classinfo (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE hor_class
-  OWNER TO vyouzhi;
-COMMENT ON TABLE hor_class
-  IS '外部数据插入，比如CSV
-rule 依赖于 classinfo 的 id 字段';
+COMMENT ON COLUMN hor_webvisitcount.val IS '值';
 
-CREATE TABLE IF NOT EXISTS hor_usersql
-(
-  id SERIAL,
-  sql text NOT NULL,
-  name character varying NOT NULL,
-  dtype integer NOT NULL DEFAULT 0,
-  modify_time timestamp without time zone DEFAULT now()
-)
-WITH (
-  OIDS=FALSE
+
+--
+-- Name: role_group; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE role_group (
+    id integer NOT NULL,
+    gname character varying DEFAULT ''::character varying NOT NULL,
+    gdesc character varying DEFAULT ''::character varying NOT NULL,
+    "position" integer DEFAULT 1,
+    mainrole text,
+    subrole text,
+    status integer DEFAULT 1 NOT NULL,
+    isdelete integer DEFAULT 0,
+    uid integer DEFAULT 0 NOT NULL,
+    ctime integer NOT NULL,
+    etime integer NOT NULL
 );
 
 
- CREATE TABLE hor_dbsource
-(
-  id serial NOT NULL,
-  name character varying NOT NULL,
-  dcname character varying NOT NULL,
-  url character varying not null,
-  username character varying not null,
-  password character varying not null,  
-  ctime integer NOT NULL,
-  modify_time timestamp without time zone DEFAULT now()
-)
-WITH (
-  OIDS=FALSE
+ALTER TABLE public.role_group OWNER TO bi;
+
+--
+-- Name: role_group_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE role_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.role_group_id_seq OWNER TO bi;
+
+--
+-- Name: role_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE role_group_id_seq OWNED BY role_group.id;
+
+
+--
+-- Name: role_log; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE role_log (
+    id integer NOT NULL,
+    lid character varying DEFAULT ''::character varying NOT NULL,
+    uid integer NOT NULL,
+    action integer DEFAULT 0,
+    ip character varying DEFAULT ''::character varying NOT NULL,
+    ctime integer DEFAULT 0 NOT NULL,
+    data text DEFAULT ''::text NOT NULL
 );
+
+
+ALTER TABLE public.role_log OWNER TO bi;
+
+--
+-- Name: role_log_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE role_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.role_log_id_seq OWNER TO bi;
+
+--
+-- Name: role_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE role_log_id_seq OWNED BY role_log.id;
+
+
+--
+-- Name: role_user_info; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE role_user_info (
+    uid integer NOT NULL,
+    name character varying NOT NULL,
+    passwd character varying NOT NULL,
+    cm character varying NOT NULL,
+    nickname character varying NOT NULL,
+    email character varying NOT NULL,
+    ctime integer DEFAULT 1 NOT NULL,
+    etime integer DEFAULT 0,
+    ltime integer DEFAULT 1 NOT NULL,
+    phone character varying DEFAULT ''::character varying NOT NULL,
+    status integer DEFAULT 1 NOT NULL,
+    isdelete integer DEFAULT 0,
+    gid integer DEFAULT 0 NOT NULL,
+    cid integer DEFAULT 0 NOT NULL,
+    error integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.role_user_info OWNER TO bi;
+
+--
+-- Name: role_user_info_uid_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE role_user_info_uid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.role_user_info_uid_seq OWNER TO bi;
+
+--
+-- Name: role_user_info_uid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE role_user_info_uid_seq OWNED BY role_user_info.uid;
+
+
+--
+-- Name: utest_viwes; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW utest_viwes AS
+ SELECT hor_class.act_v0 AS dial,
+    hor_class.act_v1 AS account_name
+   FROM hor_class
+  WHERE (hor_class.rule = 78);
+
+
+ALTER TABLE public.utest_viwes OWNER TO bi;
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_classinfo ALTER COLUMN id SET DEFAULT nextval('hor_classinfo_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_dbsource ALTER COLUMN id SET DEFAULT nextval('hor_dbsource_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_mongodbrule ALTER COLUMN id SET DEFAULT nextval('hor_mongodbrule_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_sqltmp ALTER COLUMN id SET DEFAULT nextval('hor_sqltmp_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_usersql ALTER COLUMN id SET DEFAULT nextval('hor_usersql_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY role_group ALTER COLUMN id SET DEFAULT nextval('role_group_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY role_log ALTER COLUMN id SET DEFAULT nextval('role_log_id_seq'::regclass);
+
+
+--
+-- Name: uid; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY role_user_info ALTER COLUMN uid SET DEFAULT nextval('role_user_info_uid_seq'::regclass);
+
+
+--
+-- Name: hor_classinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_classinfo
+    ADD CONSTRAINT hor_classinfo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hor_mongodbrule_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_mongodbrule
+    ADD CONSTRAINT hor_mongodbrule_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hor_sqltmp_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_sqltmp
+    ADD CONSTRAINT hor_sqltmp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: role_group_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY role_group
+    ADD CONSTRAINT role_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: role_log_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY role_log
+    ADD CONSTRAINT role_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: role_user_info_name_key; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY role_user_info
+    ADD CONSTRAINT role_user_info_name_key UNIQUE (name);
+
+
+--
+-- Name: role_user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY role_user_info
+    ADD CONSTRAINT role_user_info_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: rul_wvcdial; Type: INDEX; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE INDEX rul_wvcdial ON hor_webvisitcount USING btree (rule, dial);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
