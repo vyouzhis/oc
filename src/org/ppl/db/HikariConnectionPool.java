@@ -112,6 +112,7 @@ public class HikariConnectionPool extends PObject {
 				try {
 					if(!con.isClosed()){
 						con.commit();
+						echo("free ========");
 					}
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block

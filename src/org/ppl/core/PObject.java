@@ -22,8 +22,9 @@ import org.ppl.io.TimeClass;
 public class PObject {
 	protected String stdClass = null;
 	private String BindName = null;
-	
-	protected static final Config UserCoreConfig = new Config(globale_config.Mysql);
+
+	protected static final Config UserCoreConfig = new Config(
+			globale_config.Mysql);
 	protected static final Config myConfig = new Config(globale_config.DBCONFIG);
 	protected static final Config mConfig = new Config(globale_config.Config);
 	protected static final Config uConfig = new Config(globale_config.UrlMap);
@@ -39,9 +40,29 @@ public class PObject {
 			Logger log = Logger.getLogger(stdClass);
 			log.info(o.toString());
 		} else {
-			// System.out.println("stdClass:"+stdClass);			
+			// System.out.println("stdClass:"+stdClass);
 			System.out.println(o);
 		}
+	}
+
+	public void echo(Object o, String file, int line) {
+		if (stdClass != null) {
+			Logger log = Logger.getLogger(stdClass);
+			log.info(o.toString() + "file:"+file+ ":" + line);
+		} else {
+			// System.out.println("stdClass:"+stdClass);
+			System.out.println(o + "file:"+file + ":" + line);
+		}
+	}
+
+	public static String _FILE_() {
+		StackTraceElement stackTraces[] = (new Throwable()).getStackTrace();
+		return stackTraces[1].getFileName();
+	}
+
+	public static int _LINE_() {
+		StackTraceElement stackTraces[] = (new Throwable()).getStackTrace();
+		return stackTraces[1].getLineNumber();
 	}
 
 	protected void GetSubClassName(String subClassname) {
@@ -191,8 +212,8 @@ public class PObject {
 		TimeClass tc = TimeClass.getInstance();
 		return (int) tc.time();
 	}
-	
-	public String DateFormat(Long TimeStamp, String format ) {
+
+	public String DateFormat(Long TimeStamp, String format) {
 		TimeClass tc = TimeClass.getInstance();
 		return tc.TimeStamptoDate(TimeStamp, format);
 	}
@@ -213,15 +234,15 @@ public class PObject {
 			return false;
 		}
 	}
-	
+
 	public int toInt(Object o) {
-		if(o!= null && o.toString().matches("[0-9]+")){
+		if (o != null && o.toString().matches("[0-9]+")) {
 			return Integer.valueOf(o.toString());
-		}else {
+		} else {
 			return 0;
 		}
 	}
-	
+
 	public String escapeHtml(String old) {
 		if (old == null)
 			return "";
@@ -231,14 +252,14 @@ public class PObject {
 		news = news.replace("&apos;", "\'");
 		news = news.replace(";", "");
 		news = news.replace("'", "\'");
-		//news = news.replace("%", "%%");
+		// news = news.replace("%", "%%");
 		news = news.replace("\r", " ");
 		news = news.replace("\t", " ");
 		news = news.replace("\n", " ");
 
 		return news;
 	}
-	
+
 	public String unescapeHtml(String old) {
 		if (old == null)
 			return "";
@@ -248,9 +269,9 @@ public class PObject {
 		news = news.replace("\r", " ");
 		news = news.replace("\t", " ");
 		news = news.replace("\n", " ");
-		//news = news.replace("%", "%%");
+		// news = news.replace("%", "%%");
 		return news;
 
 	}
-	
+
 }

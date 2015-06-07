@@ -103,7 +103,7 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 		String sql ="select count(*) as count from "+DB_HOR_PRE+"mongodbrule limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
-		echo(res);
+		//echo(sql);
 		if(res!=null)return toInt( res.get("count"));
 		return 0;
 	}

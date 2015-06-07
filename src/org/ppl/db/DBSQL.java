@@ -54,10 +54,7 @@ public class DBSQL extends BaseLang {
 	}
 
 	public void rollback() {
-		if (ConDB == null) {
-			long tid = myThreadId();
-			ConDB = globale_config.GDB.get(tid);
-		}
+		InitConDB();
 		try {
 			if (ConDB != null) {
 				ConDB.rollback();
@@ -103,11 +100,7 @@ public class DBSQL extends BaseLang {
 
 		if (Cursor < MaxLimit) {
 
-			if (ConDB == null) {
-				long tid = myThreadId();
-				ConDB = globale_config.GDB.get(tid);
-
-			}
+			InitConDB();
 
 			String clearSQL = sql;
 			if (myConfig.GetValue("database.driverClassName").equals(
@@ -119,7 +112,7 @@ public class DBSQL extends BaseLang {
 				echo("con sql:" + clearSQL);
 				return null;
 			}
-
+			
 			stmt = ConDB.createStatement();
 			rs = stmt.executeQuery(clearSQL);
 		}
@@ -197,10 +190,8 @@ public class DBSQL extends BaseLang {
 
 	private long exec(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
-		if (ConDB == null) {
-			long tid = myThreadId();
-			ConDB = globale_config.GDB.get(tid);
-		}
+		
+		InitConDB();
 
 		String clearSQL = sql;
 		if (myConfig.GetValue("database.driverClassName").equals(
@@ -214,7 +205,8 @@ public class DBSQL extends BaseLang {
 		}
 
 		stmt = ConDB.createStatement();
-		stmt.clearBatch();
+		
+		//stmt.clearBatch();
 		if (ret) {
 			numRowsUpdated = stmt.executeUpdate(clearSQL,
 					Statement.RETURN_GENERATED_KEYS);
@@ -223,12 +215,28 @@ public class DBSQL extends BaseLang {
 		}
 		return numRowsUpdated;
 	}
+	
+	private void InitConDB() {
+		//if (ConDB == null) {
+			long tid = myThreadId();
+			echo("+++++++++++tid:"+tid);
+			ConDB = globale_config.GDB.get(tid);
+			
+//		}else{
+//			echo("ConDB  no null------");
+//		}
+		
+//		try {
+//			ConDB.commit();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+	}
 
 	public void CommitDB() {
-		if (ConDB == null) {
-			long tid = myThreadId();
-			ConDB = globale_config.GDB.get(tid);
-		}
+		InitConDB();
+		
 		try {
 			ConDB.commit();
 		} catch (SQLException e) {

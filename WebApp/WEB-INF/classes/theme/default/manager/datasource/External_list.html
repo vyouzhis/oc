@@ -43,6 +43,7 @@
 										</tr>
 									</thead>
 									<tbody>
+									    <#if csv_list ??>
 										<#list csv_list as item>
 										<tr>
 											<td class="center">
@@ -58,6 +59,7 @@
 											<td> <a href="${edit_url}?id=${item.id}">编辑</a>,<a href="${edit_url}?id=${item.id}">清空数据</a></td>
 										</tr>
 										</#list>
+										</#if>
 									</tbody>
 								</table>
 							</div>

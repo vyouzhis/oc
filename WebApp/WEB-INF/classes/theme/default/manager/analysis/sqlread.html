@@ -43,6 +43,7 @@
 										</tr>
 									</thead>
 									<tbody>
+										<#if csv_list??>
 										<#list csv_list as item>
 										<tr>
 											<td class="center">
@@ -54,6 +55,7 @@
 																			
 										</tr>
 										</#list>
+										</#if>
 									</tbody>
 								</table>
 							</div>

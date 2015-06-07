@@ -135,7 +135,8 @@ public class mongo_db extends Permission implements BasePerminterface {
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			TipMessage(url, e.getMessage());
+			e.printStackTrace();
+			//TipMessage(url, e.getMessage());
 		}
 	}
 
