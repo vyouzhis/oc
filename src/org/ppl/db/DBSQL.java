@@ -97,7 +97,7 @@ public class DBSQL extends BaseLang {
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
-
+		
 		if (Cursor < MaxLimit) {
 
 			InitConDB();
@@ -207,31 +207,27 @@ public class DBSQL extends BaseLang {
 		stmt = ConDB.createStatement();
 		
 		//stmt.clearBatch();
-		if (ret) {
-			numRowsUpdated = stmt.executeUpdate(clearSQL,
-					Statement.RETURN_GENERATED_KEYS);
-		} else {
-			stmt.executeUpdate(clearSQL);
+		try {
+			if (ret) {
+				numRowsUpdated = stmt.executeUpdate(clearSQL,
+						Statement.RETURN_GENERATED_KEYS);
+			} else {
+				stmt.executeUpdate(clearSQL);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			ConDB.commit();
 		}
+		
 		return numRowsUpdated;
 	}
 	
 	private void InitConDB() {
-		//if (ConDB == null) {
-			long tid = myThreadId();
-			echo("+++++++++++tid:"+tid);
+		if (ConDB == null) {
+			long tid = myThreadId();			
 			ConDB = globale_config.GDB.get(tid);
-			
-//		}else{
-//			echo("ConDB  no null------");
-//		}
-		
-//		try {
-//			ConDB.commit();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
+		}		
 	}
 
 	public void CommitDB() {

@@ -65,7 +65,7 @@ public class Permission extends BaseTheme {
 			update(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			end();
+			//end();
 		}
 	}
 

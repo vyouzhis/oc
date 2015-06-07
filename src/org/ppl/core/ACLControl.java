@@ -72,11 +72,15 @@ public class ACLControl extends ACLRole {
 	public Map<String, String> LibInfo(String value) {
 		Injector injector = globale_config.injector;
 		Map<String, String> info = new HashMap<String, String>();
-
-		Permission home = (Permission) injector.getInstance(Key.get(
-				Permission.class, Names.named(value)));
-		info.put("name", home._MLang("name"));
-		info.put("desc", home._MLang("desc"));
+		try {
+			Permission home = (Permission) injector.getInstance(Key.get(
+					Permission.class, Names.named(value)));
+			info.put("name", home._MLang("name"));
+			info.put("desc", home._MLang("desc"));
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return info;
 	}
 
