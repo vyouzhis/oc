@@ -71,8 +71,9 @@ public class ACLControl extends ACLRole {
 	 */
 	public Map<String, String> LibInfo(String value) {
 		Injector injector = globale_config.injector;
-		Map<String, String> info = new HashMap<String, String>();
+		Map<String, String> info = null;
 		try {
+			info = new HashMap<String, String>();
 			Permission home = (Permission) injector.getInstance(Key.get(
 					Permission.class, Names.named(value)));
 			info.put("name", home._MLang("name"));
@@ -94,8 +95,8 @@ public class ACLControl extends ACLRole {
 		if(time==null)return false;
 		
 		int ontime = Integer.valueOf(time);
-		TimeClass tc = TimeClass.getInstance();
-		int now = (int) tc.time();
+		
+		int now = time();
 		int timeOut = mConfig.GetInt(globale_config.TimeOut);
 		if(now-ontime>timeOut){	
 			List<String> rmc = porg.getRmc();

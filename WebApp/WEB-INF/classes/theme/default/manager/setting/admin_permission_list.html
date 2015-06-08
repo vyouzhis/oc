@@ -59,7 +59,7 @@
                <#list libList?keys as item>
                <#assign values = libList[item] >
                <#assign infos = fun.LibInfo(item) >
-              
+               <#if infos.name??>
                <tr>
                		<td class="">${infos.name}</td>
 			
@@ -105,7 +105,7 @@
 						</td>
 						
 					</tr>
-					
+					</#if>
                </tbody> 
                </#list> 	
               </table> 
