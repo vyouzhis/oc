@@ -82,7 +82,7 @@ public class External_list extends Permission implements BasePerminterface {
 				Limit, "");
 
 		setRoot("Page", page_html);
-		setRoot("edit_url", ucl.edit("External_DB"));
+		setRoot("edit_url", ucl.read("External_DB"));
 		// setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
 		setRoot("new_csv_url", ucl.read("External_DB"));
 	}

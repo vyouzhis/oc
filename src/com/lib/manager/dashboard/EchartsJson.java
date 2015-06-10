@@ -372,14 +372,16 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					tsql = tsql.replace("@" + key + "@", tList.get(key));
 				}
 				tsql = escapeHtml(tsql);
-				//echo("dtype:"+dtype);
+				
 				try {
 					
 					if (dtype == 0) {
+						
 						res = FetchAll(tsql);
 					} else {
 						res = CustomDB(tsql, dtype);
 					}
+					
 					if(res!=null){			
 						ret.add(res);
 					}

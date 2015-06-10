@@ -433,7 +433,7 @@
 				$("#dataEditor").css("max-height", "500px");
 				function SaveImg() {
 					var dataURL = myChart4.getDataURL();
-					var imgs = "<img src='"+dataURL+"' />";
+					var imgs = "<img src='"+dataURL+"' width=800px; />";
 					var val = $("#dataEditor").html();
 					$("#dataEditor").html(val + imgs);
 				}

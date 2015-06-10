@@ -186,7 +186,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
@@ -196,6 +196,7 @@ public class sqledit extends Permission implements BasePerminterface {
 				List<Map<String, Object>> tmp;
 				while (true) {
 					tmp = ucdb.FetchAll(sql);
+					
 					res.addAll(tmp);
 					if (ucdb.isFetchFinal())
 						break;

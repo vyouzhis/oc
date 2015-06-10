@@ -54,10 +54,10 @@
          </div>          
          <div class="form-group"> 
           <div class="col-xs-12"> 
-           <label class="col-sm-3 control-label">jdbc:</label> 
+           <label class="col-sm-3 control-label">jdbc:${dcname}</label> 
            <select id="dcname" name="dcname" class="col-sm-4">				
-				<option value="com.mysql.jdbc.Driver" <#if dcname=="com.mysql.jdbc.Driver">  selected </#if> >com.mysql.jdbc.Driver</option>
-				<option value="org.postgresql.Driver" <#if dcname=="org.postgresql.Driver">  selected </#if>  >org.postgresql.Driver</option>																
+				<option value="com.mysql.jdbc.Driver" <#if dcname == "com.mysql.jdbc.Driver">  selected </#if> >com.mysql.jdbc.Driver</option>
+				<option value="org.postgresql.Driver" <#if dcname == "org.postgresql.Driver">  selected </#if> >org.postgresql.Driver</option>																
 			</select>
           </div> 
          </div> 

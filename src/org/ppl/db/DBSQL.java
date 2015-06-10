@@ -76,7 +76,10 @@ public class DBSQL extends BaseLang {
 					Map<String, Object> row = new HashMap<String, Object>();
 					for (int i = 1; i <= numColumns; ++i) {
 						String name = meta.getColumnName(i);
-
+						if(meta.getColumnLabel(i)!=null && meta.getColumnLabel(i).length()>0){
+							name = meta.getColumnLabel(i);
+						}
+						
 						if (meta.getColumnTypeName(i).equals("TINYINT")) {
 							value = rs.getInt(i);
 
@@ -93,6 +96,10 @@ public class DBSQL extends BaseLang {
 		}
 
 		return results;
+	}
+	
+	public int getFields() {
+		return 0;
 	}
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
