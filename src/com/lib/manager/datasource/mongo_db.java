@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.db.MGDB;
@@ -66,6 +67,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 			return;
 		}
 		setRoot("snap_id", 0);
+		setRoot("cid", 0);
 		CollectionList();
 		switch (rmc.get(1).toString()) {
 		case "read":
@@ -87,6 +89,8 @@ public class mongo_db extends Permission implements BasePerminterface {
 		mgdb.Close();
 		setRoot("fetch_query", fetch_query);
 		
+		listPid();
+		
 		super.View();
 	}
 
@@ -107,7 +111,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		int snap = 0;
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
-		
+		int cid = toInt(porg.getKey("cid_list"));
 		
 		if(porg.getKey("snap_id").equals("1")){
 			snap = 1;
@@ -121,11 +125,11 @@ public class mongo_db extends Permission implements BasePerminterface {
 		}
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
-				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime, snap)"
-				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d, %d)";
+				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime, snap,cid)"
+				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d, %d, %d)";
 		String sql = String.format(format, project_name, db_collection,
 				fetch_query, where_query, field_query, sort_query, now, stime,
-				stime, snap);
+				stime, snap, cid);
 
 		
 		//echo(sql);
@@ -192,6 +196,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 				project_name = res.get("name").toString();
 				
 				setRoot("snap_id", res.get("snap").toString());
+				setRoot("cid", res.get("cid").toString());
 			}
 		}
 
@@ -388,6 +393,26 @@ public class mongo_db extends Permission implements BasePerminterface {
 			String json_field = JSON.toJSON(field_all).toString();
 
 			setRoot("field_all", json_field);
+		}
+	}
+	
+	private void listPid() {
+
+		int cid = toInt(porg.getKey("cid"));
+		setRoot("cid", cid);
+
+		String sql = "select id,name from " + DB_HOR_PRE
+				+ "classify order by id desc";
+		List<Map<String, Object>> res;
+
+		try {
+			res = FetchAll(sql);
+			if (res != null) {
+				setRoot("pid_list", res);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

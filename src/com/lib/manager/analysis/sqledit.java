@@ -66,7 +66,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
+		listPid();
 		super.View();
 	}
 
@@ -92,7 +92,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			setRoot("sql_pre", "\r\n" + TransferSQL);
 			setRoot("create_sql", HtmlSQL);
 			cookieAct.SetCookie("edit_sql", RunSQL);
-			
+
 			SqlView(RunSQL);
 		}
 
@@ -110,7 +110,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		String jsonTmp = porg.getKey("jsontmp");
 		if (jsonTmp == null || jsonTmp.length() < 1)
 			return sql;
-		
+
 		List<List<String>> jsonList = JSON.parseObject(jsonTmp, List.class);
 		if (jsonList == null)
 			return sql;
@@ -186,7 +186,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
@@ -196,7 +196,7 @@ public class sqledit extends Permission implements BasePerminterface {
 				List<Map<String, Object>> tmp;
 				while (true) {
 					tmp = ucdb.FetchAll(sql);
-					
+
 					res.addAll(tmp);
 					if (ucdb.isFetchFinal())
 						break;
@@ -237,7 +237,8 @@ public class sqledit extends Permission implements BasePerminterface {
 		String usql = porg.getKey("sql");
 		String jsonTmp = porg.getKey("jsontmp");
 		String nview = porg.getKey("nview");
-
+		int cid = toInt(porg.getKey("cid_list"));
+		
 		int is_get_data = toInt(porg.getKey("get_data"));
 
 		int sql_type = toInt(porg.getKey("sql_type"));
@@ -256,10 +257,9 @@ public class sqledit extends Permission implements BasePerminterface {
 
 		String format = " insert INTO "
 				+ DB_HOR_PRE
-				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview)values('%s','%s', %d, %d, '%s', %d, '%s');";
+				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d);";
 		String sql = String.format(format, name, usql, save_id, sql_type,
-				jsonTmp, is_get_data, nview);
-		
+				jsonTmp, is_get_data, nview, cid);
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String msg = _CLang("ok_save");
@@ -308,11 +308,31 @@ public class sqledit extends Permission implements BasePerminterface {
 				+ " order by id desc";
 
 		List<Map<String, Object>> res;
-	
+
 		try {
 			res = FetchAll(sql);
 			if (res != null) {
 				setRoot(l, res);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void listPid() {
+
+		int pid = toInt(porg.getKey("pid"));
+		setRoot("pid", pid);
+
+		String sql = "select id,name from " + DB_HOR_PRE
+				+ "classify order by id desc";
+		List<Map<String, Object>> res;
+
+		try {
+			res = FetchAll(sql);
+			if (res != null) {
+				setRoot("pid_list", res);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

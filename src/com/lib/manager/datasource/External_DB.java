@@ -66,7 +66,7 @@ public class External_DB extends Permission implements BasePerminterface {
 			String sql = String.format(format, id);
 
 			Map<String, Object> res = FetchOne(sql);
-			
+
 			if (res != null) {
 				echo(res);
 				setRoot("action_url", ucl.edit(SliceName(stdClass)) + "?id="
@@ -146,16 +146,19 @@ public class External_DB extends Permission implements BasePerminterface {
 				try {
 					DesEncrypter de = new DesEncrypter();
 					password = de.encrypt(password);
-					ext = " ,passwd='"+password+"'";
+					ext = " ,passwd='" + password + "'";
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
 
-			String format = " update "+DB_HOR_PRE+"dbsource SET title='%s', url='%s',username='%s', dcname='%s' %s WHERE id=%d";
-			String sql = String.format(format, title, url, username, dcname, ext, id);
-			
+			String format = " update "
+					+ DB_HOR_PRE
+					+ "dbsource SET title='%s', url='%s',username='%s', dcname='%s' %s WHERE id=%d";
+			String sql = String.format(format, title, url, username, dcname,
+					ext, id);
+
 			try {
 				update(sql);
 				TipMessage(ucl.read("External_list"), _CLang("ok_save"));
@@ -164,7 +167,8 @@ public class External_DB extends Permission implements BasePerminterface {
 				TipMessage(ucl.create(SliceName(stdClass)), e.getMessage());
 			}
 		} else {
-			TipMessage(ucl.read(SliceName(stdClass))+"?id="+id, _CLang("error_null"));
+			TipMessage(ucl.read(SliceName(stdClass)) + "?id=" + id,
+					_CLang("error_null"));
 		}
 	}
 

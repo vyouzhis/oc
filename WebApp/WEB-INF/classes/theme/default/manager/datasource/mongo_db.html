@@ -71,15 +71,19 @@
 	            <input type="text" value='${project_name!""}' id="project_name" name="project_name" placeholder="..." /> 
 	            <i class="icon-save bigger-160 red"></i> 
 	           </span> 
+	           
 	           <select data-trigger="hover" data-toggle="tooltip" data-original-title="Tooltip goes here" id="snap_id" name="snap_id" >
                	<option value="0" <#if (snap_id)?number==0 > selected="selected" </#if>  > 实时数据</option>	               	
                	<!-- <option value="1">findOne</option>  -->
-				<option value="1" <#if (snap_id)?number==1 > selected="selected" </#if> >二次分析</option>							
-				
+				<option value="1" <#if (snap_id)?number==1 > selected="selected" </#if> >二次分析</option>											
                </select>
-	               
-	          
-				
+               <select id="cid_list" name="cid_list">										
+					<#if pid_list??>
+		           		<#list pid_list as item>		
+						<option value="${item.id}" <#if item.id == cid >  selected </#if> >${item.name}</option>
+						</#list>
+					</#if>	
+				</select>	          				
 	          <button type="submit" class="btn btn-sm btn-default">
 	          <i class="icon-ok bigger-110"></i> 保存 </button> 
 	         </span> 
