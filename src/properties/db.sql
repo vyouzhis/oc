@@ -78,6 +78,9 @@ CREATE TABLE IF NOT EXISTS `web_article` (
 --
 -- PostgreSQL database dump
 --
+--
+-- PostgreSQL database dump
+--
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -209,6 +212,41 @@ CREATE VIEW game_mt4 AS
 ALTER TABLE public.game_mt4 OWNER TO bi;
 
 --
+-- Name: hor_classify; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_classify (
+    id integer NOT NULL,
+    pid integer DEFAULT 0 NOT NULL,
+    name character varying NOT NULL,
+    ctime integer NOT NULL
+);
+
+
+ALTER TABLE public.hor_classify OWNER TO bi;
+
+--
+-- Name: hor_classify_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_classify_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_classify_id_seq OWNER TO bi;
+
+--
+-- Name: hor_classify_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_classify_id_seq OWNED BY hor_classify.id;
+
+
+--
 -- Name: hor_classinfo; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
@@ -324,7 +362,8 @@ CREATE TABLE hor_mongodbrule (
     stime integer NOT NULL,
     etime integer DEFAULT 0 NOT NULL,
     istop smallint DEFAULT 0 NOT NULL,
-    snap integer DEFAULT 0 NOT NULL
+    snap integer DEFAULT 0 NOT NULL,
+    cid integer DEFAULT 0 NOT NULL
 );
 
 
@@ -335,6 +374,13 @@ ALTER TABLE public.hor_mongodbrule OWNER TO bi;
 --
 
 COMMENT ON COLUMN hor_mongodbrule.snap IS '0 -- 可以在报表那儿显示菜单，1 需要二次运算开发';
+
+
+--
+-- Name: COLUMN hor_mongodbrule.cid; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_mongodbrule.cid IS 'classify id';
 
 
 --
@@ -408,7 +454,8 @@ CREATE TABLE hor_usersql (
     sqltmp character varying(256) DEFAULT ''::character varying NOT NULL,
     uview character varying(256) DEFAULT ''::character varying NOT NULL,
     input_data integer DEFAULT 0 NOT NULL,
-    vtime integer DEFAULT 0 NOT NULL
+    vtime integer DEFAULT 0 NOT NULL,
+    cid integer DEFAULT 0 NOT NULL
 );
 
 
@@ -440,6 +487,13 @@ COMMENT ON COLUMN hor_usersql.input_data IS '0 不导入，1 导入数据';
 --
 
 COMMENT ON COLUMN hor_usersql.vtime IS 'view 运行完成时间';
+
+
+--
+-- Name: COLUMN hor_usersql.cid; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_usersql.cid IS 'classify id';
 
 
 --
@@ -493,6 +547,29 @@ dial 刻度盘';
 
 COMMENT ON COLUMN hor_webvisitcount.val IS '值';
 
+
+--
+-- Name: kfd_mt4_trades; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW kfd_mt4_trades AS
+ SELECT hor_class.act_v0 AS cmd,
+    hor_class.act_v1 AS profit,
+    hor_class.act_v2 AS close_price,
+    hor_class.act_v3 AS login,
+    hor_class.act_v4 AS open_price,
+    hor_class.act_v5 AS ticket,
+    hor_class.act_v6 AS symbol,
+    hor_class.act_v7 AS comment,
+    hor_class.act_v8 AS open_time,
+    hor_class.act_v9 AS volume,
+    hor_class.act_va AS "timestamp",
+    hor_class.act_vb AS close_time
+   FROM hor_class
+  WHERE (hor_class.rule = 1);
+
+
+ALTER TABLE public.kfd_mt4_trades OWNER TO bi;
 
 --
 -- Name: role_group; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
@@ -637,6 +714,13 @@ ALTER TABLE public.utest_viwes OWNER TO bi;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: bi
 --
 
+ALTER TABLE ONLY hor_classify ALTER COLUMN id SET DEFAULT nextval('hor_classify_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
 ALTER TABLE ONLY hor_classinfo ALTER COLUMN id SET DEFAULT nextval('hor_classinfo_id_seq'::regclass);
 
 
@@ -687,6 +771,14 @@ ALTER TABLE ONLY role_log ALTER COLUMN id SET DEFAULT nextval('role_log_id_seq':
 --
 
 ALTER TABLE ONLY role_user_info ALTER COLUMN uid SET DEFAULT nextval('role_user_info_uid_seq'::regclass);
+
+
+--
+-- Name: hor_classify_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_classify
+    ADD CONSTRAINT hor_classify_pkey PRIMARY KEY (id);
 
 
 --
