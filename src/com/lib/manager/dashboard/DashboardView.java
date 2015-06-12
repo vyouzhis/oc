@@ -11,7 +11,6 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 
 import com.alibaba.fastjson.JSON;
-import com.google.gson.annotations.JsonAdapter;
 
 public class DashboardView extends Permission implements BasePerminterface {
 	private List<String> rmc;
@@ -19,7 +18,6 @@ public class DashboardView extends Permission implements BasePerminterface {
 	public DashboardView() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
-		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
 
@@ -57,13 +55,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		
-		
-//		getMongoDBList(3, "webSite");
-//		getMongoDBList(2, "webDistinct");
-//		UserSQl();
-//		TmpSQl();
-//		
+
 		ListMainClassify();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
@@ -75,13 +67,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		String sql = "select id,name from hor_classify where pid=0 order by id";
 		
 		List<Map<String, Object>> res;
-		
-		
-//		'webSite' : {
-//			name : '网站浏览',
-//			type : 'folder',
-//			'additionalParameters' : ${webSite!""}
-//		},
+
 		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
 		Map<String, Object> SubTree;
 		List<Map<String, Object>> RootRes=null, tRes;
@@ -93,12 +79,9 @@ public class DashboardView extends Permission implements BasePerminterface {
 					SubTree = new HashMap<>();
 					SubTree.put("name", map.get("name").toString());
 					SubTree.put("type", "folder");
-					
-					
-					//TreeObject.put(map.get("name").toString(),)
-					
+
 					RootSql = "SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction in (2,3) and snap=0 and cid="+map.get("id")+" order by id desc;";
-					echo(RootSql);
+					
 					try {
 						RootRes = FetchAll(RootSql);
 												
@@ -107,7 +90,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 						e.printStackTrace();
 					}	
 					RootSql = "select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0 and cid="+map.get("id");
-					echo(RootSql);
+					
 					try {
 						tRes = FetchAll(RootSql);
 						if(RootRes != null){
@@ -123,7 +106,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 					}
 					
 					RootSql = "select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid  and u.cid= "+ map.get("id")+" order by s.id desc";
-					echo(RootSql);
+					
 					try {
 						tRes = FetchAll(RootSql);
 						if(RootRes != null){
@@ -151,55 +134,6 @@ public class DashboardView extends Permission implements BasePerminterface {
 		setRoot("treeObjectJson", treeObjectJson);
 		
 	}
-	
-	
-//	private void getMongoDBList(int qaction, String RootName) {
-//		String sql = "SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" and snap=0 order by id desc;";
-//		
-//		
-//		List<Map<String, Object>> res;
-//		
-//		try {
-//			res = FetchAll(sql);
-//			
-//			SetTree(res, RootName, qaction);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
-//		
-//	}
-//	
-//	private void UserSQl() {
-//		String sql = "select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0";
-//		List<Map<String, Object>> res;
-//		
-//		try {
-//			res = FetchAll(sql);
-//			if(res!=null){
-//				SetTree(res, "UserSQl", 4);
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	private void TmpSQl() {				
-//		String sql = "select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid order by s.id desc";
-//		
-//		List<Map<String, Object>> res;
-//		
-//		try {
-//			res = FetchAll(sql);
-//			if(res!=null){
-//				SetTree(res, "TmpSQl", 5);
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 	
 	private Map<String, Map<String, Map<String, String>>> SetTree(List<Map<String, Object>> res) {
 		Map<String, Map<String,String>> file = new HashMap<>();
