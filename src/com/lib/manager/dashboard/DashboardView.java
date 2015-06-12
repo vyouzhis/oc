@@ -15,7 +15,7 @@ import com.google.gson.annotations.JsonAdapter;
 
 public class DashboardView extends Permission implements BasePerminterface {
 	private List<String> rmc;
-	private Map<String, Map<String, Map<String, String>>> Mongo;
+	
 	public DashboardView() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
@@ -57,71 +57,167 @@ public class DashboardView extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		getMongoDBList(3, "webSite");
-		getMongoDBList(2, "webDistinct");
-		UserSQl();
-		TmpSQl();
+		
+		
+//		getMongoDBList(3, "webSite");
+//		getMongoDBList(2, "webDistinct");
+//		UserSQl();
+//		TmpSQl();
+//		
+		ListMainClassify();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
 		setRoot("listSQL_url", ucl.read("ListSQL"));
 		cardioid();
 	}
 	
-	private void getMongoDBList(int qaction, String RootName) {
-		String sql = "SELECT id,name FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" and snap=0 order by id desc;";
-		Mongo = new HashMap<String, Map<String,Map<String,String>>>();
+	private void ListMainClassify() {
+		String sql = "select id,name from hor_classify where pid=0 order by id";
 		
 		List<Map<String, Object>> res;
 		
-		try {
-			res = FetchAll(sql);
-						
-			SetTree(res, RootName, qaction);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
 		
-	}
-	
-	private void UserSQl() {
-		String sql = "select id,sql,name,sql_type,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0";
-		List<Map<String, Object>> res;
-		
+//		'webSite' : {
+//			name : '网站浏览',
+//			type : 'folder',
+//			'additionalParameters' : ${webSite!""}
+//		},
+		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
+		Map<String, Object> SubTree;
+		List<Map<String, Object>> RootRes=null, tRes;
+		String RootSql = null;
 		try {
 			res = FetchAll(sql);
 			if(res!=null){
-				SetTree(res, "UserSQl", 4);
+				for (Map<String, Object> map : res) {
+					SubTree = new HashMap<>();
+					SubTree.put("name", map.get("name").toString());
+					SubTree.put("type", "folder");
+					
+					
+					//TreeObject.put(map.get("name").toString(),)
+					
+					RootSql = "SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction in (2,3) and snap=0 and cid="+map.get("id")+" order by id desc;";
+					echo(RootSql);
+					try {
+						RootRes = FetchAll(RootSql);
+												
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}	
+					RootSql = "select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0 and cid="+map.get("id");
+					echo(RootSql);
+					try {
+						tRes = FetchAll(RootSql);
+						if(RootRes != null){
+							if(tRes!=null){
+								RootRes.addAll(tRes);
+							}
+						}else {
+							RootRes = tRes;
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					RootSql = "select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid  and u.cid= "+ map.get("id")+" order by s.id desc";
+					echo(RootSql);
+					try {
+						tRes = FetchAll(RootSql);
+						if(RootRes != null){
+							if(tRes!=null){
+								RootRes.addAll(tRes);
+							}
+						}else {
+							RootRes = tRes;
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					SubTree.put("additionalParameters", SetTree(RootRes));
+					TreeObject.put(map.get("name").toString(), SubTree);
+				}
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private void TmpSQl() {
-		String sql = "select id,name from "+DB_HOR_PRE+"sqltmp order by id desc;";
-		List<Map<String, Object>> res;
 		
-		try {
-			res = FetchAll(sql);
-			if(res!=null){
-				SetTree(res, "TmpSQl", 5);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String treeObjectJson = JSON.toJSONString(TreeObject);
+		setRoot("treeObjectJson", treeObjectJson);
+		
 	}
 	
-	private void SetTree(List<Map<String, Object>> res, String RootName, int qaction) {
+	
+//	private void getMongoDBList(int qaction, String RootName) {
+//		String sql = "SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction="+qaction+" and snap=0 order by id desc;";
+//		
+//		
+//		List<Map<String, Object>> res;
+//		
+//		try {
+//			res = FetchAll(sql);
+//			
+//			SetTree(res, RootName, qaction);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
+//		
+//	}
+//	
+//	private void UserSQl() {
+//		String sql = "select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0";
+//		List<Map<String, Object>> res;
+//		
+//		try {
+//			res = FetchAll(sql);
+//			if(res!=null){
+//				SetTree(res, "UserSQl", 4);
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	private void TmpSQl() {				
+//		String sql = "select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid order by s.id desc";
+//		
+//		List<Map<String, Object>> res;
+//		
+//		try {
+//			res = FetchAll(sql);
+//			if(res!=null){
+//				SetTree(res, "TmpSQl", 5);
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	private Map<String, Map<String, Map<String, String>>> SetTree(List<Map<String, Object>> res) {
 		Map<String, Map<String,String>> file = new HashMap<>();
+		
 		for (Map<String, Object> map : res) {
 			Map<String, String> Item = new HashMap<>();
-			Item.put("name", map.get("name").toString());
 			Item.put("type", "item");
+			
 			Item.put("id",  map.get("id").toString());
-			Item.put("qaction",  qaction+"");	
+			Item.put("name", map.get("name").toString());
+			if(map.containsKey("qaction")){
+				Item.put("qaction",  map.get("qaction").toString());
+			}else if(map.containsKey("sql_type")){
+				Item.put("qaction",  "4");
+			}else {
+				Item.put("qaction",  "5");
+			}
+				
 			if(map.containsKey("sql_type")){
 				Item.put("sql_type", map.get("sql_type").toString());
 			}
@@ -131,9 +227,12 @@ public class DashboardView extends Permission implements BasePerminterface {
 			
 			file.put(map.get("id").toString(), Item);				
 		}
+		
+		Map<String, Map<String, Map<String, String>>> Mongo;
+		Mongo = new HashMap<String, Map<String,Map<String,String>>>();
+		
 		Mongo.put("children", file);
-		String JsonTree = JSON.toJSONString(Mongo);
-		setRoot(RootName, JsonTree);
+		return Mongo;
 	}
 
 	@Override

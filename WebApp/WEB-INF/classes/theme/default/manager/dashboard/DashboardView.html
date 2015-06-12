@@ -195,29 +195,7 @@
 					//checkout examples/treeview.html and examples/treeview.js for more info
 				};
 
-				var tree_data = {
-					'webSite' : {
-						name : '网站浏览',
-						type : 'folder',
-						'additionalParameters' : ${webSite!""}
-					},
-					'webDistinct' : {
-						name : 'distinct',
-						type : 'folder',
-						'additionalParameters': ${webDistinct!""}
-					},
-					'UserSQl':{
-						name:'UserSQl',
-						type:'folder',
-						'additionalParameters': ${UserSQl!""}
-					},
-					'TmpSQl':{
-						name:'TmpSQl',
-						type:'folder',
-						'additionalParameters': ${TmpSQl!""}
-					},
-										
-				}
+				var tree_data = ${treeObjectJson!""};
 					
 				var treeDataSource = new DataSourceTree({
 					data : tree_data
