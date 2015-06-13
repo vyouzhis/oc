@@ -254,7 +254,7 @@
 										<#if List_Data??> <#list List_Data as item>
 										<tr>
 											<#list Key_Title as value>
-											<td><#if item[value]??> ${item[value]} </#if></td> </#list>
+											<td><#if item[value]??> ${item[value]?string} </#if></td> </#list>
 										</tr>
 										</#list> </#if>
 									</tbody>
