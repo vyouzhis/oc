@@ -87,15 +87,16 @@
 										<div id="tmp_list" name="tmp_list">
 											<#if tmpLists??>
 											<#list tmpLists as item>
+											<form enctype='multipart/form-data' action='${edit_url!''}?id=${item.id}' method='POST' class='form-inline'>
 											<div class="well">
 											<div class="row form-horizontal">
 
 												<label for="form-field-4"
 													class="col-sm-2 control-label no-padding-right">名称:</label>
 												<div class="col-sm-3">
-													<input type="text" placeholder="name" id="form-field-4"
+													<input type="text" placeholder="name" id="name" name="name"
 														class="input-sm" value="${item.name}"> 
-													<a href="javascript:void(0);" class="btn btn-sm btn-success" ><i class="icon-save  green"></i>&nbsp;&nbsp;保存</a>
+													<button class="btn btn-info" type="submit"><i class="icon-save  green"></i>&nbsp;&nbsp;保存</button>
 													<div class="space-2"></div>
 
 												</div>																																				
@@ -128,7 +129,7 @@
 																<option
 																	title="单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38">FLOAT</option></select>
 														</td>
-														<td><input type="text" value="${tmpL[key]}" name="${key}"
+														<td><input type="text" value='${tmpL[key]}' name="${key}"
 															id="${key}"></td>
 														<td><input type="text" value="说明" name="desc_${key}"
 															id="desc_${key}"></td>
@@ -138,6 +139,7 @@
 												</tbody>
 											</table>
 										</div>
+										</form>
 											</#list>
 											</#if>
 										</div>
@@ -205,15 +207,16 @@
 						<#list JsonList as jitem>
 						"<tr>"+
 							"<td class='center'>${jitem[0]}</td>"+
-							"<td>"+"<select name='field_${jitem[0]}' id='field_${jitem[0]}'><option title='4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295'>INT</option>"+
-									"<option title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>"+
-									"<option title='最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数'>TEXT</option>"+
-									"<option title='日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间'>DATE</option>"+
-									"<option title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>"+
-									"<option title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option></select>"+
+							"<td>"+"<select disabled='disabled' name='field_${jitem[0]}' id='field_${jitem[0]}'> "+
+									"<option  <#if jitem[2] == 'INT' > selected='selected' </#if>  title='4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295'>INT</option>"+
+									"<option <#if jitem[2] == 'VARCHAR' > selected='selected' </#if> title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>"+
+									"<option <#if jitem[2] == 'TEXT' > selected='selected' </#if> title='最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数'>TEXT</option>"+
+									"<option <#if jitem[2] == 'DATE' > selected='selected' </#if> title='日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间'>DATE</option>"+
+									"<option <#if jitem[2] == 'BOOLEAN' > selected='selected' </#if> title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>"+
+									"<option <#if jitem[2] == 'FLOAT' > selected='selected' </#if> title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option></select>"+
 							"</td>"+
-							"<td><input type='text' value='${jitem[1]}' name='${jitem[0]}' id='${jitem[0]}'></td>"+
-							"<td><input type='text' readonly value='说明' name='desc_${jitem[0]}' id='desc_${jitem[0]}'>"+"</td>"+
+							"<td><input type='text' value='${jitem[1]?string?replace('"','\\"')}' name='${jitem[0]}' id='${jitem[0]}'></td>"+
+							"<td><input type='text' readonly value='${jitem[3]}' name='desc_${jitem[0]}' id='desc_${jitem[0]}'>"+"</td>"+
 						"</tr>"+				
 						</#list>
 						</#if>

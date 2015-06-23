@@ -51,9 +51,11 @@ public class sqledit extends Permission implements BasePerminterface {
 		setRoot("sql_type", 0);
 		switch (rmc.get(1).toString()) {
 		case "read":
+			listPid();
 			read(null);
 			break;
 		case "search":
+			listPid();
 			search(null);
 			break;
 		case "create":
@@ -66,7 +68,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-		listPid();
+		
 		super.View();
 	}
 
@@ -121,6 +123,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		}
 
 		setRoot("temples", JSON.toJSONString(tList));
+		
 		setRoot("jsonList", jsonList);
 
 		return sql;
@@ -252,6 +255,7 @@ public class sqledit extends Permission implements BasePerminterface {
 
 		if (jsonTmp == null)
 			jsonTmp = "";
+		
 		if (nview == null)
 			nview = "";
 

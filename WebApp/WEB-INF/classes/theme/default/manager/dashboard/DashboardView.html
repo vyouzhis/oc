@@ -33,7 +33,7 @@
 							
 							<div id="custom-container" style="height:378px" class="well col-xs-12 col-sm-12"></div>
 							<div class="col-xs-12 col-sm-12 well ">
-								<div class="dropdown col-xs-12 col-sm-4">							
+								<div class="dropdown col-xs-12 col-sm-2">							
 									<a data-toggle="dropdown" class="dropdown-toggle" href="#">
 										图形选择 &nbsp;
 										<i class="icon-caret-down bigger-110 width-auto"></i>										
@@ -58,10 +58,24 @@
 						       		<span id="graph_name" name="graph_name" class="chart_text ">折线/柱状图</span>
 						       		</div>	
 						       	</div>
-						       	<div class="col-xs-12 col-sm-4">
+						       	<div class="col-xs-12 col-sm-2">
 					       			<h5 class="bigger lighter">
 										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
-											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>更新数据
+											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>生成图表
+										</a>
+									</h5>
+					       		</div>
+					       		<div class="col-xs-12 col-sm-2">
+					       			<h5 class="bigger lighter">
+										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
+											onclick="CacheGraphic()"> <i class="icon-camera"></i>缓存数据
+										</a>
+									</h5>
+					       		</div>
+					       		<div class="col-xs-12 col-sm-2">
+					       			<h5 class="bigger lighter">
+										<a class="btn btn-sm btn-primary" href="javascript:void(0)"
+											onclick="DownLoad()"> <i class="icon-download-alt"></i>下载数据
 										</a>
 									</h5>
 					       		</div>
@@ -397,12 +411,19 @@
 						  },
 						  complete: function(request, textStatus) { //for additional info
 							  var option = request.responseText;
-						      if(option.length > 2){
+							  var chk = option.substring(1, 5);
+							  
+						      if(option.length > 2 && chk!='html'){
 							  	myChart4.clear();
 							  	myChart4.setOption(JSON.parse(option), true);
 							  	myChart4.refresh();
 						  	  }
+						      						      
 							  myChart4.hideLoading();
+							  
+							  if(chk=='html'){
+								  alert("还没登录或超时退出!");
+							  }
 						  }
 						});
 				}

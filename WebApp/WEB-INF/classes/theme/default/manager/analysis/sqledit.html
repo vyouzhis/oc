@@ -200,21 +200,28 @@
 												<td class='center'>${item[0]}</td>
 												<td><select id='field_${item[0]}'
 													name='field_${item[0]}'>
-														<option
+														<option 
+														<#if item[2] == 'INT' > selected="selected" </#if>
 															title='4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295'>INT</option>
-														<option title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>
+														<option <#if item[2] == 'VARCHAR' > selected="selected" </#if> 
+														title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>
 														<option
+														<#if item[2] == 'TEXT' > selected="selected" </#if>
 															title='最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数'>TEXT</option>
 														<option
+														<#if item[2] == 'DATE' > selected="selected" </#if>
 															title='日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间'>DATE</option>
-														<option title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>
 														<option
+														<#if item[2] == 'BOOLEAN' > selected="selected" </#if> 
+														title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>
+														<option
+														<#if item[2] == 'FLOAT' > selected="selected" </#if> 
 															title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option>
 												</select></td>
 												<td><input type='text' id='${item[0]}'
 													name='${item[0]}' value='${item[1]}' /></td>
 												<td><input type='text' id='desc_${item[0]}'
-													name='desc_${item[0]}' value='说明' /></td>
+													name='desc_${item[0]}' value='${item[3]}' /></td>
 											</tr>
 
 											</#list> </#if>
@@ -304,6 +311,7 @@
 							list[0] = json_tmp[i];
 							list[1] = $("#" + json_tmp[i]).val();
 							list[2] = $("#field_" + json_tmp[i]).val();
+							list[3] = $("#desc_" + json_tmp[i]).val();							
 							tmp_list[i] = list;
 						}
 						tmp_url = "&jsontmp=" + JSON.stringify(tmp_list);
@@ -398,6 +406,7 @@
 												list[2] = $(
 														"#field_" + json_tmp[i])
 														.val();
+												list[3] = $("#desc_" + json_tmp[i]).val();	
 												tmp_list[i] = list;
 											}
 											tmp_url = "&jsontmp="

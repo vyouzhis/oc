@@ -3,6 +3,7 @@ package com.lib.thread;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.db.UserCoreDB;
@@ -13,7 +14,7 @@ public class updateSQLView extends BaseRapidThread {
 	private long rule = 0;
 	private String view_field = "";
 	private boolean isvfield = true;
-
+	
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
@@ -133,7 +134,7 @@ public class updateSQLView extends BaseRapidThread {
 
 		String field = "";
 		String values = "";
-
+		String value = "";
 		int m = 0;
 		boolean f = true;
 		for (Map<String, Object> map : lres) {
@@ -148,7 +149,9 @@ public class updateSQLView extends BaseRapidThread {
 							+ key + ", ";
 				}
 				m++;
-				values += "'" + map.get(key) + "',";
+				value = map.get(key).toString();
+				value = unescapeHtml(value);
+				values += "'" + value + "',";
 
 			}
 			values += rule + "),";

@@ -338,69 +338,46 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					sql = escapeHtml(sql);
 					dtype = toInt(ures.get("dtype"));
 				}
-				try {
-					
-					if (dtype == 0) {
-						res = FetchAll(sql);
-					} else {
-						res = CustomDB(sql, dtype);
-					}
-					if (res != null) {
-						ret.add(res);
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
 			}else if (qaction == 5) {
 				int tid = toInt(id.get("id"));
-				String tsql = "select t.sqltmp,u.sql,u.dtype from "+DB_HOR_PRE+"sqltmp t, "+DB_HOR_PRE+"usersql u where t.sid=u.id and t.id="+tid+" limit 1";
+				sql = "select t.sqltmp,u.sql,u.dtype from "+DB_HOR_PRE+"sqltmp t, "+DB_HOR_PRE+"usersql u where t.sid=u.id and t.id="+tid+" limit 1";
 				
 				Map<String, Object> tres ;
-				tres = FetchOne(tsql);
+				tres = FetchOne(sql);
 				//echo(tsql);
 				if(tres==null)continue;
 				
-				tsql = tres.get("sql").toString();
+				sql = tres.get("sql").toString();
 				String tJson = tres.get("sqltmp").toString();
 				dtype = toInt(tres.get("dtype"));
 				Map<String,String> tList = JSON.parseObject(tJson, Map.class);
 				
 				for (String key:tList.keySet()) {
 					
-					tsql = tsql.replace("@" + key + "@", tList.get(key));
+					sql = sql.replace("@" + key + "@", tList.get(key));
 				}
-				tsql = escapeHtml(tsql);
-				
-				try {
-					
-					if (dtype == 0) {
-						
-						res = FetchAll(tsql);
-					} else {
-						res = CustomDB(tsql, dtype);
-					}
-					
-					if(res!=null){			
-						ret.add(res);
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}			
-			else {
-
-				try {
-
-					res = FetchAll(sql);
-					ret.add(res);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				sql = escapeHtml(sql);
+								
 			}
+			
+			try {
+				
+				if (dtype == 0) {
+					
+					res = FetchAll(sql);
+				} else {
+					res = CustomDB(sql, dtype);
+				}
+				
+				if(res!=null){			
+					ret.add(res);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 
 		return ret;

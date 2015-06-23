@@ -54,7 +54,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 			return;
 		case "edit":
 			edit(null);
-			break;
+			return;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -134,9 +134,40 @@ public class sqlTmp extends Permission implements BasePerminterface{
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
+		int id = toInt(porg.getKey("id"));
+		String format = "select sqltmp from "+DB_HOR_PRE+"sqltmp where id=%d limit 1";
+		String sql = String.format(format, id);
+		
+		Map<String, Object> res;
+		res = FetchOne(sql);
+		if(res==null){
+			TipMessage(ucl.read(SliceName(stdClass)), _CLang("error_null"));
+			return;
+		}
+		
+		Map<String, Object> JsonTmp = JSON.parseObject(res.get("sqltmp").toString(), Map.class);
+		for (String key: JsonTmp.keySet()) {
+			if(porg.getKey(key)!=null){
+				JsonTmp.put(key, porg.getKey(key));
+			}
+		}
+		
+		String TmpJson = JSON.toJSONString(JsonTmp);
+		
+		format = "update "+DB_HOR_PRE+"sqltmp SET sqltmp='%s', name='%s',etime=%d where id=%d;";
+		sql = String.format(format, TmpJson,porg.getKey("name").toString(), time(), id);
+		
+		try {
+			update(sql);
+			TipMessage(ucl.search(SliceName(stdClass))+"?id="+id, _CLang("ok_save"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			TipMessage(ucl.read(SliceName(stdClass)), e.getMessage());
+		}
 		
 	}
 
@@ -176,7 +207,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 		setRoot("JsonList", JsonList);
 		
 		setRoot("create_url", ucl.create(SliceName(stdClass)));
-		
+		setRoot("edit_url", ucl.edit(SliceName(stdClass)));
 	}
 
 }
