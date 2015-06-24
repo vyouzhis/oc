@@ -11,8 +11,10 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
 import org.ppl.db.UserCoreDB;
 import org.ppl.io.DesEncrypter;
+import org.ppl.io.Encrypt;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
@@ -25,11 +27,13 @@ import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
+import com.google.gson.Gson;
 
 public class EchartsJson extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private GsonOption option = null;
 	private List<Map<String, String>> JsonIds = null;
+	private List<List<Map<String, Object>>> pieList = null;
 
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
@@ -94,7 +98,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				&& porg.getKey("graph_type").matches("[0-9]+")) {
 			gt = Integer.valueOf(porg.getKey("graph_type").toString());
 		}
+
 		PaserJson();
+
+		pieList = getEcharts();
+
 		if (JsonIds != null) {
 			switch (gt) {
 			case 1:
@@ -125,8 +133,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
 
-		List<List<Map<String, Object>>> pieList = getEcharts();
-
 		if (pieList == null || pieList.size() == 0)
 			return "";
 		int m = 0;
@@ -140,8 +146,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			if (JsonIds.size() == 1) {
 				Bar bar = new Bar();
-				bar.name(id.get("name").toString()).itemStyle()
-						.normal().lineStyle();
+				bar.name(id.get("name").toString()).itemStyle().normal()
+						.lineStyle();
 				Map<String, String> mkline = new HashMap<>();
 				mkline.put("type", "average");
 				mkline.put("name", _CLang("line_markLine"));
@@ -193,7 +199,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	// month-on-month
 	private void mom() {
 		option.legend(_MLang("mom"));
-		List<List<Map<String, Object>>> pieList = getEcharts();
+
 		List<Map<String, Object>> list = pieList.get(0);
 
 		Line line = new Line();
@@ -210,7 +216,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				m = 100;
 			} else {
 				m = (x - front) / front * 100;
-				echo("front:" + front + " x:" + x + " m:" + m);
+				//echo("front:" + front + " x:" + x + " m:" + m);
 			}
 
 			line.data(m);
@@ -224,7 +230,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private String JsonPie() {
 		option.tooltip().trigger(Trigger.item)
 				.formatter("{b} <br/> {c} ({d}%)");
-		List<List<Map<String, Object>>> pieList = getEcharts();
 
 		if (pieList == null || pieList.size() == 0)
 			return "";
@@ -256,7 +261,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		return option.toString();
 	}
-	
+
 	private String JsonMap() {
 		option.tooltip().trigger(Trigger.item)
 				.formatter("{b} <br/> {c} ({d}%)");
@@ -272,7 +277,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			List<Map<String, Object>> list = pieList.get(l);
 			l++;
-			//Pie pie = new Pie();
+			// Pie pie = new Pie();
 			com.github.abel533.echarts.series.Map map = new com.github.abel533.echarts.series.Map();
 			// legendTitle = new ArrayList<>();
 			for (Map<String, Object> key : list) {
@@ -298,7 +303,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private void PaserJson() {
 
 		String json_id = Escape.unescape(porg.getKey("ids"));
-		
+
 		json_id = escapeHtml(json_id);
 		if (json_id.length() < 2) {
 			return;
@@ -318,69 +323,127 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Map<String, Object>> res = null;
 
 		for (Map<String, String> id : JsonIds) {
+
 			qaction = toInt(id.get("qaction"));
 			int dtype = 0;
 			if (qaction == 0)
 				continue;
 
 			String sql = String.format(format, toInt(id.get("id")));
-						
+
 			if (qaction == 4) {
-				
-				String usql = "select sql,dtype from "+DB_HOR_PRE+"usersql where id="
-						+ toInt(id.get("id")) + " LIMIT 1";
+
+				String usql = "select sql,dtype from " + DB_HOR_PRE
+						+ "usersql where id=" + toInt(id.get("id"))
+						+ " LIMIT 1";
 				Map<String, Object> ures;
-				
+
 				ures = FetchOne(usql);
-				
+
 				if (ures != null) {
 					sql = ures.get("sql").toString();
 					sql = escapeHtml(sql);
 					dtype = toInt(ures.get("dtype"));
 				}
 
-			}else if (qaction == 5) {
+			} else if (qaction == 5) {
 				int tid = toInt(id.get("id"));
-				sql = "select t.sqltmp,u.sql,u.dtype from "+DB_HOR_PRE+"sqltmp t, "+DB_HOR_PRE+"usersql u where t.sid=u.id and t.id="+tid+" limit 1";
-				
-				Map<String, Object> tres ;
+				sql = "select t.sqltmp,u.sql,u.dtype from " + DB_HOR_PRE
+						+ "sqltmp t, " + DB_HOR_PRE
+						+ "usersql u where t.sid=u.id and t.id=" + tid
+						+ " limit 1";
+
+				Map<String, Object> tres;
 				tres = FetchOne(sql);
-				//echo(tsql);
-				if(tres==null)continue;
-				
+				// echo(tsql);
+				if (tres == null)
+					continue;
+
 				sql = tres.get("sql").toString();
 				String tJson = tres.get("sqltmp").toString();
 				dtype = toInt(tres.get("dtype"));
-				Map<String,String> tList = JSON.parseObject(tJson, Map.class);
-				
-				for (String key:tList.keySet()) {
-					
+				Map<String, String> tList = JSON.parseObject(tJson, Map.class);
+
+				for (String key : tList.keySet()) {
+
 					sql = sql.replace("@" + key + "@", tList.get(key));
 				}
 				sql = escapeHtml(sql);
-								
+
 			}
-			
+
 			try {
-				
+				res = getCache(sql);
+				if (res != null) {
+					ret.add(res);
+					continue;
+				}
+
 				if (dtype == 0) {
-					
+
 					res = FetchAll(sql);
 				} else {
 					res = CustomDB(sql, dtype);
 				}
-				
-				if(res!=null){			
+
+				if (res != null) {
 					ret.add(res);
+					setCache(sql, id.get("name").toString(), res);
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		return ret;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Map<String, Object>> getCache(String key) {
+		Encrypt ec = Encrypt.getInstance();
+		String md5Key = ec.MD5(key);
+		String json = "";
+		String format = "select json from " + DB_HOR_PRE
+				+ "cache where md5='%s'";
+		String csql = String.format(format, md5Key);
+
+		List<Map<String, Object>> res = null;
+
+		Map<String, Object> co;
+		co = FetchOne(csql);
+
+		if (co != null && co.size() > 0) {
+
+			json = co.get("json").toString();
+
+			if (json.length() > 1) {
+				res = JSON.parseObject(json, List.class);
+			}
+		}
+
+		return res;
+	}
+
+	private void setCache(String key, String title, List<Map<String, Object>> o) {
+		String format = "insert into hor_cache (md5,json,title)values ('%s', '%s', '%s')";
+
+		
+		String json =  JSON.toJSONString(o, SerializerFeature.UseISO8601DateFormat);
+		
+		Encrypt ec = Encrypt.getInstance();
+		String md5Key = ec.MD5(key);
+		
+		String sql = String.format(format, md5Key, json, title);
+
+		try {
+			insert(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private List<Map<String, Object>> CustomDB(String sql, int id) {
@@ -409,7 +472,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//echo("pwd:"+sql);
+		// echo("pwd:"+sql);
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
