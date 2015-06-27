@@ -115,7 +115,7 @@ public class DBSQL extends BaseLang {
 				clearSQL = sql.replace("`", "");
 			}
 
-			if (ConDB == null) {
+			if (ConDB == null || ConDB.isClosed()) {
 				echo("con sql:" + clearSQL);
 				return null;
 			}
@@ -224,7 +224,7 @@ public class DBSQL extends BaseLang {
 		} catch (Exception e) {
 			// TODO: handle exception
 			ConDB.commit();
-		}
+		}  
 		
 		return numRowsUpdated;
 	}

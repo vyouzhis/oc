@@ -132,8 +132,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		boolean Xbool = true;
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
-
-		if (pieList == null || pieList.size() == 0)
+		
+		
+		if (pieList == null || pieList.size() == 0 || JsonIds.size() == 0)
 			return "";
 		int m = 0;
 		for (Map<String, String> id : JsonIds) {
@@ -142,6 +143,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			option.legend(id.get("name").toString());
 
 			List<Map<String, Object>> list = pieList.get(m);
+			
+			if(list.size()==0)continue;
 			m++;
 
 			if (JsonIds.size() == 1) {

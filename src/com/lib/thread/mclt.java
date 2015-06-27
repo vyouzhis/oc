@@ -66,7 +66,7 @@ public class mclt extends BaseCronThread {
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				f=false;
 			}
 
 		}

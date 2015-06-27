@@ -1,7 +1,5 @@
 package org.ppl.BaseClass;
 
-import java.util.Map;
-
 import org.ppl.db.DBSQL;
 import org.ppl.db.HikariConnectionPool;
 
