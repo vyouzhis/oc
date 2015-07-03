@@ -216,7 +216,7 @@
 									"<option <#if jitem[2] == 'FLOAT' > selected='selected' </#if> title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option></select>"+
 							"</td>"+
 							"<td><input type='text' value='${jitem[1]?string?replace('"','\\"')}' name='${jitem[0]}' id='${jitem[0]}'></td>"+
-							"<td><input type='text' readonly value='${jitem[3]}' name='desc_${jitem[0]}' id='desc_${jitem[0]}'>"+"</td>"+
+							"<td><input type='text' readonly value='${jitem[3]!""}' name='desc_${jitem[0]}' id='desc_${jitem[0]}'>"+"</td>"+
 						"</tr>"+				
 						</#list>
 						</#if>

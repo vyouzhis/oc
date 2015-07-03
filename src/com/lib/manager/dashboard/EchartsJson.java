@@ -15,6 +15,7 @@ import org.ppl.io.Encrypt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.abel533.echarts.Label;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
@@ -27,6 +28,8 @@ import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
+import com.github.abel533.echarts.style.ItemStyle;
+import com.github.abel533.echarts.style.itemstyle.Normal;
 import com.google.gson.Gson;
 
 public class EchartsJson extends Permission implements BasePerminterface {
@@ -165,6 +168,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				Xbool = false;
 
+				ItemStyle itemStyle = new ItemStyle();
+				Normal normal = new Normal();
+				Label label = new Label();
+				label.setShow(true);
+				normal.setLabel(label);
+				
+	            //itemStyle: {normal: {color:'rgba(193,35,43,1)', label:{show:true}}},
+	            
+				itemStyle.setNormal(normal);
+				
+				bar.itemStyle(itemStyle);
+				
+				
 				option.series(bar);
 			} else {
 				Line line = new Line();
@@ -183,7 +199,17 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 				Xbool = false;
-
+				ItemStyle itemStyle = new ItemStyle();
+				Normal normal = new Normal();
+				Label label = new Label();
+				label.setShow(true);
+				normal.setLabel(label);
+				
+	            //itemStyle: {normal: {color:'rgba(193,35,43,1)', label:{show:true}}},
+	            
+				itemStyle.setNormal(normal);
+				
+				line.itemStyle(itemStyle);
 				option.series(line);
 			}
 

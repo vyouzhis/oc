@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.rosuda.JRI.Rengine;
+
 import com.google.inject.Injector;
 import com.lib.plug.echarts.echarts;
 
@@ -41,6 +43,8 @@ public class globale_config {
 	public static String Uinfo = "iCore";
 	
 	public static Injector injector = null;
+	
+	public static Rengine RengineJava = null;
 	
 	public static Map<Long, Connection> GDB = null;
 	

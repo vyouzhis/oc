@@ -9,6 +9,7 @@ import java.util.Map;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
+import org.ppl.etc.globale_config;
 
 import com.alibaba.fastjson.JSON;
 
@@ -230,17 +231,24 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void cardioid() {
-		 double r[] = new double[20];
-
-	        double theta[] = new double[r.length];
-
-	        for (int k = 0;  k < r.length;  k++) {
-
-	            theta[k] = Math.PI*k/(r.length-1);
-
-	            r[k] = 0.5 + Math.cos(theta[k]);
-
-	        }
+//		 double r[] = new double[20];
+//
+//	        double theta[] = new double[r.length];
+//
+//	        for (int k = 0;  k < r.length;  k++) {
+//
+//	            theta[k] = Math.PI*k/(r.length-1);
+//
+//	            r[k] = 0.5 + Math.cos(theta[k]);
+//
+//	        }
+	        double[] x = globale_config.RengineJava.eval("seq(-3,3,.05)").asDoubleArray();
+			double[] y = globale_config.RengineJava.eval("dnorm(seq(-3,3,.05))").asDoubleArray();
+			int i=0;
+			for (double a : y) {
+				y[i]=a*1000;
+				i++;
+			}
 //	        echo("---");
 //	        for (int i = 0; i < theta.length; i++) {
 //				echo(theta[i]);
@@ -250,8 +258,8 @@ public class DashboardView extends Permission implements BasePerminterface {
 //				echo(r[i]);
 //			}
 	        
-	        setRoot("xAxis", JSON.toJSONString(r));
-			setRoot("yAxis", JSON.toJSONString(theta));
+	        setRoot("xAxis", JSON.toJSONString(y));
+			setRoot("yAxis", JSON.toJSONString(x));
 	}
 
 }

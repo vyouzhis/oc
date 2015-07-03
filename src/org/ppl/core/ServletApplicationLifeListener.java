@@ -13,6 +13,7 @@ import org.ppl.Module.ModuleBind;
 import org.ppl.db.HikariConnectionPool;
 import org.ppl.etc.Config;
 import org.ppl.etc.globale_config;
+import org.rosuda.JRI.Rengine;
 
 import com.alibaba.fastjson.JSON;
 import com.google.inject.Guice;
@@ -44,6 +45,7 @@ public class ServletApplicationLifeListener extends PObject implements
 				
 		HikariConnectionPool.getInstance();
 		globale_config.GDB = new HashMap<>();
+		globale_config.RengineJava = new Rengine(new String[] { "--no-save" }, false, null); 
 				
 		InitPackList();
 			
