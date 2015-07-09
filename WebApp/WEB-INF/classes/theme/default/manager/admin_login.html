@@ -38,13 +38,17 @@
 														</span>
 													</label>
 
+
 													<label class="block clearfix">
 														<span class="block input-icon input-icon-right">
 															<input type="password" class="form-control"  id="passwd" name="passwd"  placeholder="Password" />
 															<i class="icon-lock"></i>
 														</span>
 													</label>
-
+													<label class="block clearfix">
+													<img id="kaptchaImage" onclick="changeCode()" width="100" height="32" alt="Captcha" src="/bi/captcha_image">
+													<!-- src should be pointed to your php captcha code -->
+													</label>
 													<div class="space"></div>
 
 													<div class="clearfix">
@@ -118,6 +122,13 @@
            var md5 = $.md5($.md5(passwd)+salt);
            $("#passwd").val(md5);           
         }
+        
+        function changeCode() {
+    		$('#kaptchaImage').attr(
+    				'src',
+    				'/bi/captcha_image?'
+    						+ Math.floor(Math.random() * 100)).fadeIn();		
+    	}
     </script>
 
 

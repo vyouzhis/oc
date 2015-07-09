@@ -65,7 +65,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	private void ListMainClassify() {
-		String sql = "select id,name from hor_classify where pid=0 order by id";
+		String sql = "select id,name from hor_classify where pid=0 and displays=0 order by id";
 		
 		List<Map<String, Object>> res;
 

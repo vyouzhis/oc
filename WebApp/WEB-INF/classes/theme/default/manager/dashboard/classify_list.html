@@ -35,7 +35,8 @@
 									<thead>
 										<tr>
 											<th class="center">id</th>
-											<th>标题</th>											
+											<th>标题</th>
+											<th>状态</th>												
 											<th class="hidden-480">创建时间</th>
 											<th>操作</th>
 										</tr>
@@ -50,7 +51,9 @@
 											<td>
 												${item.name}
 											</td>											
-											
+											<td>
+											<#if item.displays==0>显示<#else>隐藏</#if>
+											</td>
 											<td>${fun.DateFormat(item.ctime, "yyyy-MM-dd HH:mm")}</td>
 										
 											<td> <a href="${edit_url}?id=${item.id}">编辑</a>,<a href="${edit_url}?id=${item.id}">清空数据</a></td>

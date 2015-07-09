@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.ppl.core.PObject;
 import org.ppl.etc.globale_config;
 
-import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 

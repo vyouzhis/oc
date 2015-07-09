@@ -139,7 +139,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
 		int id = toInt(porg.getKey("id"));
-		String format = "select sqltmp from "+DB_HOR_PRE+"sqltmp where id=%d limit 1";
+		String format = "select sqltmp,sid from "+DB_HOR_PRE+"sqltmp where id=%d limit 1";
 		String sql = String.format(format, id);
 		
 		Map<String, Object> res;
@@ -163,7 +163,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 		
 		try {
 			update(sql);
-			TipMessage(ucl.search(SliceName(stdClass))+"?id="+id, _CLang("ok_save"));
+			TipMessage(ucl.search(SliceName(stdClass))+"?id="+res.get("sid").toString(), _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			TipMessage(ucl.read(SliceName(stdClass)), e.getMessage());

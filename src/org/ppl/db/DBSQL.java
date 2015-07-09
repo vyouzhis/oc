@@ -113,6 +113,7 @@ public class DBSQL extends BaseLang {
 			if (myConfig.GetValue("database.driverClassName").equals(
 					"org.postgresql.Driver")) {
 				clearSQL = sql.replace("`", "");
+				clearSQL = clearSQL.replace("\"", "\'");
 			}
 
 			if (ConDB == null || ConDB.isClosed()) {
