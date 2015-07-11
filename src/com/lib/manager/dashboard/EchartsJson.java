@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omg.CORBA.OBJ_ADAPTER;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
@@ -28,6 +29,7 @@ import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
+import com.github.abel533.echarts.style.AreaStyle;
 import com.github.abel533.echarts.style.ItemStyle;
 import com.github.abel533.echarts.style.itemstyle.Normal;
 import com.google.gson.Gson;
@@ -80,9 +82,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private void InitOption() {
 		option.toolbox()
 				.show(true)
-				.feature(Tool.mark, Tool.dataView, Tool.dataZoom,
-						new MagicType(Magic.line, Magic.bar), Tool.restore,
-						Tool.saveAsImage);
+				.feature(
+						Tool.mark,
+						Tool.dataView,
+						Tool.dataZoom,
+						new MagicType(Magic.line, Magic.bar, Magic.stack,
+								Magic.tiled), Tool.restore, Tool.saveAsImage);
 
 		option.calculable(true);
 
@@ -92,33 +97,39 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		int gt = 1;
+		String gt = "";
 		String EJson = "";
-		if (porg.getKey("graph_type") != null
-				&& porg.getKey("graph_type").matches("[0-9]+")) {
-			gt = Integer.valueOf(porg.getKey("graph_type").toString());
+		if (porg.getKey("graph_type") != null) {
+			gt = porg.getKey("graph_type").toString();
 		}
+
+		List<Map<String, Object>> GL;
+		String glJson = mConfig.GetValue("echarts.graph");
+
+		GL = JSON.parseObject(glJson, List.class);
 
 		PaserJson();
 
 		pieList = getEcharts();
 
 		if (JsonIds != null) {
-			switch (gt) {
-			case 1:
+
+			if (GL.get(0).get("graph").toString().equals(gt)) {
 				EJson = JsonLine();
-				break;
-			case 2:
+
+			} else if (GL.get(1).get("graph").toString().equals(gt)) {
 				EJson = JsonPie();
-				break;
-			case 3:
+
+			} else if (GL.get(2).get("graph").toString().equals(gt)) {
 				EJson = JsonMap();
-			default:
-				break;
 			}
+			// else{
+			//
+			// }
 		}
 		super.setHtml(EJson);
 	}
@@ -135,29 +146,37 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		boolean Xbool = true;
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
-		
-		
+
 		if (pieList == null || pieList.size() == 0 || JsonIds.size() == 0)
 			return "";
 		int m = 0;
+
+		int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
+		itemStyle_lable = toInt(porg.getKey("itemStyle_lable"));
+		itemStyle_areaStyle = toInt(porg.getKey("itemStyle_areaStyle"));
+		markLine_average = toInt(porg.getKey("markLine_average"));
+
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
 			option.legend(id.get("name").toString());
 
 			List<Map<String, Object>> list = pieList.get(m);
-			
-			if(list.size()==0)continue;
+
+			if (list.size() == 0)
+				continue;
 			m++;
 
 			if (JsonIds.size() == 1) {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
 						.lineStyle();
-				Map<String, String> mkline = new HashMap<>();
-				mkline.put("type", "average");
-				mkline.put("name", _CLang("line_markLine"));
-				bar.markLine().data(mkline);
+				if (markLine_average == 1) {
+					Map<String, String> mkline = new HashMap<>();
+					mkline.put("type", "average");
+					mkline.put("name", _CLang("line_markLine"));
+					bar.markLine().data(mkline);
+				}
 				for (Map<String, Object> key : list) {
 
 					if (Xbool) {
@@ -168,28 +187,39 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				Xbool = false;
 
-				ItemStyle itemStyle = new ItemStyle();
-				Normal normal = new Normal();
-				Label label = new Label();
-				label.setShow(true);
-				normal.setLabel(label);
-				
-	            //itemStyle: {normal: {color:'rgba(193,35,43,1)', label:{show:true}}},
-	            
-				itemStyle.setNormal(normal);
-				
-				bar.itemStyle(itemStyle);
-				
-				
+				if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+					ItemStyle itemStyle = new ItemStyle();
+					Normal normal = new Normal();
+
+					if (itemStyle_lable == 1) {
+						Label label = new Label();
+						label.setShow(true);
+
+						normal.setLabel(label);
+					}
+					if (itemStyle_areaStyle == 1) {
+						AreaStyle aStyle = new AreaStyle();
+						normal.setAreaStyle(aStyle.typeDefault());
+					}
+					// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+					// label:{show:true}}},
+
+					itemStyle.setNormal(normal);
+
+					bar.itemStyle(itemStyle);
+				}
 				option.series(bar);
 			} else {
 				Line line = new Line();
 				line.smooth(true).name(id.get("name").toString()).itemStyle()
 						.normal().lineStyle();
-				Map<String, String> mkline = new HashMap<>();
-				mkline.put("type", "average");
-				mkline.put("name", _CLang("line_markLine"));
-				line.markLine().data(mkline);
+
+				if (markLine_average == 1) {
+					Map<String, String> mkline = new HashMap<>();
+					mkline.put("type", "average");
+					mkline.put("name", _CLang("line_markLine"));
+					line.markLine().data(mkline);
+				}
 				for (Map<String, Object> key : list) {
 
 					if (Xbool) {
@@ -199,17 +229,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 				Xbool = false;
-				ItemStyle itemStyle = new ItemStyle();
-				Normal normal = new Normal();
-				Label label = new Label();
-				label.setShow(true);
-				normal.setLabel(label);
-				
-	            //itemStyle: {normal: {color:'rgba(193,35,43,1)', label:{show:true}}},
-	            
-				itemStyle.setNormal(normal);
-				
-				line.itemStyle(itemStyle);
+				if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+					ItemStyle itemStyle = new ItemStyle();
+					Normal normal = new Normal();
+
+					if (itemStyle_lable == 1) {
+						Label label = new Label();
+						label.setShow(true);
+
+						normal.setLabel(label);
+					}
+					if (itemStyle_areaStyle == 1) {
+						AreaStyle aStyle = new AreaStyle();
+						normal.setAreaStyle(aStyle.typeDefault());
+					}
+
+					// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+					// label:{show:true}}},
+
+					itemStyle.setNormal(normal);
+
+					line.itemStyle(itemStyle);
+				}
 				option.series(line);
 			}
 
@@ -245,7 +286,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				m = 100;
 			} else {
 				m = (x - front) / front * 100;
-				//echo("front:" + front + " x:" + x + " m:" + m);
+				// echo("front:" + front + " x:" + x + " m:" + m);
 			}
 
 			line.data(m);
@@ -458,12 +499,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private void setCache(String key, String title, List<Map<String, Object>> o) {
 		String format = "insert into hor_cache (md5,json,title)values ('%s', '%s', '%s')";
 
-		
-		String json =  JSON.toJSONString(o, SerializerFeature.UseISO8601DateFormat);
-		
+		String json = JSON.toJSONString(o,
+				SerializerFeature.UseISO8601DateFormat);
+
 		Encrypt ec = Encrypt.getInstance();
 		String md5Key = ec.MD5(key);
-		
+
 		String sql = String.format(format, md5Key, json, title);
 
 		try {

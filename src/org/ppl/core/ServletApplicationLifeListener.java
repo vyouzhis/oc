@@ -45,7 +45,7 @@ public class ServletApplicationLifeListener extends PObject implements
 				
 		HikariConnectionPool.getInstance();
 		globale_config.GDB = new HashMap<>();
-		globale_config.RengineJava = new Rengine(new String[] { "--no-save" }, false, null); 
+		//globale_config.RengineJava = new Rengine(new String[] { "--no-save" }, false, null); 
 				
 		InitPackList();
 			

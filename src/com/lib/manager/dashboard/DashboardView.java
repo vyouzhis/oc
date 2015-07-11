@@ -49,7 +49,8 @@ public class DashboardView extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
+		GraphList();
+		
 		super.View();
 	}
 
@@ -242,13 +243,13 @@ public class DashboardView extends Permission implements BasePerminterface {
 //	            r[k] = 0.5 + Math.cos(theta[k]);
 //
 //	        }
-	        double[] x = globale_config.RengineJava.eval("seq(-3,3,.05)").asDoubleArray();
-			double[] y = globale_config.RengineJava.eval("dnorm(seq(-3,3,.05))").asDoubleArray();
-			int i=0;
-			for (double a : y) {
-				y[i]=a*1000;
-				i++;
-			}
+//	        double[] x = globale_config.RengineJava.eval("seq(-3,3,.05)").asDoubleArray();
+//			double[] y = globale_config.RengineJava.eval("dnorm(seq(-3,3,.05))").asDoubleArray();
+//			int i=0;
+//			for (double a : y) {
+//				y[i]=a*1000;
+//				i++;
+//			}
 //	        echo("---");
 //	        for (int i = 0; i < theta.length; i++) {
 //				echo(theta[i]);
@@ -258,8 +259,18 @@ public class DashboardView extends Permission implements BasePerminterface {
 //				echo(r[i]);
 //			}
 	        
-	        setRoot("xAxis", JSON.toJSONString(y));
-			setRoot("yAxis", JSON.toJSONString(x));
+	       // setRoot("xAxis", JSON.toJSONString(y));
+			//setRoot("yAxis", JSON.toJSONString(x));
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private void GraphList() {
+		List<Map<String, Object>> GL ;
+		String glJson = mConfig.GetValue("echarts.graph");
+		
+		GL = JSON.parseObject(glJson, List.class);
+		setRoot("graphList", GL);
 	}
 
 }

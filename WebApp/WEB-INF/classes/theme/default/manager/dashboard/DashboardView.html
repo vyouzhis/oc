@@ -33,30 +33,43 @@
 							
 							<div id="custom-container" style="height:378px" class="well col-xs-12 col-sm-12"></div>
 							<div class="col-xs-12 col-sm-12 well ">
-								<div class="dropdown col-xs-12 col-sm-2">							
-									<a data-toggle="dropdown" class="dropdown-toggle" href="#">
-										图形选择 &nbsp;
-										<i class="icon-caret-down bigger-110 width-auto"></i>										
-									</a>				
-									<ul class="dropdown-menu dropdown-info">
-										<li>
-											<a onclick="graph(1)" href="javascript:void(0)">折线/柱状图</a>
-										</li>				
-										<li>
-											<a onclick="graph(2)" href="javascript:void(0)" >饼图</a>																						
-										</li>
-										<li>
-											<a onclick="graph(3)" href="javascript:void(0)" >标准地图</a>																						
-										</li>
-									</ul>
-										
-								</div>
-					       		
+						
 					       		<div class="col-xs-12 col-sm-4">
-						       		<div id="graph" name="graph" class="chart_1 chart_line">
-						       		<input id="graph_type" type="text" value="1" name="graph_type" style="display:none;">
-						       		<span id="graph_name" name="graph_name" class="chart_text ">折线/柱状图</span>
-						       		</div>	
+						 
+						       		<#if graphList??>
+						       		<#list graphList as item>
+						       		<div class="col-sm-5">
+							       		<div class="radio">
+											<label>
+												<input <#if (item_index) = 0> checked </#if> type="radio" name="graph_type" id="graph_type" value="${item['graph']}"  />
+												<span class="lbl chart_1 chart_${item['graph']}" style="text-align: left; text-indent: 32px;">${item['name']}</span> 
+											</label>											
+										</div>
+									</div>
+									</#list>
+									</#if>
+									 						       														
+						       	</div>
+						       	<div class="col-xs-12 col-sm-4">
+						       		<div class="checkbox">
+										<label>
+											<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
+											<span class="lbl"> itemStyle.lable</span>
+										</label>
+									</div>
+									
+									<div class="checkbox">
+										<label>
+											<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
+											<span class="lbl">itemStyle.areaStyle</span>
+										</label>
+									</div>
+									<div class="checkbox">
+										<label>
+											<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
+											<span class="lbl">markLine.average</span>
+										</label>
+									</div>
 						       	</div>
 						       	<div class="col-xs-12 col-sm-2">
 					       			<h5 class="bigger lighter">
@@ -77,6 +90,7 @@
 					       	</div>
 					       	
 						</div>
+						
 						<div class="col-xs-12 col-sm-3">
 
 
@@ -335,7 +349,7 @@
 					        {
 					            type : 'category',
 					            boundaryGap : false,
-					            data : ${yAxis}
+					            data : ${yAxis!"[]"},
 					        }
 					    ],
 					    yAxis : [
@@ -348,7 +362,7 @@
 					        {
 					            name:'Gaussian distribution',
 					            type:'line',
-					            data:${xAxis},
+					            data:${xAxis!"[]"},
 					           
 					        }
 					    ]
@@ -394,14 +408,29 @@
 
 				function refresh() {
 					var o = $('#tree1').tree('selectedItems');
-										
+									
 					var selectedItems = escape(JSON.stringify(o));
 					console.log( JSON.stringify(o) );
+					
+					var itemStyle_lable=0;
+					if($('input[name="itemStyle_lable"]:checked').val()=="on"){
+						itemStyle_lable=1;
+					}
+					var itemStyle_areaStyle=0;
+					if($('input[name="itemStyle_areaStyle"]:checked').val()=="on"){
+						itemStyle_areaStyle=1;
+					}
+					var markLine_average=0;
+					if($('input[name="markLine_average"]:checked').val()=="on"){
+						markLine_average=1;
+					}
+					
 					$.ajax({
 						  url: "${json_url}?jsoncallback=?",
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
-						  data:{"ids":selectedItems,  "graph_type":$("#graph_type").val()},
+						  data:{"ids":selectedItems,  "graph_type":$('input[name="graph_type"]:checked').val(), "itemStyle_lable":itemStyle_lable
+							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average},
 						  success: function(result){
 							  console.log("success"+result);
 						  },
@@ -442,28 +471,5 @@
 				
 				
 				var ue = UE.getEditor('editor');
-				
-				function graph (t) {
-					$("#graph_type").val(t);
-					var clazz = "chart_line";
-					switch (t) {
-						case 1:
-							 $("#graph_name").text("折线/柱状图");
-							 clazz = "chart_line";
-						break;
-						case 2:
-							 $("#graph_name").text("饼图");
-							clazz = "chart_pie";
-						break;
-						case 3:
-							 $("#graph_name").text("标准地图");
-							clazz = "chart_map";
-						default:
-							// default statements
-					}
-					
-					$("#graph").attr("class", "chart_1 "+clazz);
-				}
-				
-				
+								
 			</script>
