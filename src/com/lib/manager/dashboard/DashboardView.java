@@ -74,6 +74,11 @@ public class DashboardView extends Permission implements BasePerminterface {
 		Map<String, Object> SubTree;
 		List<Map<String, Object>> RootRes=null, tRes;
 		String RootSql = null;
+		List<String> formats = new ArrayList<>();
+		formats.add("SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction in (2,3) and snap=0 and cid=%s order by id desc;");
+		formats.add("select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0 and cid=%s");
+		formats.add("select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid  and u.cid= %s order by s.id desc");
+		
 		try {
 			res = FetchAll(sql);
 			if(res!=null){
@@ -82,48 +87,27 @@ public class DashboardView extends Permission implements BasePerminterface {
 					SubTree.put("name", map.get("name").toString());
 					SubTree.put("type", "folder");
 
-					RootSql = "SELECT id,name,cid,qaction FROM "+DB_HOR_PRE+"mongodbrule where qaction in (2,3) and snap=0 and cid="+map.get("id")+" order by id desc;";
-					
-					try {
-						RootRes = FetchAll(RootSql);
-												
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
-					RootSql = "select id,sql,name,sql_type,sqltmp,cid from "+DB_HOR_PRE+"usersql where sql_type=0 and input_data=0 and cid="+map.get("id");
-					
-					try {
-						tRes = FetchAll(RootSql);
-						if(RootRes != null){
-							if(tRes!=null){
-								RootRes.addAll(tRes);
+					for (String tsql:formats) {
+						RootSql = String.format(tsql, map.get("id").toString());
+						try {
+							tRes = FetchAll(RootSql);
+							if(RootRes != null){
+								if(tRes!=null){
+									RootRes.addAll(tRes);
+								}
+							}else {
+								RootRes = tRes;
 							}
-						}else {
-							RootRes = tRes;
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 					
-					RootSql = "select s.id,s.name,u.cid from "+DB_HOR_PRE+"sqltmp s, "+DB_HOR_PRE+"usersql u where u.id=s.sid  and u.cid= "+ map.get("id")+" order by s.id desc";
-					
-					try {
-						tRes = FetchAll(RootSql);
-						if(RootRes != null){
-							if(tRes!=null){
-								RootRes.addAll(tRes);
-							}
-						}else {
-							RootRes = tRes;
-						}
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+																			
 					SubTree.put("additionalParameters", SetTree(RootRes));
 					TreeObject.put(map.get("name").toString(), SubTree);
+					RootRes = null;
 				}
 				
 			}
@@ -131,6 +115,24 @@ public class DashboardView extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		RootSql = "select id,name,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=1 order by id desc";
+		try {
+			tRes = FetchAll(RootSql);
+			if(tRes != null){
+												
+				SubTree = new HashMap<>();
+				SubTree.put("name", _MLang("tmp"));
+				SubTree.put("type", "folder");
+				SubTree.put("additionalParameters", SetTree(tRes));
+				TreeObject.put(_MLang("tmp"), SubTree);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		String treeObjectJson = JSON.toJSONString(TreeObject);
 		setRoot("treeObjectJson", treeObjectJson);

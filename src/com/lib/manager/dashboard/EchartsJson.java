@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.CORBA.OBJ_ADAPTER;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
@@ -32,7 +31,6 @@ import com.github.abel533.echarts.series.Pie;
 import com.github.abel533.echarts.style.AreaStyle;
 import com.github.abel533.echarts.style.ItemStyle;
 import com.github.abel533.echarts.style.itemstyle.Normal;
-import com.google.gson.Gson;
 
 public class EchartsJson extends Permission implements BasePerminterface {
 	private List<String> rmc;
