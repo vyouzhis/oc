@@ -9,7 +9,6 @@ import java.util.Map;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
 
 import com.alibaba.fastjson.JSON;
 
@@ -116,7 +115,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 			e.printStackTrace();
 		}
 		
-		RootSql = "select id,name,sqltmp from "+DB_HOR_PRE+"usersql where sql_type=1 order by id desc";
+		RootSql = "select id,name,sqltmp,'6' as qaction from "+DB_HOR_PRE+"usersql where sql_type=1 order by id desc";
 		try {
 			tRes = FetchAll(RootSql);
 			if(tRes != null){

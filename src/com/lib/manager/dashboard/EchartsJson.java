@@ -389,6 +389,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
 
 		List<Map<String, Object>> res = null;
+		String tmp_list = porg.getKey("tmp_list");
+		Map<String, String> tmp_map = null;
+		if (tmp_list != null) {
+			tmp_map = JSON.parseObject(tmp_list, Map.class);
+		}
 
 		for (Map<String, String> id : JsonIds) {
 
@@ -398,12 +403,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				continue;
 
 			String sql = String.format(format, toInt(id.get("id")));
-
+			int tid = toInt(id.get("id"));
 			if (qaction == 4) {
 
 				String usql = "select sql,dtype from " + DB_HOR_PRE
-						+ "usersql where id=" + toInt(id.get("id"))
-						+ " LIMIT 1";
+						+ "usersql where id=" + tid + " LIMIT 1";
 				Map<String, Object> ures;
 
 				ures = FetchOne(usql);
@@ -415,7 +419,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 			} else if (qaction == 5) {
-				int tid = toInt(id.get("id"));
+
 				sql = "select t.sqltmp,u.sql,u.dtype from " + DB_HOR_PRE
 						+ "sqltmp t, " + DB_HOR_PRE
 						+ "usersql u where t.sid=u.id and t.id=" + tid
@@ -438,6 +442,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 				sql = escapeHtml(sql);
 
+			} else if (qaction == 6) {
+				if (tmp_map == null)
+					continue;
+				sql = "SELECT sql from " + DB_HOR_PRE + "usersql where id="
+						+ tid + " limit 1";
+				Map<String, Object> tmpRes;
+				tmpRes = FetchOne(sql);
+				if (tmpRes == null)
+					continue;
+				format = tmpRes.get("sql").toString();
+
+				for (int i = 0; i < 10; i++) {
+					if (tmp_map.containsKey(tid + "_arg" + i)) {
+						echo(tmp_map.get(tid + "_arg" + i));
+						format = format.replace("@arg" + i + "@",
+								tmp_map.get(tid + "_arg" + i));
+					}
+				}
+
+				sql = escapeHtml(format);
+				
+				echo(sql);
 			}
 
 			try {

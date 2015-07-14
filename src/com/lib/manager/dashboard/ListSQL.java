@@ -1,19 +1,14 @@
 package com.lib.manager.dashboard;
 
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 
-import com.alibaba.fastjson.JSON;
 
 public class ListSQL extends Permission implements BasePerminterface {
 	private List<String> rmc;
-	private Map<String, Map<String, Map<String, String>>> Mongo;
+	//private Map<String, Map<String, Map<String, String>>> Mongo;
 
 	public ListSQL() {
 		// TODO Auto-generated constructor stub

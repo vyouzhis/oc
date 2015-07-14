@@ -48,6 +48,9 @@ public class viewDb_List extends Permission implements BasePerminterface {
 		case "edit":
 			edit(null);
 			break;
+		case "remove":
+			remove(null);
+			return;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -91,6 +94,7 @@ public class viewDb_List extends Permission implements BasePerminterface {
 		
 		setRoot("Page", page_html);
 		setRoot("edit_url", ucl.edit("csvDb"));
+		setRoot("del_url", ucl.remove(SliceName(stdClass)));
 		//setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
 		setRoot("new_csv_url", ucl.read("csvDb"));
 		setRoot("new_sql_url", ucl.read("sqledit"));
@@ -119,7 +123,19 @@ public class viewDb_List extends Permission implements BasePerminterface {
 	@Override
 	public void remove(Object arg) {
 		// TODO Auto-generated method stub
-
+		int id = toInt(porg.getKey("id"));
+		UrlClassList ucl = UrlClassList.getInstance();
+		
+		String sql = " DELETE FROM hor_class WHERE rule ="+id;
+		try {
+			update(sql);
+			TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_save"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			//echo(sql);
+			TipMessage(ucl.read(SliceName(stdClass)), _CLang("error_save"));
+		}
+		
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class updateCSVData extends BaseRapidThread{
 	@SuppressWarnings("unchecked")
 	private void ucsv() {
 		if(ThreadMail == null) return;
-		
+		echo("start csv data!");
 		Map<String, byte[]> file = (Map<String, byte[]>) ThreadMail.get("csv_file");
 		long rule = (long) ThreadMail.get("rule");
 		String view_name = (String) ThreadMail.get("view_name");
@@ -108,7 +108,7 @@ public class updateCSVData extends BaseRapidThread{
 						l++;
 					}
 					values += rule+"),"; 
-					//echo("values ---");
+					//echo("values ---"+time());
 				}
 				csvReader.close();
 			} catch (FileNotFoundException e) {
@@ -125,11 +125,19 @@ public class updateCSVData extends BaseRapidThread{
 
 		field += " rule";
 		
-
+		String dropview="drop view if exists "+view_name;
+		try {
+			dbcreate(dropview);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		String format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d";
 		String Sql = String.format(format, view_name, view_field, rule);
-		//echo(Sql);
+		
 		try {
 			dbcreate(Sql);
 		} catch (SQLException e) {

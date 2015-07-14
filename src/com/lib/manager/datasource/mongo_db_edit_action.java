@@ -94,7 +94,7 @@ public class mongo_db_edit_action extends Permission implements BasePerminterfac
 		UrlClassList ucl = UrlClassList.getInstance();
 		try {
 			update(sql);
-			TipMessage(ucl.read("mongo_purge_list"), _CLang("ok_save"));
+			TipMessage(ucl.read("mongo_purge_list"), _CLang("ok_remove"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			echo(sql);

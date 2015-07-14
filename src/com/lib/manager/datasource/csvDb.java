@@ -74,7 +74,7 @@ public class csvDb extends Permission implements BasePerminterface {
 		
 		CreateInfo();
 		
-		TipMessage(ucl.read("csvDb_List"), _CLang("ok_save"));
+		TipMessage(ucl.read("viewDb_List"), _CLang("ok_save"));
 	}
 
 	private void CreateView(long rule) {
@@ -90,23 +90,29 @@ public class csvDb extends Permission implements BasePerminterface {
 	}
 
 	private void CreateInfo() {
-		String name = porg.getKey("name");
+		String title = porg.getKey("title");
 		String view_name = porg.getKey("view_name");
 		String idesc = porg.getKey("idesc");
+		int eid = toInt(porg.getKey("id"));
+		
 		int now = time();
-		if (name == null || view_name == null || idesc == null)
+		if (title == null || view_name == null || idesc == null)
 			return;
 
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
 				+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
-		String sql = String.format(format, name, view_name, idesc, now);
+		String sql = String.format(format, title, view_name, idesc, now);
 
 		try {
-			long id = insert(sql, true);
-			echo(id);
-			CommitDB();
-			if (id != -1) {
+			long id = eid;
+			if(eid==0){
+				id = insert(sql, true);
+				//echo(id);
+				CommitDB();
+			}
+
+			if (id != -1 && id!=0) {
 				CreateView(id);
 			}
 		} catch (SQLException e) {
@@ -119,6 +125,23 @@ public class csvDb extends Permission implements BasePerminterface {
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
 		//setRoot("action_url", ucl.create(SliceName(stdClass)));
+		setRoot("isedit", "1");
+		int id = toInt(porg.getKey("id"));
+
+		String sql = "select * from "
+				+ DB_HOR_PRE
+				+ "classinfo where id="+id;
+		Map<String, Object> res;
+		
+		res = FetchOne(sql);
+		if(res!=null){
+			setRoot("view_name", res.get("view_name").toString());
+			setRoot("title", res.get("title").toString());
+			setRoot("idesc", res.get("idesc").toString());
+		}
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("action_url", ucl.create(SliceName(stdClass)));
+		setRoot("editid", "?id="+id);
 	}
 
 	@Override
