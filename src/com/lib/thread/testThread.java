@@ -19,13 +19,13 @@ public class testThread extends BaseRapidThread {
 	@Override
 	public boolean isRun() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean Stop() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override

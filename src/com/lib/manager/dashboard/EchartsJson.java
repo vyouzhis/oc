@@ -115,7 +115,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		pieList = getEcharts();
 
 		if (JsonIds != null) {
-
+			
 			if (GL.get(0).get("graph").toString().equals(gt)) {
 				EJson = JsonLine();
 
@@ -180,7 +180,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					if (Xbool) {
 						valueAxis.data(key.get("dial").toString());
 					}
-					bar.data(key.get("volume"));
+					float val = toFloat(key.get("volume"));
+					if(val==0){
+						bar.data(key.get("volume"));
+					}else {
+						bar.data(String.format("%.2f", val));
+					}
 				}
 
 				Xbool = false;
@@ -223,7 +228,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					if (Xbool) {
 						valueAxis.data(key.get("dial").toString());
 					}
-					line.data(key.get("volume"));
+					
+					float val = toFloat(key.get("volume"));
+					if(val==0){
+						line.data(key.get("volume"));
+					}else {
+						line.data(String.format("%.2f", val));
+					}
+										
 				}
 
 				Xbool = false;
@@ -477,8 +489,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				} else {
 					res = CustomDB(sql, dtype);
 				}
-
-				if (res != null) {
+				
+				if (res != null) {					
 					ret.add(res);
 					setCache(sql, id.get("name").toString(), res);
 				}

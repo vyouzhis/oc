@@ -103,7 +103,7 @@ public class mdlt extends BaseCronThread {
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return getStop();
+		return true;
 	}
 
 }

@@ -236,8 +236,16 @@ public class PObject {
 	}
 
 	public int toInt(Object o) {
-		if (o != null && o.toString().matches("[0-9]+")) {
+		if (o != null && o.toString().matches("[0-9-]+")) {
 			return Integer.valueOf(o.toString());
+		} else {
+			return 0;
+		}
+	}
+	
+	public float toFloat(Object o) {
+		if (o != null && o.toString().matches("[0-9.-]+")) {
+			return Float.valueOf(o.toString());
 		} else {
 			return 0;
 		}
