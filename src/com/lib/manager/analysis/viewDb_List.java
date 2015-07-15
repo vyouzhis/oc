@@ -126,7 +126,7 @@ public class viewDb_List extends Permission implements BasePerminterface {
 		int id = toInt(porg.getKey("id"));
 		UrlClassList ucl = UrlClassList.getInstance();
 		
-		String sql = " DELETE FROM hor_class WHERE rule ="+id;
+		String sql = " DELETE FROM "+DB_HOR_PRE+"class WHERE rule ="+id;
 		try {
 			update(sql);
 			TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_save"));

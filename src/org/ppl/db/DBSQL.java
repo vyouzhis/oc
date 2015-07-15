@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.postgresql.copy.CopyManager;
+import org.postgresql.core.BaseConnection;
 import org.ppl.BaseClass.BaseLang;
 import org.ppl.etc.globale_config;
 
@@ -256,4 +258,11 @@ public class DBSQL extends BaseLang {
 	public void setErrorMsg(String errorMsg) {
 		ErrorMsg = errorMsg;
 	}
+	
+	public Connection getCon() {
+		InitConDB();
+		return ConDB;
+	}
+	
+	
 }

@@ -16,17 +16,5 @@ public abstract class BaseCronThread extends DBSQL{
 	public abstract boolean isStop();
 	public boolean getStop() {
 		return false;
-//		String format = "select * from role_thread where name='%s'";
-//		String sql = String.format(format, SliceName(stdClass));
-//		
-//		Map<String, Object> res;
-//		
-//		res = FetchOne(sql);
-//		if(res!=null){
-//			if (Integer.valueOf(res.get("isstop").toString()) == 1) {
-//				return false;
-//			}
-//		}
-//		return true;
 	}
 }

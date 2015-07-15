@@ -454,16 +454,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				format = tmpRes.get("sql").toString();
 
 				for (int i = 0; i < 10; i++) {
-					if (tmp_map.containsKey(tid + "_arg" + i)) {
-						echo(tmp_map.get(tid + "_arg" + i));
+					if (tmp_map.containsKey(tid + "_arg" + i)) {						
 						format = format.replace("@arg" + i + "@",
 								tmp_map.get(tid + "_arg" + i));
 					}
 				}
 
 				sql = escapeHtml(format);
-				
-				echo(sql);
+								
 			}
 
 			try {
