@@ -76,7 +76,7 @@ public class updateCSVData extends BaseRapidThread {
 				echo("error file get string");
 				return;
 			}
-
+			if(bytesAsString==null) return;
 			readers = new StringReader(bytesAsString);
 			reader = new BufferedReader(readers);
 			try {
@@ -131,14 +131,4 @@ public class updateCSVData extends BaseRapidThread {
 		}
 
 	}
-
-	private String clear(String v) {
-		String s = v.trim();
-		if (s.length() > 1) {
-			return s.substring(0, s.length() - 1);
-		} else {
-			return v;
-		}
-	}
-
 }

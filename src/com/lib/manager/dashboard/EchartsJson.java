@@ -184,7 +184,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					if(val==0){
 						bar.data(key.get("volume"));
 					}else {
-						bar.data(String.format("%.2f", val));
+						bar.data(Float.valueOf(String.format("%.2f", val)));
 					}
 				}
 
@@ -233,7 +233,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					if(val==0){
 						line.data(key.get("volume"));
 					}else {
-						line.data(String.format("%.2f", val));
+						line.data(Float.valueOf(String.format("%.2f", val)));
 					}
 										
 				}
