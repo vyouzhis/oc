@@ -560,9 +560,38 @@
 				*/
 				function SaveImg() {
 					var dataURL = myChart4.getDataURL();
-					var imgs = "<img src='"+dataURL+"' width=800px; />";
-					var val = $("#dataEditor").html();
-					$("#dataEditor").html(val + imgs);
+					
+					$.ajax({
+						  url: "${saveimg_url}?jsoncallback=?",
+						  contentType: 'text/html;charset=utf-8',
+						  
+						  data:{"data":dataURL},
+						  success: function(result){
+							  console.log("success"+result);
+						  },
+						  error: function(request, textStatus, errorThrown) {
+						    //alert(textStatus);
+						  },
+						  complete: function(request, textStatus) { //for additional info
+							  var option = request.responseText;
+								option = option.replace(/[\r\n]/g, "");
+							  console.log("success"+option);
+							  var imgs = "";
+						     imgs = "<img src='${data_uri}"+option+"' />";
+						     UE.getEditor('editor').setContent(imgs, true);
+						     
+						  }
+						});
+					
+					/*$.get("${saveimg_url}", { "data":dataURL},
+							  function(data){
+							    alert("Data Loaded: " + data);
+							    var arr = [];
+						        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
+						        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
+						        alert(arr.join("\n"));
+							}
+					);*/
 				}
 				
 				

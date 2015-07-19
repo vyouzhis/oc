@@ -32,6 +32,7 @@ public class Index extends HttpServlet {
 	public void service(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+			
 		synchronized (mutex) {
 			PorG porg = PorG.getInstance();
 			porg.Init(req, res);

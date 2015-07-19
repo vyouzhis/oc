@@ -23,7 +23,7 @@ public class ProjectPath {
 	}
 
 	public URI DataDir() {
-		return getPath("/Data/");
+		return getPath("../../Data/");
 	}
 
 	private URI getPath(String baseName) {

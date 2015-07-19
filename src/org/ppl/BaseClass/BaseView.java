@@ -75,6 +75,7 @@ public class BaseView extends ACLControl{
 		setRoot("static_css_uri", porg.getContext_Path()+"/static/ace/css");
 		setRoot("static_js_uri", porg.getContext_Path()+"/static/ace/js");
 		setRoot("static_avatars_uri", porg.getContext_Path()+"/static/ace/avatars");
+		setRoot("data_uri",  porg.getContext_Path()+"/Data/");
 		
 		setRoot("static_uri", porg.getContext_Path());
 		setRoot("surface_plugins", porg.getContext_Path()+"/static/surface/plugins");
