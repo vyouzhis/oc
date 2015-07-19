@@ -574,8 +574,7 @@
 						  },
 						  complete: function(request, textStatus) { //for additional info
 							  var option = request.responseText;
-								option = option.replace(/[\r\n]/g, "");
-							  console.log("success"+option);
+							  option = option.replace(/[\r\n]/g, "");							  
 							  var imgs = "";
 						     imgs = "<img src='${data_uri}"+option+"' />";
 						     UE.getEditor('editor').setContent(imgs, true);
