@@ -20,9 +20,7 @@ public class admin_login extends Permission {
 		// TODO Auto-generated method stub
 
 		//callRJava();
-		
-			System.out.println("Index:"+admin_login.class.getClassLoader().getResource("../../"));
-		
+						
 		UrlClassList ucl = UrlClassList.getInstance();
 
 		setRoot("admin_login_action_uri",

@@ -1,18 +1,19 @@
 package com.lib.manager.dashboard;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.exceptions.InvalidFormatException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.io.ProjectPath;
 
-import com.alibaba.fastjson.util.Base64;
-
-
-public class SaveImg extends Permission implements BasePerminterface {
+public class SaveDoc extends Permission implements BasePerminterface {
 	private List<String> rmc;
 
-	public SaveImg() {
+	public SaveDoc() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		// stdClass = className;
@@ -38,8 +39,6 @@ public class SaveImg extends Permission implements BasePerminterface {
 		case "create":
 			create(null);
 			break;
-		
-
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -55,18 +54,24 @@ public class SaveImg extends Permission implements BasePerminterface {
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-		String data = porg.getKey("data");
-		byte[] baseImg ;
-	
-		if(data!=null){
-			
-			baseImg = Base64.decodeFast(data.substring(22, data.length()));
-			
-			if(data.length()<1)return;
-			ProjectPath pp = ProjectPath.getInstance();
-			String name = time()+".png";
-			pp.SaveFile(name, baseImg);
-			super.setHtml(name);
+		String doc = porg.getKey("doc");
+		String title = porg.getKey("title");
+
+		if (doc == null || title == null) {
+			super.setHtml(_CLang("error_null"));
+			return;
+		}
+		
+		String format = "insert into " + DB_HOR_PRE
+				+ "doc(title,doc,ctime)VALUES('%s','%s', %d)";
+		String sql = String.format(format, title, doc, time());
+
+		try {
+			insert(sql);
+			super.setHtml(_CLang("ok_save"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			super.setHtml(_CLang("error_save"));
 		}
 	}
 

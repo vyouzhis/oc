@@ -154,11 +154,22 @@
 								<h1>
 									<i class="icon-th-large"></i><a href="javascript:void(0)"
 										onclick="SaveImg()">保存图表</a>
-										<button class="btn btn-success" id="bootbox-options">预览</button>
+										<button class="btn btn-success" id="bootbox-options">保存数据</button>
 										
 
 								</h1>
 							</div>
+							<div class="col-xs-12">
+								<div class="form-group">
+									<label for="form-field-1" class="col-sm-1 control-label no-padding-right"> 标题: </label>
+
+									<div class="col-sm-9">
+										<input type="text" class="col-xs-10 col-sm-5" placeholder="title" id="title" name="title">
+									</div>
+								</div>
+								
+							</div>
+							<div class="hr hr-24"></div>
 							<div class="col-xs-12">
 								<!-- <div class="wysiwyg-editor" name="dataEditor" id="dataEditor"></div> -->
 								<script id="editor" type="text/plain" style="height:500px;"></script>
@@ -385,6 +396,31 @@
 					
 					// 生成PDF
 					$("#bootbox-options").on(ace.click_event, function() {
+						
+						
+							var doc = UE.getEditor('editor').getContent();
+							var title = $("#title").val();
+							$.ajax({
+								  url: "${doc_url}?jsoncallback=?",
+								  contentType: 'text/html;charset=utf-8',
+								  
+								  data:{"doc":doc, "title":title},
+								  success: function(result){
+									  console.log("success"+result);
+								  },
+								  error: function(request, textStatus, errorThrown) {
+								    //alert(textStatus);
+								  },
+								  complete: function(request, textStatus) { //for additional info
+									  var option = request.responseText;
+									  //option = option.replace(/[\r\n]/g, "");							  
+									  
+									  console.log("success:"+option);
+									  alert(option);
+								  }
+								});
+							
+						/*
 						var msg = "<div id='pdf_id'>"+$("#dataEditor").html()+"</div>";
 						bootbox.dialog({
 							message: msg,
@@ -404,7 +440,8 @@
 							}
 							
 						});
-						$(".modal-dialog").css("width","900px");
+						$(".modal-dialog").css("width","900px");*/
+						
 					});
 
 				});
@@ -580,18 +617,10 @@
 						     UE.getEditor('editor').setContent(imgs, true);
 						     
 						  }
-						});
-					
-					/*$.get("${saveimg_url}", { "data":dataURL},
-							  function(data){
-							    alert("Data Loaded: " + data);
-							    var arr = [];
-						        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
-						        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
-						        alert(arr.join("\n"));
-							}
-					);*/
+						});				
 				}
+				
+				
 				
 				
 				var ue = UE.getEditor('editor');
