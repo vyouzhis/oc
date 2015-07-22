@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.etc.UrlClassList;
 
 public class api_secret_list extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private int Limit = 10;
 	private int page = 0;
-
+	private UrlClassList ucl = UrlClassList.getInstance();
+	
 	public api_secret_list() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
@@ -47,6 +49,8 @@ public class api_secret_list extends Permission implements BasePerminterface {
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
 
+		setRoot("new_api_url", ucl.read("api_secret_action"));
+		
 	}
 
 	@Override

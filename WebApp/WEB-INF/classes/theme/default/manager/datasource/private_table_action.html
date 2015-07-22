@@ -1,0 +1,92 @@
+
+<body> 
+  ${navbar!""}
+  <div class="main-container" id="main-container"> 
+   <script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script> 
+   <div class="main-container-inner"> 
+    
+    ${menu!""}
+     <div class="main-content"> 
+     <div class="breadcrumbs" id="breadcrumbs"> 
+      <script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script> 
+      <ul class="breadcrumb"> 
+       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
+       <li class="active">${name}</li> 
+      </ul> 
+      <!-- #nav-search --> 
+     </div> 
+     <div class="page-content"> 
+      <!-- /.page-header --> 
+      <div class="row"> 
+      	<form class="form-horizontal id-message-form col-xs-12" action="${new_table_url!''}" enctype="multipart/form-data" method="post">
+      	<input type="hidden" value="0" name="count" id="count"> 
+      	<div class="form-group well"> 
+          <div class="col-sm-8"> 
+           <label class="col-sm-3 control-label">视图名:</label> 
+           <input type="text" value="" class="col-sm-4" id="table_name" name="table_name"> 
+           <label class="col-sm-4">(只能英文,数字或下划线)</label> 
+          </div> 
+          <div class="col-sm-4">
+          	<button class="btn btn-info" type="submit">
+				<i class="icon-ok bigger-110"></i>
+				Save
+			</button>
+			<button  onclick="addField()"   type="button" class="btn btn-success">增加字段</button>
+			
+          </div>
+         </div>
+         
+      	<table class="table table-striped table-bordered table-hover"
+			id="sample-table-1">
+			<thead>
+				<tr>
+
+					<th>字段</th>
+					<th>类型</th>
+					<th class="hidden-480">默认值</th>
+					<th class="hidden-480">备注</th>
+				</tr>
+			</thead>
+
+			<tbody id="sqlparams" name="sqlparams">
+			</tbody>
+			</table>
+			</form>
+      </div> 
+     <!-- /.row --> 
+    <!-- /.main-content --> 
+   
+    <!-- /#ace-settings-container --> 
+   </div> 
+   <!-- /.main-container-inner --> 
+   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
+  </div> 
+  <!-- /.main-container --> 
+<script type="text/javascript">
+var element=1;
+function addField(){
+	var html_new = "<tr>"
+		+ "<td class='center'><input type='text' id='field_"+ element +"' name='field_" +element+ "'/>"
+		+"</td>"
+		+ "<td> <select id='column_type_"+element+"' name='column_type_"+element+"' >"
+		+ "<option title='4 字节整数，有符号范围从 -2147483648 到 2147483647，无符号范围从 0 到 4294967295'>INT</option>"
+		+ "<option title='变长（0-65,535）字符串，最大有效长度取决于最大行大小'>VARCHAR</option>"
+		+ "<option title='最多存储 65535（2^16 - 1）字节的文本字段，存储时在内容前使用 2 字节表示内容的字节数'>TEXT</option>"
+		+ "<option title='日期，支持的范围从 1000-01-01 到 9999-12-31 now() 为当前时间'>DATE</option>"
+		+ "<option title='TINYINT(1) 的别名，零值表示假，非零值表示真'>BOOLEAN</option>"
+		+ "<option title='单精度浮点数，取值范围从 -3.402823466E+38 到 -1.175494351E-38、0 以及从 1.175494351E-38 到 3.402823466E+38'>FLOAT</option>"
+		+ "</select>"
+		+ "</td>"
+		+ "<td><input type='text' id='default_"+element+"' name='default_"+element+"' value='0' /> </td>"
+		+ "<td><input type='text' id='desc_"+element+"' name='desc_"+element+"' value='说明' /> </td>"
+		+ "</tr>";
+	//console.log(html_new);	
+	$("#sqlparams").append(html_new);
+	element++;
+	$("#count").val(element);
+}
+</script>

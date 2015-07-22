@@ -82,6 +82,21 @@ CREATE TABLE IF NOT EXISTS `web_article` (
 -- PostgreSQL database dump
 --
 
+CREATE TABLE hor_doc
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  ctime integer NOT NULL,
+  doc text,
+  CONSTRAINT hor_doc_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hor_doc
+  OWNER TO bi;
+
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
