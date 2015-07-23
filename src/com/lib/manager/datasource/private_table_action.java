@@ -55,10 +55,9 @@ public class private_table_action extends Permission implements
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
 		int count = toInt(porg.getKey("count"));
-		if (count != 0) {
-			echo(count);
-		} else {
-			echo("error");
+		if (count == 0) {			
+			TipMessage(ucl.read("private_table_list"), _CLang("error_null"));
+			return;
 		}
 
 		String formatc = "CREATE TABLE c_%s (%s)";
