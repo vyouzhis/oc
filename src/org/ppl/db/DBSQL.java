@@ -1,6 +1,7 @@
 package org.ppl.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class DBSQL extends BaseLang {
 
 	public void end() {
 		try {
-			if(stmt!=null)
+			if (stmt != null)
 				stmt.close();
 			// c.commit();
 			// c.close();
@@ -76,10 +77,11 @@ public class DBSQL extends BaseLang {
 					Map<String, Object> row = new HashMap<String, Object>();
 					for (int i = 1; i <= numColumns; ++i) {
 						String name = meta.getColumnName(i);
-						if(meta.getColumnLabel(i)!=null && meta.getColumnLabel(i).length()>0){
+						if (meta.getColumnLabel(i) != null
+								&& meta.getColumnLabel(i).length() > 0) {
 							name = meta.getColumnLabel(i);
 						}
-						
+
 						if (meta.getColumnTypeName(i).equals("TINYINT")) {
 							value = rs.getInt(i);
 
@@ -97,14 +99,14 @@ public class DBSQL extends BaseLang {
 
 		return results;
 	}
-	
+
 	public int getFields() {
 		return 0;
 	}
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
-		
+
 		if (Cursor < MaxLimit) {
 
 			InitConDB();
@@ -120,7 +122,7 @@ public class DBSQL extends BaseLang {
 				echo("con sql:" + clearSQL);
 				return null;
 			}
-			
+
 			stmt = ConDB.createStatement();
 			rs = stmt.executeQuery(clearSQL);
 		}
@@ -198,7 +200,7 @@ public class DBSQL extends BaseLang {
 
 	private long exec(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
-		
+
 		InitConDB();
 
 		String clearSQL = sql;
@@ -213,8 +215,8 @@ public class DBSQL extends BaseLang {
 		}
 
 		stmt = ConDB.createStatement();
-		
-		//stmt.clearBatch();
+
+		// stmt.clearBatch();
 		try {
 			if (ret) {
 				numRowsUpdated = stmt.executeUpdate(clearSQL,
@@ -225,22 +227,22 @@ public class DBSQL extends BaseLang {
 		} catch (Exception e) {
 			// TODO: handle exception
 			ConDB.commit();
-		}  
-		
+		}
+
 		return numRowsUpdated;
 	}
-	
+
 	private void InitConDB() {
 		if (ConDB == null) {
-			long tid = myThreadId();			
+			long tid = myThreadId();
 			ConDB = globale_config.GDB.get(tid);
 
-		}		
+		}
 	}
 
 	public void CommitDB() {
 		InitConDB();
-		
+
 		try {
 			ConDB.commit();
 		} catch (SQLException e) {
@@ -256,11 +258,32 @@ public class DBSQL extends BaseLang {
 	public void setErrorMsg(String errorMsg) {
 		ErrorMsg = errorMsg;
 	}
-	
+
 	public Connection getCon() {
 		InitConDB();
 		return ConDB;
 	}
-	
-	
+
+	public List<String> getTables() {			
+		InitConDB();
+		DatabaseMetaData md;
+		List<String> res = new ArrayList<>();
+		try {
+			md = ConDB.getMetaData();
+			ResultSet rs = md.getTables(null, null, "c_%", null);
+			while (rs.next()) {
+				if(rs.getString(3).substring(0,2).equals("c_")){
+					res.add(rs.getString(3));
+				}
+			  
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return res;
+		
+	}
+
 }

@@ -53,26 +53,8 @@ public class private_table_list extends Permission implements BasePerminterface 
 		// TODO Auto-generated method stub
 		setRoot("new_table_url", ucl.read("private_table_action"));
 		
-//		int offset = 0;
-//
-//		if (page != 0) {
-//			offset = (page - 1) * Limit;
-//		}
-//
-//		String format = "select * from " + DB_HOR_PRE
-//				+ "dbsource order by id desc  limit %d offset %d";
-//		String sql = String.format(format, Limit, offset);
-//
-//		List<Map<String, Object>> res;
-//
-//		try {
-//			res = FetchAll(sql);
-//			setRoot("csv_list", res);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		SetPage();
+		List<String> tables = getTables();
+		echo(tables);
 	}
 
 	private void SetPage() {

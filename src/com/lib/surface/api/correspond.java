@@ -45,4 +45,8 @@ public class correspond extends BaseSurface{
 			
 		super.setHtml("ok");
 	}
+	
+	public void set_entries() {
+		
+	}
 }

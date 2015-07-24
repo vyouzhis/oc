@@ -265,7 +265,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 		}
-		if (JsonIds.size() == 1) {
+		if (JsonIds.size() == 1) {			
 			mom();
 		}
 		option.xAxis(valueAxis);
@@ -279,7 +279,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	// month-on-month
 	private void mom() {
 		option.legend(_MLang("mom"));
-
+		
 		List<Map<String, Object>> list = pieList.get(0);
 
 		Line line = new Line();
@@ -299,7 +299,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				// echo("front:" + front + " x:" + x + " m:" + m);
 			}
 
-			line.data(m);
+			line.data((int)m);
 			front = x;
 
 		}

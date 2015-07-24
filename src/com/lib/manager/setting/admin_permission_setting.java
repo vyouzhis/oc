@@ -93,7 +93,7 @@ public class admin_permission_setting extends Permission implements
 			getGroupUser(porg.getKey("gid"));
 		}
 		String Json = aclfetchMyRole();
-		echo(Json);
+
 		setRoot("Pack_Class_List", PackClassList);
 	}
 
