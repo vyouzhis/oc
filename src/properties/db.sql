@@ -78,24 +78,6 @@ CREATE TABLE IF NOT EXISTS `web_article` (
 --
 -- PostgreSQL database dump
 --
---
--- PostgreSQL database dump
---
-
-CREATE TABLE hor_doc
-(
-  id serial NOT NULL,
-  title character varying NOT NULL,
-  ctime integer NOT NULL,
-  doc text,
-  CONSTRAINT hor_doc_pkey PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE hor_doc
-  OWNER TO bi;
-
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -125,11 +107,41 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: c_hdfgsdf; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE c_hdfgsdf (
+    t1 integer DEFAULT 0 NOT NULL,
+    t2 character varying DEFAULT 'sdf'::character varying NOT NULL,
+    t3 text NOT NULL,
+    t4 date DEFAULT '2015-07-22'::date NOT NULL,
+    t5 boolean DEFAULT true NOT NULL,
+    t6 double precision DEFAULT 0.100000000000000006::double precision NOT NULL
+);
+
+
+ALTER TABLE public.c_hdfgsdf OWNER TO bi;
+
+--
+-- Name: c_mydata; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE c_mydata (
+    id integer DEFAULT 0 NOT NULL,
+    name character varying DEFAULT '100'::character varying NOT NULL,
+    ctime integer DEFAULT 0 NOT NULL,
+    link text NOT NULL
+);
+
+
+ALTER TABLE public.c_mydata OWNER TO bi;
+
+--
 -- Name: hor_class; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
 CREATE TABLE hor_class (
-    rule integer,
+    rule integer DEFAULT 0 NOT NULL,
     act_v0 text,
     act_v1 text,
     act_v2 text,
@@ -162,69 +174,98 @@ rule 依赖于 classinfo 的 id 字段';
 
 
 --
--- Name: el_mt4; Type: VIEW; Schema: public; Owner: bi
+-- Name: eldata; Type: VIEW; Schema: public; Owner: bi
 --
 
-CREATE VIEW el_mt4 AS
- SELECT hor_class.act_v0 AS profit,
+CREATE VIEW eldata AS
+ SELECT hor_class.act_v0 AS "﻿deal",
     hor_class.act_v1 AS login,
-    hor_class.act_v2 AS symbol,
+    hor_class.act_v2 AS name,
     hor_class.act_v3 AS open_time,
-    hor_class.act_v4 AS "timestamp",
-    hor_class.act_v5 AS volume,
-    hor_class.act_v6 AS close_time
+    hor_class.act_v4 AS type,
+    hor_class.act_v5 AS symbol,
+    hor_class.act_v6 AS volume,
+    hor_class.act_v7 AS open_price,
+    hor_class.act_v8 AS close_time,
+    hor_class.act_v9 AS close_price,
+    hor_class.act_va AS commission,
+    hor_class.act_vb AS taxes,
+    hor_class.act_vc AS agent,
+    hor_class.act_vd AS swap,
+    hor_class.act_ve AS profit,
+    hor_class.act_vf AS pips,
+    hor_class.act_v10 AS comment
    FROM hor_class
-  WHERE (hor_class.rule = 77);
+  WHERE (hor_class.rule = 38);
 
 
-ALTER TABLE public.el_mt4 OWNER TO bi;
-
---
--- Name: game_kfd; Type: VIEW; Schema: public; Owner: bi
---
-
-CREATE VIEW game_kfd AS
- SELECT hor_class.act_v0 AS account_name
-   FROM hor_class
-  WHERE (hor_class.rule = 75);
-
-
-ALTER TABLE public.game_kfd OWNER TO bi;
+ALTER TABLE public.eldata OWNER TO bi;
 
 --
--- Name: game_kfdmt4; Type: VIEW; Schema: public; Owner: bi
+-- Name: hor_apisecret; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
-CREATE VIEW game_kfdmt4 AS
- SELECT hor_class.act_v0 AS profit,
-    hor_class.act_v1 AS login,
-    hor_class.act_v2 AS symbol,
-    hor_class.act_v3 AS open_time,
-    hor_class.act_v4 AS "timestamp",
-    hor_class.act_v5 AS volume,
-    hor_class.act_v6 AS close_time
-   FROM hor_class
-  WHERE (hor_class.rule = 76);
+CREATE TABLE hor_apisecret (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    username character varying NOT NULL,
+    passwd character varying NOT NULL,
+    ctime integer NOT NULL,
+    idesc character varying DEFAULT ''::character varying NOT NULL,
+    secret character varying(32) DEFAULT ''::character varying NOT NULL
+);
 
 
-ALTER TABLE public.game_kfdmt4 OWNER TO bi;
+ALTER TABLE public.hor_apisecret OWNER TO bi;
 
 --
--- Name: game_mt4; Type: VIEW; Schema: public; Owner: bi
+-- Name: COLUMN hor_apisecret.secret; Type: COMMENT; Schema: public; Owner: bi
 --
 
-CREATE VIEW game_mt4 AS
- SELECT hor_class.act_v0 AS login,
-    hor_class.act_v1 AS symbol,
-    hor_class.act_v2 AS open_time,
-    hor_class.act_v3 AS "timestamp",
-    hor_class.act_v4 AS volume,
-    hor_class.act_v5 AS close_time
-   FROM hor_class
-  WHERE (hor_class.rule = 73);
+COMMENT ON COLUMN hor_apisecret.secret IS 'secret';
 
 
-ALTER TABLE public.game_mt4 OWNER TO bi;
+--
+-- Name: hor_apisecret_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_apisecret_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_apisecret_id_seq OWNER TO bi;
+
+--
+-- Name: hor_apisecret_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_apisecret_id_seq OWNED BY hor_apisecret.id;
+
+
+--
+-- Name: hor_cache; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_cache (
+    md5 character varying NOT NULL,
+    json text NOT NULL,
+    ctime timestamp without time zone DEFAULT now(),
+    title character varying NOT NULL
+);
+
+
+ALTER TABLE public.hor_cache OWNER TO bi;
+
+--
+-- Name: COLUMN hor_cache.title; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_cache.title IS '名称';
+
 
 --
 -- Name: hor_classify; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
@@ -234,11 +275,19 @@ CREATE TABLE hor_classify (
     id integer NOT NULL,
     pid integer DEFAULT 0 NOT NULL,
     name character varying NOT NULL,
-    ctime integer NOT NULL
+    ctime integer NOT NULL,
+    displays integer DEFAULT 0 NOT NULL
 );
 
 
 ALTER TABLE public.hor_classify OWNER TO bi;
+
+--
+-- Name: COLUMN hor_classify.displays; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_classify.displays IS '0 显示，1 隐藏';
+
 
 --
 -- Name: hor_classify_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
@@ -362,6 +411,41 @@ ALTER SEQUENCE hor_dbsource_id_seq OWNED BY hor_dbsource.id;
 
 
 --
+-- Name: hor_doc; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE TABLE hor_doc (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    ctime integer NOT NULL,
+    doc text
+);
+
+
+ALTER TABLE public.hor_doc OWNER TO bi;
+
+--
+-- Name: hor_doc_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
+--
+
+CREATE SEQUENCE hor_doc_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.hor_doc_id_seq OWNER TO bi;
+
+--
+-- Name: hor_doc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
+--
+
+ALTER SEQUENCE hor_doc_id_seq OWNED BY hor_doc.id;
+
+
+--
 -- Name: hor_mongodbrule; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
@@ -427,8 +511,9 @@ CREATE TABLE hor_sqltmp (
     id integer NOT NULL,
     sid integer NOT NULL,
     name character varying NOT NULL,
-    sqltmp character varying(256) DEFAULT ''::character varying NOT NULL,
-    ctime timestamp without time zone DEFAULT now()
+    sqltmp text DEFAULT ''::character varying NOT NULL,
+    ctime timestamp without time zone DEFAULT now(),
+    etime integer DEFAULT 0 NOT NULL
 );
 
 
@@ -564,29 +649,6 @@ COMMENT ON COLUMN hor_webvisitcount.val IS '值';
 
 
 --
--- Name: kfd_mt4_trades; Type: VIEW; Schema: public; Owner: bi
---
-
-CREATE VIEW kfd_mt4_trades AS
- SELECT hor_class.act_v0 AS cmd,
-    hor_class.act_v1 AS profit,
-    hor_class.act_v2 AS close_price,
-    hor_class.act_v3 AS login,
-    hor_class.act_v4 AS open_price,
-    hor_class.act_v5 AS ticket,
-    hor_class.act_v6 AS symbol,
-    hor_class.act_v7 AS comment,
-    hor_class.act_v8 AS open_time,
-    hor_class.act_v9 AS volume,
-    hor_class.act_va AS "timestamp",
-    hor_class.act_vb AS close_time
-   FROM hor_class
-  WHERE (hor_class.rule = 1);
-
-
-ALTER TABLE public.kfd_mt4_trades OWNER TO bi;
-
---
 -- Name: role_group; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
@@ -713,17 +775,24 @@ ALTER SEQUENCE role_user_info_uid_seq OWNED BY role_user_info.uid;
 
 
 --
--- Name: utest_viwes; Type: VIEW; Schema: public; Owner: bi
+-- Name: testsdf; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
 --
 
-CREATE VIEW utest_viwes AS
- SELECT hor_class.act_v0 AS dial,
-    hor_class.act_v1 AS account_name
-   FROM hor_class
-  WHERE (hor_class.rule = 78);
+CREATE TABLE testsdf (
+    t1 integer DEFAULT 222 NOT NULL,
+    t2 text NOT NULL,
+    t3 date DEFAULT '2015-07-23'::date NOT NULL
+);
 
 
-ALTER TABLE public.utest_viwes OWNER TO bi;
+ALTER TABLE public.testsdf OWNER TO bi;
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_apisecret ALTER COLUMN id SET DEFAULT nextval('hor_apisecret_id_seq'::regclass);
+
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: bi
@@ -744,6 +813,13 @@ ALTER TABLE ONLY hor_classinfo ALTER COLUMN id SET DEFAULT nextval('hor_classinf
 --
 
 ALTER TABLE ONLY hor_dbsource ALTER COLUMN id SET DEFAULT nextval('hor_dbsource_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: bi
+--
+
+ALTER TABLE ONLY hor_doc ALTER COLUMN id SET DEFAULT nextval('hor_doc_id_seq'::regclass);
 
 
 --
@@ -789,6 +865,14 @@ ALTER TABLE ONLY role_user_info ALTER COLUMN uid SET DEFAULT nextval('role_user_
 
 
 --
+-- Name: hor_apisecret_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_apisecret
+    ADD CONSTRAINT hor_apisecret_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: hor_classify_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
 --
 
@@ -802,6 +886,14 @@ ALTER TABLE ONLY hor_classify
 
 ALTER TABLE ONLY hor_classinfo
     ADD CONSTRAINT hor_classinfo_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hor_doc_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
+--
+
+ALTER TABLE ONLY hor_doc
+    ADD CONSTRAINT hor_doc_pkey PRIMARY KEY (id);
 
 
 --
@@ -850,6 +942,20 @@ ALTER TABLE ONLY role_user_info
 
 ALTER TABLE ONLY role_user_info
     ADD CONSTRAINT role_user_info_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: md5_index; Type: INDEX; Schema: public; Owner: bi; Tablespace: 
+--
+
+CREATE INDEX md5_index ON hor_cache USING btree (md5);
+
+
+--
+-- Name: INDEX md5_index; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON INDEX md5_index IS 'md5_index';
 
 
 --
