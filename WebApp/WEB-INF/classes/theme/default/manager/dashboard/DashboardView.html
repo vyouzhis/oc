@@ -29,7 +29,7 @@
 					<!-- /.page-header -->
 					<div class="row">
 						<div class="col-xs-12 col-sm-9">							
-							<div id="custom-container" style="height:378px" class="well col-xs-12 col-sm-12">
+							<div id="custom-container" style="height:378px;" class="well col-xs-12 col-sm-12">
 							</div>
 							<div class="col-xs-12 col-sm-12 well">							
 								<div class="widget-box">
@@ -48,7 +48,8 @@
 								</div>								
 							</div>
 							<div class="col-xs-12 col-sm-12">								
-								<script id="editor" type="text/plain" style="height:500px;"></script>
+								<!-- <script id="editor" type="text/plain" style="height:500px;"></script> -->
+								<div class="wysiwyg-editor" name="dataEditor" id="dataEditor"></div>
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-3">
@@ -160,11 +161,11 @@
 					class="icon-double-angle-up icon-only bigger-110"></i>
 				</a>
 			</div>
-			<!-- /.main-container 
+			<!-- /.main-container -->
 
 			<script src="${static_js_uri}/jquery.hotkeys.min.js"></script>
 			<script src="${static_js_uri}/bootstrap-wysiwyg.min.js"></script>
-			-->
+			
 			
 			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/ue/ueditor.config.js"></script>
     		<script type="text/javascript" charset="utf-8" src="${static_js_uri}/ue/ueditor.all.min.js"> </script>
@@ -570,11 +571,11 @@
 				}
 				
 								
-				/*
+				/**/
 				$("#dataEditor").ace_wysiwyg();
 				$("#dataEditor").css("height", "500px");
 				$("#dataEditor").css("max-height", "500px");
-				*/
+				
 				function SaveImg() {
 					var dataURL = myChart4.getDataURL();
 					
@@ -594,8 +595,10 @@
 							  option = option.replace(/[\r\n]/g, "");							  
 							  var imgs = "";
 						     imgs = "<img src='${data_uri}"+option+"' />";
-						     UE.getEditor('editor').setContent(imgs, true);
-						     
+						    // UE.getEditor('editor').setContent(imgs, true);
+						   
+								var val = $("#dataEditor").html();
+								$("#dataEditor").html(val + imgs);
 						  }
 						});				
 				}
@@ -603,6 +606,6 @@
 				
 				
 				
-				var ue = UE.getEditor('editor');
+				//var ue = UE.getEditor('editor');
 								
 			</script>
