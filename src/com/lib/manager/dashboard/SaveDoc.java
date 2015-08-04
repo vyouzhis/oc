@@ -62,7 +62,7 @@ public class SaveDoc extends Permission implements BasePerminterface {
 				+ "doc(title,doc,ctime)VALUES('%s','%s', %d)";
 		String sql = String.format(format, title, doc, time());
 
-		try {
+		try {			
 			insert(sql);
 			super.setHtml(_CLang("ok_save"));
 		} catch (SQLException e) {

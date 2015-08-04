@@ -77,6 +77,7 @@ public class updateCSVData extends BaseRapidThread {
 				return;
 			}
 			if(bytesAsString==null) return;
+			
 			readers = new StringReader(bytesAsString);
 			reader = new BufferedReader(readers);
 			try {
@@ -105,19 +106,22 @@ public class updateCSVData extends BaseRapidThread {
 				
 				if (copyManager != null) {
 					copyManager.copyIn("COPY " + DB_HOR_PRE + "class (" + field
-							+ ") FROM STDIN DELIMITER ',' ", reader);					
+							+ ") FROM STDIN DELIMITER ',' ", reader);	
+										
+					format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
+							+ "class WHERE rule=%d";
+					Sql = String.format(format, view_name, asName, rule);
+					
+					dbcreate(Sql);
+									
+					Sql = "update " + DB_HOR_PRE + "class  set rule=" + rule
+							+ " where rule=0";
+					
+					update(Sql);
+				}else {
+					echo("error");
 				}
-				
-				format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
-						+ "class WHERE rule=%d";
-				Sql = String.format(format, view_name, asName, rule);
-				
-				dbcreate(Sql);
 								
-				Sql = "update " + DB_HOR_PRE + "class  set rule=" + rule
-						+ " where rule=0";
-				
-				update(Sql);
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
