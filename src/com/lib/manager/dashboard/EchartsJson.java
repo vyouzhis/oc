@@ -20,6 +20,7 @@ import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
 import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.RoseType;
 import com.github.abel533.echarts.code.Tool;
 import com.github.abel533.echarts.code.Trigger;
 import com.github.abel533.echarts.code.Y;
@@ -150,6 +151,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		int m = 0;
 
 		int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
+
 		itemStyle_lable = toInt(porg.getKey("itemStyle_lable"));
 		itemStyle_areaStyle = toInt(porg.getKey("itemStyle_areaStyle"));
 		markLine_average = toInt(porg.getKey("markLine_average"));
@@ -315,6 +317,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			return "";
 		// List<String> legendTitle = null;
 		int l = 0;
+		int roseType = 0;
+		roseType = toInt(porg.getKey("roseType"));
+		
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
@@ -322,6 +327,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			List<Map<String, Object>> list = pieList.get(l);
 			l++;
 			Pie pie = new Pie();
+			if(roseType==1){
+				pie.roseType(RoseType.area);
+			}
 			// legendTitle = new ArrayList<>();
 			for (Map<String, Object> key : list) {
 				Map<String, Object> m = new HashMap<>();
@@ -331,7 +339,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				option.legend(key.get("dial").toString());
 				pie.data(m);
 			}
-
+			
 			// option.legend().data(legendTitle);
 			option.series(pie);
 

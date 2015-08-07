@@ -94,6 +94,12 @@
 											<span class="lbl">markLine.average</span>
 										</label>
 									</div>
+									<div class="checkbox">
+										<label>
+											<input class="ace ace-checkbox-2" type="checkbox" name="roseType" id="roseType">
+											<span class="lbl">南丁格尔玫瑰</span>
+										</label>
+									</div>
 						       	</div>
 						       	<div class="col-xs-12 col-sm-12 well">
 					       			<h5 class="bigger lighter">
@@ -534,6 +540,12 @@
 					if($('input[name="markLine_average"]:checked').val()=="on"){
 						markLine_average=1;
 					}
+					
+					var roseType=0;
+					if($('input[name="roseType"]:checked').val()=="on"){
+						roseType=1;
+					}
+					
 					var array = $("#tmp_list").getIdArray();
 					var tmp={};
 					for(var a in array){
@@ -549,7 +561,7 @@
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
 						  data:{"ids":selectedItems,  "graph_type":$('input[name="graph_type"]:checked').val(), "itemStyle_lable":itemStyle_lable
-							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average, "tmp_list":tmp_list},
+							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average,"roseType":roseType, "tmp_list":tmp_list},
 						  success: function(result){
 							  console.log("success"+result);
 						  },
