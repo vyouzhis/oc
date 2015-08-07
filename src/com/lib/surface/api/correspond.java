@@ -1,5 +1,6 @@
 package com.lib.surface.api;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -71,11 +72,46 @@ public class correspond extends BaseSurface {
 		}
 
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public void set_entries(Map<String, Object> o) {
 		echo(o);
 		String format = "INSERT INTO %s (%s) VALUES %s ;";
 		String table = o.get("module_name").toString();
-		String string;
+		String name_value_list = o.get("name_value_list").toString();
+		String fields="";
+		String values = "";
+		boolean flag = false;
+		List<List<Map<String, Object>>> nvl = JSON.parseObject(name_value_list, List.class);
+		if(nvl == null) return;
+		
+		for (int i = 0; i < nvl.size(); i++) {
+			List<Map<String, Object>> nmap = nvl.get(i);
+			values += "(";
+			for (int j = 0; j < nmap.size(); j++) {
+				if(flag == false){
+					fields += nmap.get(j).get("name").toString()+",";
+				}
+				values += "'"+nmap.get(j).get("value").toString()+"',";
+			}
+			if(values.length() > 3);
+			values = values.substring(0, values.length()-1);
+			values += "),";
+			flag = true;
+		}
+		if(fields.length() > 3) {
+			fields = fields.substring(0, fields.length()-1);
+			values = values.substring(0, values.length()-1);
+		}
+		String sql = String.format(format, table, fields, values);
+		//echo(sql);
+		
+		try {
+			insert(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

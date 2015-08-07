@@ -443,7 +443,7 @@
 					        trigger: 'axis'
 					    },
 					    legend: {
-					        data:['Gaussian distribution']
+					        data:['Math Log']
 					    },
 					    calculable : true,
 					    xAxis : [
@@ -461,7 +461,7 @@
 					    ],
 					    series : [
 					        {
-					            name:'Gaussian distribution',
+					            name:'Math Log',
 					            type:'line',
 					            data:${xAxis!"[]"},
 					           
@@ -575,9 +575,12 @@
 							  }
 							  endTime = new Date().getTime();
 							  var useTime = (endTime - startTime)/1000;
-							
+							  var helpMsg = "";
 							  $("#showTime").attr("class", "col-xs-12 col-sm-12");
-							  $("#useTime").html(useTime+" 秒");
+							  if(useTime > 5) {
+								  helpMsg = ",<a href=''>太慢了，需要帮忙</a>";
+							  }
+							  $("#useTime").html(useTime+" 秒"+helpMsg);
 						  }
 						});
 				}

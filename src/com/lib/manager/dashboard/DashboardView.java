@@ -199,42 +199,52 @@ public class DashboardView extends Permission implements BasePerminterface {
 	}
 	
 	
-	private void cardioid2() {
-		int t = 0;
-		double a = Math.sin(0.01745 * t) * 0.5 + 16;
-		
-		double r;
-		double px, py;
-		int ox= 160;
-		int oy = 32;
-		t = (t + 12) % 3;
-		double rotation = t / 24;
+	private void cardioid() {
+//		int t = 0;
+//		double a = Math.sin(0.01745 * t) * 0.5 + 16;
+//		
+//		double r;
+//		double px, py;
+//		int ox= 160;
+//		int oy = 32;
+//		t = (t + 12) % 3;
+//		double rotation = t / 24;
 		List<Double> xAxis = new ArrayList<>();
 		List<Double> yAxis = new ArrayList<>();
-		for (int j = 0; j < 360; j += 4) {
-			for (int i = 0; i < 360; i += 4) {
-				// Cardioid
-				double theta = Math.PI / 180 * (i + rotation);
-				r = a * (1 - Math.sin(theta));
-				px = r * Math.cos(theta);
-				py = r * Math.sin(theta);
-
-				// deco
-				double phi = Math.PI / 180 * j;
-				px *= phi * Math.sin(phi) * 1.1;
-				py *= phi;
-				double xx = px + ox;
-				double yy = py + oy;
-				xAxis.add(xx);
-				yAxis.add(yy);
-				//echo(xx+" , " + yy);
+//		for (int j = 0; j < 360; j += 4) {
+//			for (int i = 0; i < 360; i += 4) {
+//				// Cardioid
+//				double theta = Math.PI / 180 * (i + rotation);
+//				r = a * (1 - Math.sin(theta));
+//				px = r * Math.cos(theta);
+//				py = r * Math.sin(theta);
+//
+//				// deco
+//				double phi = Math.PI / 180 * j;
+//				px *= phi * Math.sin(phi) * 1.1;
+//				py *= phi;
+//				double xx = px + ox;
+//				double yy = py + oy;
+//				xAxis.add(xx);
+//				yAxis.add(yy);
+//				//echo(xx+" , " + yy);
+//			}
+//		}
+		
+		  for (double i = 1; i < 50; i++) {
+		    	 double radians = Math.toRadians(i);
+		    	 xAxis.add(i);
+		    	 yAxis.add(Math.log(i)*10);
+			   //  System.out.format("The value of pi is %.4f%n", Math.PI);
+//			     System.out.format("The sine of %.1f degrees is %.4f%n",
+//			                        degrees, Math.sin(radians)*100);
 			}
-		}
 		
-		
+		setRoot("xAxis", JSON.toJSONString(yAxis));
+		setRoot("yAxis", JSON.toJSONString(xAxis));
 	}
 	
-	private void cardioid() {
+	private void cardioidg() {
 //		 double r[] = new double[20];
 //
 //	        double theta[] = new double[r.length];
