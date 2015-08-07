@@ -159,7 +159,20 @@ CREATE TABLE hor_class (
     act_ve text,
     act_vf text,
     modify_time timestamp without time zone DEFAULT now(),
-    act_v10 text
+    act_v10 text,
+    act_v11 text,
+    act_v12 text,
+    act_v13 text,
+    act_v14 text,
+    act_v15 text,
+    act_v16 text,
+    act_v17 text,
+    act_v18 text,
+    act_v19 text,
+    act_v1a text,
+    act_v1b text,
+    act_v1c text,
+    act_v1d text
 );
 
 
@@ -555,7 +568,8 @@ CREATE TABLE hor_usersql (
     uview character varying(256) DEFAULT ''::character varying NOT NULL,
     input_data integer DEFAULT 0 NOT NULL,
     vtime integer DEFAULT 0 NOT NULL,
-    cid integer DEFAULT 0 NOT NULL
+    cid integer DEFAULT 0 NOT NULL,
+    uid integer DEFAULT 0 NOT NULL
 );
 
 
@@ -594,6 +608,13 @@ COMMENT ON COLUMN hor_usersql.vtime IS 'view 运行完成时间';
 --
 
 COMMENT ON COLUMN hor_usersql.cid IS 'classify id';
+
+
+--
+-- Name: COLUMN hor_usersql.uid; Type: COMMENT; Schema: public; Owner: bi
+--
+
+COMMENT ON COLUMN hor_usersql.uid IS '用户ID';
 
 
 --
@@ -647,6 +668,25 @@ dial 刻度盘';
 
 COMMENT ON COLUMN hor_webvisitcount.val IS '值';
 
+
+--
+-- Name: p2p; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW p2p AS
+ SELECT hor_class.act_v0 AS risk,
+    hor_class.act_v1 AS title,
+    hor_class.act_v2 AS lowestamount,
+    hor_class.act_v3 AS investcycle,
+    hor_class.act_v4 AS investfield,
+    hor_class.act_v5 AS riskscore,
+    hor_class.act_v6 AS producttypelabel,
+    hor_class.act_v7 AS expectedprofitrate
+   FROM hor_class
+  WHERE (hor_class.rule = 39);
+
+
+ALTER TABLE public.p2p OWNER TO bi;
 
 --
 -- Name: role_group; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
@@ -786,6 +826,45 @@ CREATE TABLE testsdf (
 
 
 ALTER TABLE public.testsdf OWNER TO bi;
+
+--
+-- Name: wine; Type: VIEW; Schema: public; Owner: bi
+--
+
+CREATE VIEW wine AS
+ SELECT hor_class.act_v0 AS factory,
+    hor_class.act_v1 AS addr,
+    hor_class.act_v2 AS phome,
+    hor_class.act_v3 AS burden,
+    hor_class.act_v4 AS storage,
+    hor_class.act_v5 AS quality,
+    hor_class.act_v6 AS title,
+    hor_class.act_v7 AS content,
+    hor_class.act_v8 AS brand,
+    hor_class.act_v9 AS series,
+    hor_class.act_va AS set_size,
+    hor_class.act_vb AS wine_class,
+    hor_class.act_vc AS wine_grade,
+    hor_class.act_vd AS area,
+    hor_class.act_ve AS grapes,
+    hor_class.act_vf AS flavour,
+    hor_class.act_v10 AS drinking_occasion,
+    hor_class.act_v11 AS origin,
+    hor_class.act_v12 AS classification,
+    hor_class.act_v13 AS packing,
+    hor_class.act_v14 AS collocation,
+    hor_class.act_v15 AS sleeping_time,
+    hor_class.act_v16 AS bouquet,
+    hor_class.act_v17 AS import_type,
+    hor_class.act_v18 AS price,
+    hor_class.act_v19 AS cost_price,
+    hor_class.act_v1a AS sales,
+    hor_class.act_v1b AS evaluate
+   FROM hor_class
+  WHERE (hor_class.rule = 40);
+
+
+ALTER TABLE public.wine OWNER TO bi;
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: bi
