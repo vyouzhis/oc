@@ -15,6 +15,7 @@ import org.ppl.io.Encrypt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
@@ -23,6 +24,7 @@ import com.github.abel533.echarts.code.Magic;
 import com.github.abel533.echarts.code.RoseType;
 import com.github.abel533.echarts.code.Tool;
 import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.code.X;
 import com.github.abel533.echarts.code.Y;
 import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.json.GsonOption;
@@ -31,6 +33,7 @@ import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
 import com.github.abel533.echarts.style.AreaStyle;
 import com.github.abel533.echarts.style.ItemStyle;
+import com.github.abel533.echarts.style.itemstyle.Emphasis;
 import com.github.abel533.echarts.style.itemstyle.Normal;
 
 public class EchartsJson extends Permission implements BasePerminterface {
@@ -352,38 +355,74 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	private String JsonMap() {
 		option.tooltip().trigger(Trigger.item)
-				.formatter("{b} <br/> {c} ({d}%)");
-		List<List<Map<String, Object>>> pieList = getEcharts();
-
-		if (pieList == null || pieList.size() == 0)
+				.formatter("{b} <br/> {c}");
+		List<List<Map<String, Object>>> mapList = getEcharts();
+		ItemStyle itemStyle = new ItemStyle();
+		Normal normal = new Normal();
+		Label label = new Label();
+		label.show(true);
+		Emphasis emphasis = new Emphasis();
+		emphasis.setLabel(label);
+		
+		normal.setLabel(label);
+		itemStyle.setEmphasis(emphasis);
+		itemStyle.setNormal(normal);
+		int min = 0;
+		int max = 0;
+		int tmp = 0;
+		
+		if (mapList == null || mapList.size() == 0)
 			return "";
-		// List<String> legendTitle = null;
+		//List<String> legendTitle = new ArrayList<>();
 		int l = 0;
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
-
-			List<Map<String, Object>> list = pieList.get(l);
+			
+			option.legend(id.get("name").toString());
+			
+			List<Map<String, Object>> list = mapList.get(l);
 			l++;
-			// Pie pie = new Pie();
 			com.github.abel533.echarts.series.Map map = new com.github.abel533.echarts.series.Map();
 			// legendTitle = new ArrayList<>();
+			map.mapType("china");
+			map.roam(false);					
+			map.itemStyle(itemStyle);
+			map.setName(id.get("name").toString());
 			for (Map<String, Object> key : list) {
 				Map<String, Object> m = new HashMap<>();
 				m.put("value", key.get("volume"));
 				m.put("name", key.get("dial").toString());
-				// legendTitle.add(key.get("dial").toString());
-				option.legend(key.get("dial").toString());
+				tmp = Integer.valueOf(key.get("volume").toString());
+				if(tmp<min){
+					min = tmp;
+				}
+				if(tmp>max){
+					max = tmp;
+				}		
 				map.data(m);
 			}
-
-			// option.legend().data(legendTitle);
 			option.series(map);
 
 		}
+		//option.legend(legendTitle);
 		// option.legend().data(data);
 		// option.xAxis(valueAxis);
-
+		
+		DataRange dataRange = new DataRange();
+		dataRange.setMin(min);
+		dataRange.setMax(max);
+		dataRange.x(X.left);
+		dataRange.y(Y.bottom);
+		List<String> tList = new ArrayList<>();
+		tList.add(_MLang("hight"));
+		tList.add(_MLang("low"));
+		dataRange.text(tList);
+		dataRange.calculable(true);
+		option.dataRange(dataRange);
+				
+		option.legend().x(X.right);
+		
 		return option.toString();
 	}
 
