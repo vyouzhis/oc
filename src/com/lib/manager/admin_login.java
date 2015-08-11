@@ -1,7 +1,5 @@
 package com.lib.manager;
 
-import java.net.URISyntaxException;
-
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
@@ -26,6 +24,7 @@ public class admin_login extends Permission {
 		setRoot("admin_login_action_uri",
 				ucl.BuildUrl("admin_login_action", ""));
 		setRoot("salt", getSalt());
+		setRoot("input_tips", _CLang("input_tips"));
 		super.View();
 	}
 
@@ -48,14 +47,14 @@ public class admin_login extends Permission {
 //			
 //		}
 
-		echo("ok R");
+		//echo("ok R");
 		if (!globale_config.RengineJava.waitForR()) {
 			echo("Cannot load R");
 			return;
 		}
 		// 打印变量
 		String version = globale_config.RengineJava.eval("R.version.string").asString();
-		echo(version);
+		//echo(version);
 
 		// 循环打印数组
 		double[] arr = globale_config.RengineJava.eval("rnorm(10)").asDoubleArray();
@@ -65,6 +64,6 @@ public class admin_login extends Permission {
 
 		//globale_config.RengineJava.end();
 		//re.destroy();
-		echo("end!!!");
+		//echo("end!!!");
 	}
 }

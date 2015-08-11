@@ -210,7 +210,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		List<Double> xAxis = new ArrayList<>();
 		List<Double> yAxis = new ArrayList<>();
 
-		for (double i = 1; i < 50; i++) {
+		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
 			yAxis.add(Math.log(i) * 10);
 
