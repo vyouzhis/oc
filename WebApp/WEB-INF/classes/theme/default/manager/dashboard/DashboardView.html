@@ -647,7 +647,7 @@
 						    var stemTxt=CKEDITOR.instances.editor1.getData(); 
 						   // console.log("editor_data:"+stemTxt);
 							 
-							   CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+							CKEDITOR.instances.editor1.setData( stemTxt+imgs );
 						  
 								//var val = $("#dataEditor").html();
 								//$("#dataEditor").html(val + imgs);
@@ -656,5 +656,44 @@
 						});				
 				}
 				
+				setTimeout(initEdits, 5000);
+				function initEdits(){
+				var initEDit = getCookie("cacheEdit");
+			       if(initEDit.length >0){			    	   
+			    	   CKEDITOR.instances.editor1.setData(unescape(initEDit));
+			       }
+			       
+			       console.log("initEDit:"+initEDit);
+				}
+				  setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
+
+			       function myInterval()
+			       {
+			    	   var stemTxt=CKEDITOR.instances.editor1.getData();
+			    	   setCookie("cacheEdit", escape(stemTxt), 1);
+			    	   console.log("loop time:"+stemTxt);			    	   			    	   
+			        }
+				
+			       function setCookie(cname, cvalue, exdays) {
+			    	    var d = new Date();
+			    	    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+			    	    var expires = "expires="+d.toUTCString();
+			    	    document.cookie = cname + "=" + cvalue + "; " + expires;
+			       }
+			       
+			       function getCookie(cname) {
+			    	    var name = cname + "=";
+			    	    var ca = document.cookie.split(';');
+			    	    for(var i=0; i<ca.length; i++) {
+			    	        var c = ca[i];
+			    	        while (c.charAt(0)==' ') c = c.substring(1);
+			    	        if (c.indexOf(name) == 0) {
+			    	            return c.substring(name.length, c.length);
+			    	        }
+			    	    }
+			    	    return "";
+			    	}
+			       
+			       
 								
 			</script>
