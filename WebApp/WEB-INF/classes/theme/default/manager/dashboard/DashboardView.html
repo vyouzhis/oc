@@ -47,6 +47,22 @@
 									</div>
 								</div>								
 							</div>
+							<div id="juxtapose" name="juxtapose" class="col-xs-12 col-sm-12 hide">							
+								<div class="widget-box">
+									<div class="widget-header widget-header-flat">
+										<h4 class="smaller">
+											<i class="icon-cogs"></i>
+											对比规则
+										</h4>
+									</div>
+							
+									<div class="widget-body">
+										<div id="juxtapose_list" name="juxtapose_list">
+											
+										</div>
+									</div>
+								</div>								
+							</div>
 							<div class="col-xs-12 col-sm-12">								
 								<!-- <script id="editor" type="text/plain" style="height:500px;"></script> 
 								<div class="wysiwyg-editor" name="dataEditor" id="dataEditor"></div>-->
@@ -310,6 +326,7 @@
 						"</tr>"+
 					"</thead>"+
 					"<tbody>";
+					console.log(p);
 					var o = eval(p);
 					for(var k in o) {
 						//console.log(o[k]['qaction']);
@@ -349,8 +366,7 @@
 					}
 					
 					tmp+="</tbody>"+"</table>";
-					if(flag==1){
-						//var tlist = $("#tmp_list").html();
+					if(flag==1){					
 						$("#tmp_list").html(tmp);
 						//console.log(tmp);
 					}else{
@@ -503,8 +519,9 @@
 					
 					var ecConfig = require('echarts/config');
 					myChart4.on(ecConfig.EVENT.DBLCLICK, function (param){
-						console.log(param.name);
+						console.log("dial:"+param.name+"- volume:"+param.value);
 						//获取同一刻度下面的不同数据 对比
+						$("#juxtapose").attr("class", "col-xs-12 col-sm-12");
 					});
 					
 				});
@@ -639,9 +656,5 @@
 						});				
 				}
 				
-				
-				
-				
-				//var ue = UE.getEditor('editor');
 								
 			</script>
