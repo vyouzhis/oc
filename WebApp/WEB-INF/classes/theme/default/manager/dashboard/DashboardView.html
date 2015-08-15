@@ -670,7 +670,9 @@
 			       function myInterval()
 			       {
 			    	   var stemTxt=CKEDITOR.instances.editor1.getData();
-			    	   setCookie("cacheEdit", escape(stemTxt), 1);
+			    	   if(stemTxt.length > 1){
+			    	   		setCookie("cacheEdit", escape(stemTxt), 1);
+			       	   }
 			    	   console.log("loop time:"+stemTxt);			    	   			    	   
 			        }
 				
