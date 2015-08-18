@@ -41,7 +41,7 @@ public class HikariConnectionPool extends PObject {
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		config.addDataSourceProperty("useServerPrepStmts", "true");
-
+		
 		ds = new HikariDataSource(config);
 		ds.setMaximumPoolSize(myConfig.GetInt("database.MaximumPoolSize"));
 
@@ -78,7 +78,7 @@ public class HikariConnectionPool extends PObject {
 
 	public void GetCon() {
 
-		synchronized (ConList) {
+		synchronized (ConList) {			
 			while (ConList.isEmpty()) {
 				
 				try {
@@ -90,6 +90,7 @@ public class HikariConnectionPool extends PObject {
 				
 			}
 			long tid = myThreadId();
+			echo("tid:"+tid);
 			Connection con = ConList.pop();
 			try {
 				if(con.isClosed()){
@@ -111,14 +112,21 @@ public class HikariConnectionPool extends PObject {
 			if (con != null) {
 				try {
 					if(!con.isClosed()){
-						con.commit();						
+						con.commit();
+						ConList.add(con);
 					}
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					//e1.printStackTrace();
+					try {
+						con.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					}
 				}
-												
-				ConList.add(con);
+									
+				
 				globale_config.GDB.put(tid, null);
 			}
 			ConList.notify();
