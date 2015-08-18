@@ -6,6 +6,7 @@ import java.util.List;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 
+
 public class SaveDoc extends Permission implements BasePerminterface {
 	private List<String> rmc;
 
@@ -57,12 +58,14 @@ public class SaveDoc extends Permission implements BasePerminterface {
 			super.setHtml(_CLang("error_null"));
 			return;
 		}
-		
+
+		//BuildDoc(doc);
+
 		String format = "insert into " + DB_HOR_PRE
 				+ "doc(title,doc,ctime)VALUES('%s','%s', %d)";
 		String sql = String.format(format, title, doc, time());
 
-		try {			
+		try {
 			insert(sql);
 			super.setHtml(_CLang("ok_save"));
 		} catch (SQLException e) {
@@ -70,6 +73,34 @@ public class SaveDoc extends Permission implements BasePerminterface {
 			super.setHtml(_CLang("error_save"));
 		}
 	}
+	/*
+	@SuppressWarnings("unused")
+	private void BuildDoc(String content) {
+		//
+		 ProjectPath pp = ProjectPath.getInstance();
+		//
+		// pp.SaveFile("dd.doc", val);
+
+		String fileName = "a.doc";
+
+		try {
+			String path = SaveDoc.class.getClassLoader().getResource("../../Data/").getPath();
+			byte b[] = content.getBytes();
+			ByteArrayInputStream bais = new ByteArrayInputStream(b);
+			POIFSFileSystem poifs = new POIFSFileSystem();
+			DirectoryEntry directory = poifs.getRoot();
+			DocumentEntry documentEntry = directory.createDocument(
+					"WordDocument", bais);
+			FileOutputStream ostream = new FileOutputStream(path + fileName);
+			poifs.writeFilesystem(ostream);
+			bais.close();
+			ostream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}*/
 
 	@Override
 	public void edit(Object arg) {

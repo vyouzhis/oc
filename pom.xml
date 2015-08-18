@@ -264,7 +264,16 @@
 			<version>0.8-4</version>
 		</dependency>
 		<!-- rjava -->
-				
+
+		<!-- office word ppt 
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.12</version>
+		</dependency>
+		 office word ppt -->
+
+
 	</dependencies>
 
 	<repositories>
