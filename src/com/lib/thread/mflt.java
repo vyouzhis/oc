@@ -47,6 +47,7 @@ public class mflt extends BaseCronThread  {
 				+ offset;
 		List<Map<String, Object>> res;
 		DataDig dd = DataDig.getInstance();
+		echo("mflt loop");
 		try {
 			res = FetchAll(sql);
 			if (res != null) {
@@ -63,7 +64,7 @@ public class mflt extends BaseCronThread  {
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 }

@@ -236,7 +236,6 @@ public class DBSQL extends BaseLang {
 		if (ConDB == null) {
 			long tid = myThreadId();
 			ConDB = globale_config.GDB.get(tid);
-
 		}
 	}
 

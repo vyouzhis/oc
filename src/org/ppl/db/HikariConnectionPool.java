@@ -14,7 +14,7 @@ public class HikariConnectionPool extends PObject {
 	static HikariConnectionPool source;
 	public HikariDataSource ds = null;
 
-	private LinkedList<Connection> ConList = null;
+	//private LinkedList<Connection> ConList = null;
 
 	public static HikariConnectionPool getInstance() {
 		if (source == null) {
@@ -45,8 +45,8 @@ public class HikariConnectionPool extends PObject {
 		ds = new HikariDataSource(config);
 		ds.setMaximumPoolSize(myConfig.GetInt("database.MaximumPoolSize"));
 
-		ConList = new LinkedList<>();
-		Connect();
+		//ConList = new LinkedList<>();
+		//Connect();
 	}
 
 	private void LoadDBLib() {
@@ -60,76 +60,87 @@ public class HikariConnectionPool extends PObject {
 	}
 	private void Connect() {
 
-		try {
-			Connection con;
-			for (int i = 0; i < ds.getMaximumPoolSize(); i++) {
-				con = ds.getConnection();
-				con.setAutoCommit(false);
-
-				ConList.add(con);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			echo(e.getClass().getName() + ": " + e.getMessage());
-			System.exit(0);
-		}
+//		try {
+//			Connection con;
+//			for (int i = 0; i < ds.getMaximumPoolSize(); i++) {
+//				con = ds.getConnection();
+//				con.setAutoCommit(false);
+//
+//				ConList.add(con);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			echo(e.getClass().getName() + ": " + e.getMessage());
+//			System.exit(0);
+//		}
 
 	}
 
 	public void GetCon() {
 
-		synchronized (ConList) {			
-			while (ConList.isEmpty()) {
-				
-				try {
-					ConList.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}
+		synchronized (globale_config.GDB) {	
 			long tid = myThreadId();
 			echo("tid:"+tid);
-			Connection con = ConList.pop();
+			Connection con;
 			try {
-				if(con.isClosed()){
-					con = ds.getConnection();					
-				}
+				con = ds.getConnection();
+				con.setAutoCommit(false);
 				globale_config.GDB.put(tid, con);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
-				globale_config.GDB.put(tid, null);
-			}				
+				e.printStackTrace();
+			}
+//			while (ConList.isEmpty()) {
+//				
+//				try {
+//					ConList.wait();
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//			}
+//			long tid = myThreadId();
+//			echo("tid:"+tid);
+//			Connection con = ConList.pop();
+//			try {
+//				if(con.isClosed()){
+//					con = ds.getConnection();					
+//				}
+//				globale_config.GDB.put(tid, con);
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				//e.printStackTrace();
+//				globale_config.GDB.put(tid, null);
+//			}				
 		}
 	}
 
 	public void free() {
-		synchronized (ConList) {
+		synchronized (globale_config.GDB) {
 			long tid = myThreadId();
 			Connection con = globale_config.GDB.get(tid);
 			if (con != null) {
 				try {
 					if(!con.isClosed()){
-						con.commit();
-						ConList.add(con);
+						con.commit();						
 					}
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
-					//e1.printStackTrace();
-					try {
-						con.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
-					}
+					e1.printStackTrace();
+					
 				}
 									
-				
+				try {
+					con.close();
+					echo("close db");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				globale_config.GDB.put(tid, null);
 			}
-			ConList.notify();
+			//ConList.notify();
 
 		}
 	}
