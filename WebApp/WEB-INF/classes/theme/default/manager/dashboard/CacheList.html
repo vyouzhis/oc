@@ -25,6 +25,7 @@
       	<div class="col-xs-12">
 							<h3 class="header smaller lighter blue">
 								结果 <small>
+								<a href="javascript:void(null);" id="btn5">删除选择的缓存</a>
 								</small>
 							</h3>
 						</div>
@@ -53,7 +54,7 @@
 										<tr>
 											<td class="center">
 												<label>
-													<input type="checkbox" class="ace">
+													<input type="checkbox" value="${item.md5}" name="checkbox" class="ace">
 													<span class="lbl"></span>
 												</label>
 											</td>
@@ -102,6 +103,42 @@
 					});
 						
 				});
+				
+				$("#btn5").click(function(){//输出选中的值
+					
+					var list = [];
+					var i=0;
+					$('input[name="checkbox"]:checked').each(function(){
+						//str+=$(this).val()+"";
+						list[i] = $(this).val();
+						//alert($(this).val());
+						i++;
+						
+					});
+					
+					//alert(str);
+					var args = JSON.stringify(list);
+					console.log("md5:"+args);
+					$.ajax({
+						  url: "${remove_url}?jsoncallback=?",
+						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+						  dataType: 'json',
+						  data:{"ids":args},
+						  success: function(result){
+							  console.log("success"+result);
+						  },
+						  error: function(request, textStatus, errorThrown) {
+						    //alert(textStatus);
+						  },
+						  complete: function(request, textStatus) { //for additional info
+							  var option = request.responseText;
+							  //console.log("option:"+option);
+							  window.location.reload();
+						  }
+						});
+					
+				});
+					 
 			
 			
 				

@@ -80,6 +80,7 @@ public class sqlread extends Permission implements BasePerminterface {
 		try {
 			res = FetchAll(sql);
 			setRoot("csv_list", res);
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

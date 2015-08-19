@@ -2,7 +2,6 @@ package org.ppl.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedList;
 
 import org.ppl.core.PObject;
 import org.ppl.etc.globale_config;
@@ -13,8 +12,6 @@ import com.zaxxer.hikari.HikariDataSource;
 public class HikariConnectionPool extends PObject {
 	static HikariConnectionPool source;
 	public HikariDataSource ds = null;
-
-	//private LinkedList<Connection> ConList = null;
 
 	public static HikariConnectionPool getInstance() {
 		if (source == null) {
@@ -45,8 +42,6 @@ public class HikariConnectionPool extends PObject {
 		ds = new HikariDataSource(config);
 		ds.setMaximumPoolSize(myConfig.GetInt("database.MaximumPoolSize"));
 
-		//ConList = new LinkedList<>();
-		//Connect();
 	}
 
 	private void LoadDBLib() {
@@ -58,29 +53,12 @@ public class HikariConnectionPool extends PObject {
 			e.printStackTrace();
 		}
 	}
-	private void Connect() {
-
-//		try {
-//			Connection con;
-//			for (int i = 0; i < ds.getMaximumPoolSize(); i++) {
-//				con = ds.getConnection();
-//				con.setAutoCommit(false);
-//
-//				ConList.add(con);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			echo(e.getClass().getName() + ": " + e.getMessage());
-//			System.exit(0);
-//		}
-
-	}
 
 	public void GetCon() {
 
 		synchronized (globale_config.GDB) {	
 			long tid = myThreadId();
-			echo("tid:"+tid);
+			//echo("tid:"+tid);
 			Connection con;
 			try {
 				con = ds.getConnection();
@@ -90,29 +68,7 @@ public class HikariConnectionPool extends PObject {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-//			while (ConList.isEmpty()) {
-//				
-//				try {
-//					ConList.wait();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				
-//			}
-//			long tid = myThreadId();
-//			echo("tid:"+tid);
-//			Connection con = ConList.pop();
-//			try {
-//				if(con.isClosed()){
-//					con = ds.getConnection();					
-//				}
-//				globale_config.GDB.put(tid, con);
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				//e.printStackTrace();
-//				globale_config.GDB.put(tid, null);
-//			}				
+				
 		}
 	}
 
@@ -121,26 +77,19 @@ public class HikariConnectionPool extends PObject {
 			long tid = myThreadId();
 			Connection con = globale_config.GDB.get(tid);
 			if (con != null) {
-				try {
-					if(!con.isClosed()){
-						con.commit();						
-					}
+				try {					
+					con.commit();						
+					con.close();
+					//echo("close db");
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					
 				}
-									
-				try {
-					con.close();
-					echo("close db");
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+													
 				globale_config.GDB.put(tid, null);
 			}
-			//ConList.notify();
+			
 
 		}
 	}

@@ -52,7 +52,8 @@ public class classify_action extends Permission implements BasePerminterface{
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		int pid = toInt(porg.getKey("pid"));
+		int id = toInt(porg.getKey("id"));
+		int pid=0;
 		setRoot("pid", pid);
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("action_url", ucl.create(SliceName(stdClass)));

@@ -228,7 +228,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
-			setRoot("ErrorMsg", e.getMessage().toString());
+			setRoot("ErrorMsg", getErrorMsg());
 		}
 
 	}
@@ -283,7 +283,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			msg = e.getMessage();
+			msg = getErrorMsg();
 		}
 
 		TipMessage(ucl.read(SliceName(stdClass)), msg);
