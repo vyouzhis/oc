@@ -292,7 +292,7 @@ public class sqledit extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
