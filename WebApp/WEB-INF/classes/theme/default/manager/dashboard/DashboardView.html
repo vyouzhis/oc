@@ -63,7 +63,7 @@
 									</div>
 								</div>								
 							</div>
-							<div class="col-xs-12 col-sm-12">								
+							<div class="col-xs-12 col-sm-12" >								
 								<!-- <script id="editor" type="text/plain" style="height:500px;"></script> 
 								<div class="wysiwyg-editor" name="dataEditor" id="dataEditor"></div>-->
 								<textarea class="ckeditor" id="editor1" name="editor1"></textarea>
@@ -129,7 +129,7 @@
 										onclick="SaveImg()"><i class="icon-th-large"></i> 保存图表</a>
 										
 										<a class="btn btn-success btn-xs btn-app"  id="bootbox-options"><i class="icon-ok bigger-110"></i>保存数据</a>
-																				
+										<a class="btn btn-success btn-xs btn-app"  id="bword"><i class="icon-ok bigger-110"></i>导出DOC</a>							
 									</h5>
 									
 					       		</div>		
@@ -189,6 +189,8 @@
 					class="icon-double-angle-up icon-only bigger-110"></i>
 				</a>
 			</div>
+			<div id="docEdit" name="docEdit" class="hide">
+			</div>
 			<!-- /.main-container -->
 			
 			<script type="text/javascript" src="${static_js_uri}/ckeditor/ckeditor.js"></script>
@@ -207,7 +209,8 @@
 			<script type="text/javascript" src="${static_js_uri}/fuelux/fuelux.tree.min.js"></script>
 			<script type="text/javascript" src="${static_js_uri}/bootbox.min.js"></script>
 		
-			
+			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/FileSaver.js"></script>
+    		<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/jquery.wordexport.js"> </script>
 			
 			<script type="text/javascript">
 
@@ -385,6 +388,15 @@
 						//console.log("tree:"+JSON.stringify(o));
 						addTmp(o);
 					});
+
+					
+					$('#bword').on("click", function(){
+						var stemTxt=CKEDITOR.instances.editor1.getData();
+						$("#docEdit").html(stemTxt);
+						$("#docEdit").wordExport();
+					});
+					
+					 
 					
 
 					$('#tree1')
@@ -651,10 +663,6 @@
 						   // console.log("editor_data:"+stemTxt);
 							 
 							CKEDITOR.instances.editor1.setData( stemTxt+imgs );
-						  
-								//var val = $("#dataEditor").html();
-								//$("#dataEditor").html(val + imgs);
-  
 						  }
 						});				
 				}
@@ -666,7 +674,7 @@
 			    	   CKEDITOR.instances.editor1.setData(unescape(initEDit));
 			       }
 			       
-			       console.log("initEDit:"+initEDit);
+			      // console.log("initEDit:"+initEDit);
 				}
 				  setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
 
@@ -676,7 +684,7 @@
 			    	   if(stemTxt.length > 1){
 			    	   		setCookie("cacheEdit", escape(stemTxt), 1);
 			       	   }
-			    	   console.log("loop time:"+stemTxt);			    	   			    	   
+			    	  // console.log("loop time:"+stemTxt);			    	   			    	   
 			        }
 				
 			       function setCookie(cname, cvalue, exdays) {
