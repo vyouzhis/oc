@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 public class sqledit extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private int dbid = 0;
+	UrlClassList ucl = UrlClassList.getInstance();
 
 	public sqledit() {
 		// TODO Auto-generated constructor stub
@@ -43,12 +44,11 @@ public class sqledit extends Permission implements BasePerminterface {
 		ListTip("name", "mongodbrule", "ListRule");
 		ListTip("title,view_name", "classinfo", "ListView");
 
-		if (porg.getKey("dbid") != null
-				&& porg.getKey("dbid").toString().matches("[0-9]+")) {
-			dbid = Integer.valueOf(porg.getKey("dbid"));
-		}
+		dbid = toInt(porg.getKey("dbid"));
+
 		setRoot("dbid", dbid);
 		setRoot("sql_type", 0);
+
 		switch (rmc.get(1).toString()) {
 		case "read":
 			listPid();
@@ -63,20 +63,29 @@ public class sqledit extends Permission implements BasePerminterface {
 			return;
 		case "edit":
 			edit(null);
-			break;
+			return;
 		default:
 			Msg(_CLang("error_role"));
 			return;
 		}
-		
+
 		super.View();
 	}
 
 	public void read(Object arg) {
+		int id = toInt(porg.getKey("id"));
+		if (id != 0) {
+			readEditId(id);
+			return;
+		}
 
-		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("action_url", ucl.read(SliceName(stdClass)));
-		setRoot("create_url", ucl.create(SliceName(stdClass)));
+		int eid = toInt(porg.getKey("eid"));
+		if (eid > 0) {
+			setRoot("create_url", ucl.edit(SliceName(stdClass)));
+		} else {
+			setRoot("create_url", ucl.create(SliceName(stdClass)));
+		}
 		dbList();
 		String TransferSQL = porg.getKey("sql_script");
 		if (TransferSQL == null) {
@@ -102,6 +111,52 @@ public class sqledit extends Permission implements BasePerminterface {
 			setRoot("sql_edit", esql);
 		}
 
+		String name = porg.getKey("name");
+		if (name != null) {
+			setRoot("sname", name);
+		}
+
+		setRoot("eid", eid);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void readEditId(int id) {
+
+		String sql = "select * from " + DB_HOR_PRE + "usersql where id=" + id;
+		Map<String, Object> res;
+		res = FetchOne(sql);
+		if (res == null)
+			return;
+		String esql = res.get("sql").toString();
+		String ename = res.get("name").toString();
+		String edtype = res.get("dtype").toString();
+		String esql_type = res.get("sql_type").toString();
+		String esqltmp = res.get("sqltmp").toString();
+		String euview = res.get("uview").toString();
+		String einput_data = res.get("input_data").toString();
+		String evtime = res.get("vtime").toString();
+		String ecid = res.get("cid").toString();
+
+		// setRoot("sql_pre", "\r\n" + esql);
+		setRoot("create_sql", esql);
+		cookieAct.SetCookie("edit_sql", esql);
+		setRoot("sql_type", esql_type);
+		setRoot("sname", ename);
+		setRoot("sql_edit", esql);
+		setRoot("dbi", edtype);
+		setRoot("eid", id);
+		if (esqltmp.length() > 3) {
+
+			List<List<String>> jsonList = JSON.parseObject(esqltmp, List.class);
+			setRoot("jsonList", jsonList);
+			List<String> tList = new ArrayList<>();
+			for (List<String> list : jsonList) {
+				tList.add(list.get(0));
+			}
+			setRoot("temples", JSON.toJSONString(tList));
+		}
+		setRoot("create_url", ucl.edit(SliceName(stdClass)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,7 +178,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		}
 
 		setRoot("temples", JSON.toJSONString(tList));
-		
+
 		setRoot("jsonList", jsonList);
 
 		return sql;
@@ -241,7 +296,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		String jsonTmp = porg.getKey("jsontmp");
 		String nview = porg.getKey("nview");
 		int cid = toInt(porg.getKey("cid_list"));
-		
+
 		int is_get_data = toInt(porg.getKey("get_data"));
 
 		int sql_type = toInt(porg.getKey("sql_type"));
@@ -255,7 +310,7 @@ public class sqledit extends Permission implements BasePerminterface {
 
 		if (jsonTmp == null)
 			jsonTmp = "";
-		
+
 		if (nview == null)
 			nview = "";
 
@@ -274,7 +329,7 @@ public class sqledit extends Permission implements BasePerminterface {
 					&& nview.length() > 0) {
 				// 后台运行获取数据
 				Map<String, Object> mail = new HashMap<>();
-				// mail.put("id", id);
+
 				mail.put("sql", usql);
 				mail.put("view", nview);
 				mail.put("name", name);
@@ -292,7 +347,60 @@ public class sqledit extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
+		String name = porg.getKey("name");
+		String usql = porg.getKey("sql");
+		String jsonTmp = porg.getKey("jsontmp");
+		String nview = porg.getKey("nview");
+		int cid = toInt(porg.getKey("cid_list"));
+		int eid = toInt(porg.getKey("eid"));
+		int is_get_data = toInt(porg.getKey("get_data"));
+
+		int sql_type = toInt(porg.getKey("sql_type"));
+
+		int save_id = toInt(porg.getKey("save_id"));
+
+		if (name == null || usql == null)
+			return;
+
+		usql = unescapeHtml(usql);
+
+		if (jsonTmp == null)
+			jsonTmp = "";
+
+		if (nview == null)
+			nview = "";
+
+		String format = " update "+DB_HOR_PRE+"usersql SET name='%s', sql='%s',dtype='%s', sql_type='%s',sqltmp='%s', input_data='%s',uview='%s',cid='%s' where id=%d";
 		
+		
+		String sql = String.format(format, name, usql, save_id, sql_type,
+				jsonTmp, is_get_data, nview, cid, eid);
+
+		UrlClassList ucl = UrlClassList.getInstance();
+		String msg = _CLang("ok_save");
+		try {
+			echo(sql);
+			insert(sql);
+			
+			
+//
+//			if (id > 0 && sql_type == 0 && is_get_data == 1
+//					&& nview.length() > 0) {
+//				// 后台运行获取数据
+//				Map<String, Object> mail = new HashMap<>();
+//
+//				mail.put("sql", usql);
+//				mail.put("view", nview);
+//				mail.put("name", name);
+//				mail.put("dtype", save_id);
+//				TellPostMan("updateSQLView", mail);
+//			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			msg = getErrorMsg();
+		}
+
+		TipMessage(ucl.read(SliceName(stdClass)), msg);
 	}
 
 	@Override

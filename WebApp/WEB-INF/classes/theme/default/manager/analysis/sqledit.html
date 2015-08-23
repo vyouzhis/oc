@@ -154,15 +154,18 @@
 											<div class="col-sm-9">
 												<input class="hide" type="text" id="sql" name="sql"
 													value='${create_sql!""}' /> <span class="input-group-btn">
-
+													<input class="hide" type="text" id="eid" name="eid"
+													value='${eid!0}' /> 
+													
 													<input class="hide" type="text" id="save_id" name="save_id"
-													value='${dbid!0}' /> <span class="input-group-btn">
+													value='${dbid!0}' /> 
+													<span class="input-group-btn">
 
 														<input class="hide" type="text" id="temples"
 														name="temples" value='${temples!""}' /> <span
 														class="input-group-btn"> <span class="input-icon">
 																<input type="text" id="name" name="name"
-																placeholder="..." /> <i
+																placeholder="..." value='${sname!""}' /> <i
 																class="icon-save bigger-160 red"></i>
 														</span>
 															<button type="submit" class="btn btn-sm btn-default">
@@ -221,7 +224,7 @@
 												<td><input type='text' id='${item[0]}'
 													name='${item[0]}' value='${item[1]}' /></td>
 												<td><input type='text' id='desc_${item[0]}'
-													name='desc_${item[0]}' value='${item[3]}' /></td>
+													name='desc_${item[0]}' value='${item[3]!""}' /></td>
 											</tr>
 
 											</#list> </#if>
@@ -298,8 +301,7 @@
 						method : 'sql'
 					});
 					var dbid = $("#select_db").val();
-					var sql_type = $('input[name="form-field-radio"]:checked')
-							.val();
+					var sql_type = $('input[name="form-field-radio"]:checked').val();
 					var temple = $("#temples").val();
 					var tmp_list = [];
 					var tmp_url = "";
@@ -313,14 +315,14 @@
 							list[2] = $("#field_" + json_tmp[i]).val();
 							list[3] = $("#desc_" + json_tmp[i]).val();							
 							tmp_list[i] = list;
-						}
+						}												
 						tmp_url = "&jsontmp=" + JSON.stringify(tmp_list);
 					}
 
 					$("#target").attr(
 							"action",
 							'${action_url!""}' + "?sql_type=" + sql_type
-									+ "&dbid=" + dbid + tmp_url);
+									+ "&dbid=" + dbid + tmp_url+"&name="+$("#name").val()+"&eid="+$("#eid").val()+"&pid="+$("#cid_list").val());
 					$("#target").submit();
 				}
 
