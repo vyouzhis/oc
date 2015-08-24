@@ -379,7 +379,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		UrlClassList ucl = UrlClassList.getInstance();
 		String msg = _CLang("ok_save");
 		try {
-			echo(sql);
+			//echo(sql);
 			insert(sql);
 			
 			

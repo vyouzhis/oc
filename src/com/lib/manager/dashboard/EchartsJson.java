@@ -479,7 +479,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			} else if (qaction == 5) {
 
-				sql = "select t.sqltmp,u.sql,u.dtype from " + DB_HOR_PRE
+				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from " + DB_HOR_PRE
 						+ "sqltmp t, " + DB_HOR_PRE
 						+ "usersql u where t.sid=u.id and t.id=" + tid
 						+ " limit 1";
@@ -492,26 +492,35 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				sql = tres.get("sql").toString();
 				String tJson = tres.get("sqltmp").toString();
+				String uJson = tres.get("usqltmp").toString();
 				dtype = toInt(tres.get("dtype"));
 				Map<String, String> tList = JSON.parseObject(tJson, Map.class);
 
+				List<List<String>> uList = JSON.parseObject(uJson, List.class);
+				
 				for (String key : tList.keySet()) {
-
 					sql = sql.replace("@" + key + "@", tList.get(key));
 				}
+				
+				for (List<String> lkey : uList) {
+					sql = sql.replace("@" + lkey.get(0) + "@", lkey.get(1));
+				}
+				
+				
 				sql = escapeHtml(sql);
-
+				echo(sql);
+				
 			} else if (qaction == 6) {
 				if (tmp_map == null)
 					continue;
-				sql = "SELECT sql from " + DB_HOR_PRE + "usersql where id="
+				sql = "SELECT sql,dtype from " + DB_HOR_PRE + "usersql where id="
 						+ tid + " limit 1";
 				Map<String, Object> tmpRes;
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
 					continue;
 				format = tmpRes.get("sql").toString();
-
+				dtype = toInt(tmpRes.get("dtype"));
 				for (int i = 0; i < 10; i++) {
 					if (tmp_map.containsKey(tid + "_arg" + i)) {						
 						format = format.replace("@arg" + i + "@",
@@ -520,7 +529,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 				sql = escapeHtml(format);
-								
+							
 			}
 
 			try {
