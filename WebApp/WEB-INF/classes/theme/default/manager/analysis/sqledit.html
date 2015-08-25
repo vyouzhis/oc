@@ -264,7 +264,10 @@
 										<#if List_Data??> <#list List_Data as item>
 										<tr>
 											<#list Key_Title as value>
-											<td><#if item[value]??> ${item[value]?string} </#if></td> </#list>
+												<td><#if (item[value])?is_string || (item[value])?is_number > ${item[value]?string} </#if>
+													<#if (item[value])?is_date> ${item[value]?date} </#if>
+												 </td> 
+											</#list>
 										</tr>
 										</#list> </#if>
 									</tbody>
