@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
+import com.github.abel533.echarts.Title;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
@@ -119,7 +120,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		pieList = getEcharts();
 
 		if (JsonIds != null) {
-			
+
 			if (GL.get(0).get("graph").toString().equals(gt)) {
 				EJson = JsonLine();
 
@@ -142,7 +143,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		categoryAxis.setType(AxisType.value);
 		categoryAxis.axisLabel().formatter("{value}");
 		option.yAxis(categoryAxis);
-
+		List<Object> valAxiList = new ArrayList<>();
 		option.tooltip().trigger(Trigger.axis);
 
 		boolean Xbool = true;
@@ -186,9 +187,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						valueAxis.data(key.get("dial").toString());
 					}
 					float val = toFloat(key.get("volume"));
-					if(val==0){
+					if (val == 0) {
 						bar.data(key.get("volume"));
-					}else {
+					} else {
 						bar.data(Float.valueOf(String.format("%.2f", val)));
 					}
 				}
@@ -228,19 +229,29 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					mkline.put("name", _CLang("line_markLine"));
 					line.markLine().data(mkline);
 				}
+				int j = 0;
+				boolean xC=true;
 				for (Map<String, Object> key : list) {
 
 					if (Xbool) {
 						valueAxis.data(key.get("dial").toString());
+						valAxiList.add(key.get("dial").toString());
+					}else{
+						//数据对齐
+						while (xC && j<valAxiList.size() && !valAxiList.get(j).toString()
+								.equals(key.get("dial").toString())) {
+							line.data("");
+							j++;
+						}
+						xC = false;
 					}
-					
 					float val = toFloat(key.get("volume"));
-					if(val==0){
+					if (val == 0) {
 						line.data(key.get("volume"));
-					}else {
+					} else {
 						line.data(Float.valueOf(String.format("%.2f", val)));
 					}
-										
+
 				}
 
 				Xbool = false;
@@ -270,7 +281,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 		}
-		if (JsonIds.size() == 1) {			
+		if (JsonIds.size() == 1) {
 			mom();
 		}
 		option.xAxis(valueAxis);
@@ -284,7 +295,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	// month-on-month
 	private void mom() {
 		option.legend(_MLang("mom"));
-		
+
 		List<Map<String, Object>> list = pieList.get(0);
 
 		Line line = new Line();
@@ -304,7 +315,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				// echo("front:" + front + " x:" + x + " m:" + m);
 			}
 
-			line.data((int)m);
+			line.data((int) m);
 			front = x;
 
 		}
@@ -322,17 +333,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		int l = 0;
 		int roseType = 0;
 		roseType = toInt(porg.getKey("roseType"));
-		
+
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
-
+			
 			List<Map<String, Object>> list = pieList.get(l);
 			l++;
 			Pie pie = new Pie();
-			if(roseType==1){
+			if (roseType == 1) {
 				pie.roseType(RoseType.area);
 			}
+			//Title title = new Title();
+			//title.text(id.get("name").toString());
 			// legendTitle = new ArrayList<>();
 			for (Map<String, Object> key : list) {
 				Map<String, Object> m = new HashMap<>();
@@ -342,20 +355,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				option.legend(key.get("dial").toString());
 				pie.data(m);
 			}
-			
+
 			// option.legend().data(legendTitle);
 			option.series(pie);
-
+			option.title(id.get("name").toString());
 		}
 		// option.legend().data(data);
 		// option.xAxis(valueAxis);
-
+		
 		return option.toString();
 	}
 
 	private String JsonMap() {
-		option.tooltip().trigger(Trigger.item)
-				.formatter("{b} <br/> {c}");
+		option.tooltip().trigger(Trigger.item).formatter("{b} <br/> {c}");
 		List<List<Map<String, Object>>> mapList = getEcharts();
 		ItemStyle itemStyle = new ItemStyle();
 		Normal normal = new Normal();
@@ -363,30 +375,30 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		label.show(true);
 		Emphasis emphasis = new Emphasis();
 		emphasis.setLabel(label);
-		
+
 		normal.setLabel(label);
 		itemStyle.setEmphasis(emphasis);
 		itemStyle.setNormal(normal);
 		int min = 0;
 		int max = 0;
 		int tmp = 0;
-		
+
 		if (mapList == null || mapList.size() == 0)
 			return "";
-		//List<String> legendTitle = new ArrayList<>();
+		// List<String> legendTitle = new ArrayList<>();
 		int l = 0;
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
-			
+
 			option.legend(id.get("name").toString());
-			
+
 			List<Map<String, Object>> list = mapList.get(l);
 			l++;
 			com.github.abel533.echarts.series.Map map = new com.github.abel533.echarts.series.Map();
 			// legendTitle = new ArrayList<>();
 			map.mapType("china");
-			map.roam(false);					
+			map.roam(false);
 			map.itemStyle(itemStyle);
 			map.setName(id.get("name").toString());
 			for (Map<String, Object> key : list) {
@@ -394,21 +406,21 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				m.put("value", key.get("volume"));
 				m.put("name", key.get("dial").toString());
 				tmp = Integer.valueOf(key.get("volume").toString());
-				if(tmp<min){
+				if (tmp < min) {
 					min = tmp;
 				}
-				if(tmp>max){
+				if (tmp > max) {
 					max = tmp;
-				}		
+				}
 				map.data(m);
 			}
 			option.series(map);
 
 		}
-		//option.legend(legendTitle);
+		// option.legend(legendTitle);
 		// option.legend().data(data);
 		// option.xAxis(valueAxis);
-		
+
 		DataRange dataRange = new DataRange();
 		dataRange.setMin(min);
 		dataRange.setMax(max);
@@ -420,9 +432,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		dataRange.text(tList);
 		dataRange.calculable(true);
 		option.dataRange(dataRange);
-				
+
 		option.legend().x(X.right);
-		
+
 		return option.toString();
 	}
 
@@ -479,8 +491,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			} else if (qaction == 5) {
 
-				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from " + DB_HOR_PRE
-						+ "sqltmp t, " + DB_HOR_PRE
+				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from "
+						+ DB_HOR_PRE + "sqltmp t, " + DB_HOR_PRE
 						+ "usersql u where t.sid=u.id and t.id=" + tid
 						+ " limit 1";
 
@@ -497,24 +509,23 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				Map<String, String> tList = JSON.parseObject(tJson, Map.class);
 
 				List<List<String>> uList = JSON.parseObject(uJson, List.class);
-				
+
 				for (String key : tList.keySet()) {
 					sql = sql.replace("@" + key + "@", tList.get(key));
 				}
-				
+
 				for (List<String> lkey : uList) {
 					sql = sql.replace("@" + lkey.get(0) + "@", lkey.get(1));
 				}
-				
-				
+
 				sql = escapeHtml(sql);
-				echo(sql);
-				
+				// echo(sql);
+
 			} else if (qaction == 6) {
 				if (tmp_map == null)
 					continue;
-				sql = "SELECT sql,dtype from " + DB_HOR_PRE + "usersql where id="
-						+ tid + " limit 1";
+				sql = "SELECT sql,dtype from " + DB_HOR_PRE
+						+ "usersql where id=" + tid + " limit 1";
 				Map<String, Object> tmpRes;
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
@@ -522,14 +533,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				format = tmpRes.get("sql").toString();
 				dtype = toInt(tmpRes.get("dtype"));
 				for (int i = 0; i < 10; i++) {
-					if (tmp_map.containsKey(tid + "_arg" + i)) {						
+					if (tmp_map.containsKey(tid + "_arg" + i)) {
 						format = format.replace("@arg" + i + "@",
 								tmp_map.get(tid + "_arg" + i));
 					}
 				}
 
 				sql = escapeHtml(format);
-							
+
 			}
 
 			try {
@@ -545,8 +556,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				} else {
 					res = CustomDB(sql, dtype);
 				}
-				
-				if (res != null) {					
+
+				if (res != null) {
 					ret.add(res);
 					setCache(sql, id.get("name").toString(), res);
 				}
