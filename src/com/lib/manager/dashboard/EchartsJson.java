@@ -306,7 +306,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		float m;
 		for (Map<String, Object> key : list) {
 
-			x = Float.valueOf(key.get("volume").toString());
+			x = toFloat(key.get("volume"));
 
 			if (front == 0) {
 				m = 100;

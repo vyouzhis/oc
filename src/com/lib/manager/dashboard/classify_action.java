@@ -52,11 +52,14 @@ public class classify_action extends Permission implements BasePerminterface{
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		int id = toInt(porg.getKey("id"));
-		int pid=0;
+		int pid = toInt(porg.getKey("pid"));
+		
+		if(pid==0) pid=1;
+		
 		setRoot("pid", pid);
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("action_url", ucl.create(SliceName(stdClass)));
+		
 		listPid();
 	}
 	
@@ -64,7 +67,7 @@ public class classify_action extends Permission implements BasePerminterface{
 	 * i am lazy :(
 	 */
 	private void listPid() {
-		String sql = "select id,name from "+DB_HOR_PRE+"classify where pid=0";
+		String sql = "select id,name from "+DB_HOR_PRE+"classify where pid=1";
 		List<Map<String, Object>> res;
 				
 		try {

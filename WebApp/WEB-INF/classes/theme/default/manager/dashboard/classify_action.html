@@ -29,9 +29,9 @@
         
         <div class="form-group"> 
           <div class="col-xs-12"> 
-           <label class="col-sm-3 control-label">主节点:</label> 
+           <label class="col-sm-3 control-label">上级菜单:</label> 
            <select id="pid_select" name="pid_select" class="col-sm-4">		
-          	 	<option value="0" >主节点</option>
+          	 	<option value="1" >主节点</option>
            		<#if pid_list??>
            		<#list pid_list as item>		
 				<option value="${item.id}" <#if item.id == pid>  selected </#if> >${item.name}</option>

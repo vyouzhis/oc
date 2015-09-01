@@ -66,8 +66,11 @@ public class DashboardView extends Permission implements BasePerminterface {
 		cardioid();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void ListMainClassify() {
-		String sql = "select id,name from hor_classify where pid=0 and displays=0 order by id";
+		String sql = "select id,name,pid,(select name from " + DB_HOR_PRE
+				+ "classify h where h.id=c.pid ) as pname from " + DB_HOR_PRE
+				+ "classify c where displays=0 order by pid,id";
 
 		List<Map<String, Object>> res;
 
@@ -87,13 +90,10 @@ public class DashboardView extends Permission implements BasePerminterface {
 				+ DB_HOR_PRE
 				+ "usersql u where u.id=s.sid  and u.cid= %s order by s.id desc");
 
-		try {
+		try {			
 			res = FetchAll(sql);
 			if (res != null) {
 				for (Map<String, Object> map : res) {
-					SubTree = new HashMap<>();
-					SubTree.put("name", map.get("name").toString());
-					SubTree.put("type", "folder");
 
 					for (String tsql : formats) {
 						RootSql = String.format(tsql, map.get("id").toString());
@@ -111,10 +111,27 @@ public class DashboardView extends Permission implements BasePerminterface {
 							e.printStackTrace();
 						}
 					}
-
-					SubTree.put("additionalParameters", SetTree(RootRes));
-					TreeObject.put(map.get("name").toString(), SubTree);
+					if (toInt(map.get("pid")) == 1) {
+						SubTree = new HashMap<>();
+						SubTree.put("additionalParameters", SetTree(RootRes));
+						SubTree.put("name", map.get("name").toString());
+						SubTree.put("type", "folder");
+						TreeObject.put(map.get("name").toString(), SubTree);
+						
+					} else {
+						Map<String, Object> Item = new HashMap<>();
+						Item.put("type", "folder");
+						Item.put("name", map.get("name"));
+						Item.put("additionalParameters", SetTree(RootRes));
+						Map<String, Map<String, Object>> file = new HashMap<>();
+						
+						
+						file = (Map<String, Map<String, Object>>) TreeObject.get(map.get("pname").toString()).get("additionalParameters");
+						file.get("children").put(map.get("name").toString(), Item);
+						
+					}
 					RootRes = null;
+
 				}
 
 			}
@@ -133,6 +150,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 				SubTree.put("name", _MLang("tmp"));
 				SubTree.put("type", "folder");
 				SubTree.put("additionalParameters", SetTree(tRes));
+
 				TreeObject.put(_MLang("tmp"), SubTree);
 
 			}

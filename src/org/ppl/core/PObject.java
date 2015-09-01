@@ -245,7 +245,13 @@ public class PObject {
 	
 	public float toFloat(Object o) {
 		if (o != null && o.toString().matches("[0-9.-]+")) {
-			return Float.valueOf(o.toString());
+			try {
+				return Float.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				// TODO: handle exception
+				return 0;
+			}
+			
 		} else {
 			return 0;
 		}

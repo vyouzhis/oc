@@ -59,8 +59,7 @@ public class classify_list extends Permission implements BasePerminterface {
 			offset = (page - 1) * Limit;
 		}
 		
-		String format = "select * from " + DB_HOR_PRE
-				+ "classify order by id desc  limit %d offset %d";
+		String format = "select id,pid,name,ctime,displays,(select name from "+DB_HOR_PRE+"classify h where h.id=c.pid ) as pname from "+DB_HOR_PRE+"classify c order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 
 		List<Map<String, Object>> res;
@@ -87,6 +86,7 @@ public class classify_list extends Permission implements BasePerminterface {
 
 		setRoot("Page", page_html);
 		setRoot("edit_url", ucl.read("classify_action"));
+		setRoot("add_url", ucl.create("classify_action"));
 		// setRoot("remove_url", ucl.remove("mongo_db_edit_action"));
 		setRoot("classify_action_url", ucl.read("classify_action"));
 	}
