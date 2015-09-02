@@ -13,6 +13,7 @@ import org.ppl.io.TimeClass;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import com.lib.plug.echarts.echarts;
 
 public class CronThread extends LibThread {
 	private Map<String, Integer> cronMap;
@@ -47,14 +48,14 @@ public class CronThread extends LibThread {
 		}
 		
 		while (true) {
-			
+			System.out.println("start...");
 			int now = (int)tc.time();
 			
 			int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
 			int nowDay = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "dd"));
 						
 			for (String key:cronMap.keySet()) {
-				//System.out.print("KEY:"+key);
+				System.out.print("KEY:"+key);
 				Injector injector = globale_config.injector;
 				BaseCronThread cron = (BaseCronThread) injector
 						.getInstance(Key.get(BaseCronThread.class,

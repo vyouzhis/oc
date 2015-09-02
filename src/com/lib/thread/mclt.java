@@ -24,7 +24,7 @@ public class mclt extends BaseCronThread {
 	@Override
 	public int minute() {
 		// TODO Auto-generated method stub
-		return 30;
+		return 5;
 	}
 
 	@Override
@@ -45,38 +45,40 @@ public class mclt extends BaseCronThread {
 		int offset = 0;
 		List<Map<String, Object>> res;
 		DataDig dd = DataDig.getInstance();
-
+		echo("mclt...");
 		String sql = "select id,collention,query, etime,istop from "
 				+ DB_HOR_PRE
 				+ "mongodbrule where qaction=3 order by id limit 10 offset ";
-		boolean  f = true;
-		while (f) {
+		
+		while (true) {
 			sql += offset;
 
 			try {
 				res = FetchAll(sql);
+				echo(res);
 				if (res != null && res.size()>0) {
 					for (int i = 0; i < res.size(); i++) {
 						dd.Operation(res.get(i));
 					}
 					offset += 10;
 				} else {
-					f=false;
+					break;
 				}
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				f=false;
+				break;
 			}
 
 		}
+		echo("mclt...end");
 
 	}
 
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 }

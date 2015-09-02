@@ -43,7 +43,7 @@ public class DataDig extends DBSQL {
 		List<String> date_format = new ArrayList<>();
 		date_format.add("yyyyMM");
 		date_format.add("yyyyMMdd");
-		date_format.add("yyyyMMddHH");
+		//date_format.add("yyyyMMddHH");
 
 		String m = "";
 		MGDB mgdb;
@@ -66,7 +66,7 @@ public class DataDig extends DBSQL {
 		}
 		if (jo == null)
 			return;
-
+		echo("1");
 		Map<String, Integer> add = new HashMap<>();
 		int lt = start;
 		String dFormat = "";
@@ -81,14 +81,15 @@ public class DataDig extends DBSQL {
 		String sql_format = "(%d, %d, %d " + dVal + "),";
 
 		Map<String, Integer> sql_val = new HashMap<>();
-
+		echo("2");
 		while ((lt + 3600) < now) {
 			add.put("$gte", start);
 			// 3600 1 hour
 			lt = start + 3600;
 			add.put("$lt", lt);
 			jo.put("ctime", add);
-			// echo(jo);
+			 echo(jo);
+			//echo("3");
 			String json = JSON.toJSONString(jo);
 			mgdb.JsonWhere(json);
 
@@ -109,6 +110,7 @@ public class DataDig extends DBSQL {
 			start = lt;
 
 		}
+		echo("4");
 		mgdb.Close();
 		// echo(sql_val);
 		String val_link = "";
@@ -118,7 +120,7 @@ public class DataDig extends DBSQL {
 		}
 
 		String sql = format + val_link.substring(0, val_link.length() - 1);
-		// echo(sql);
+		 echo(sql);
 
 		try {
 			update(sql);

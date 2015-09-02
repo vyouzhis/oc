@@ -64,7 +64,7 @@ public class mflt extends BaseCronThread  {
 	@Override
 	public boolean isStop() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
