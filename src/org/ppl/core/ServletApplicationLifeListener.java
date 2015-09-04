@@ -72,9 +72,6 @@ public class ServletApplicationLifeListener extends PObject implements
 					BaseRapidThread.class, Names.named(rl)));
 			libLan.Run();
 		}
-		
-		
-
 	}
 	
 	@SuppressWarnings("unchecked")

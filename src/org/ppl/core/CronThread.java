@@ -51,24 +51,16 @@ public class CronThread extends LibThread {
 
 		while (true) {
 			System.out.println("start...");
-
+			ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());
+			
 			for (String key : cronMap.keySet()) {
 				// System.out.print("KEY:"+key);
-								
-				ExecutorService cachedThreadPool = Executors.newFixedThreadPool(1);
-				cachedThreadPool.execute(new Runnable() {
-					
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						ThreadRuns(key);
-					}
-				});
 				
-				cachedThreadPool.shutdown();
-				
+				cachedThreadPool.execute(new ThreadPoolRun(key, cronMap.get(key)));
+										
 			}
-
+			
+			cachedThreadPool.shutdown();
 			try {
 				Thread.sleep(60 * cronDelay * 1000);
 			} catch (InterruptedException e) {
@@ -78,47 +70,7 @@ public class CronThread extends LibThread {
 		}
 	}
 
-	private void ThreadRuns(String key) {
-		TimeClass tc = TimeClass.getInstance();
-		int now = (int) tc.time();
-
-		int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
-		int nowDay = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "dd"));
-		Injector injector = globale_config.injector;
-		BaseCronThread cron = (BaseCronThread) injector.getInstance(Key.get(
-				BaseCronThread.class, Names.named(key)));
-		boolean isStop = cron.isStop();
-		
-		if (isStop == true) {
-			cron.free();
-			return;
-		}
-
-		int minu = cron.minute();
-		int hour = cron.hour();
-		int day = cron.day();
-
-		int sleepTime = cronMap.get(key);
-		int newTime = 0;
-		if (day == 0 && hour == 0 && sleepTime < now) {
-			newTime = now + minu * 60;
-		} else if (day == 0 && hour == nowHour && sleepTime < now) {
-			newTime = now + minu * 60 + hour * 60 * 60;
-		} else if (day == nowDay && sleepTime < now) {
-			newTime = now + hour * 60 * 60 + minu * 60 + 86400;
-		} else {
-			cron.free();
-			System.out.println("continue key:" + key + " sleepTime:"
-					+ sleepTime + " day:" + day + " hour:" + hour + " now:"
-					+ now);
-			return;
-		}
-
-		cronMap.put(key, newTime);
-		cron.Run();
-		cron.free();
-
-	}
+	
 
 	private String SliceName(String k) {
 		String[] name = k.split("\\.");
