@@ -11,6 +11,8 @@ import com.google.inject.name.Names;
 public class ThreadPoolRun implements Runnable {
 	private String tpKey;
 	int sTime = 0;
+	private BaseCronThread cron;
+	
 	public ThreadPoolRun(String key, int now) {
 		// TODO Auto-generated constructor stub
 		tpKey = key;
@@ -23,20 +25,20 @@ public class ThreadPoolRun implements Runnable {
 		ThreadRuns();
 	}
 	
-	private void ThreadRuns() {
+	public int etime() {
 		TimeClass tc = TimeClass.getInstance();
 		int now = (int) tc.time();
 
 		int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
 		int nowDay = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "dd"));
 		Injector injector = globale_config.injector;
-		BaseCronThread cron = (BaseCronThread) injector.getInstance(Key.get(
+		cron = (BaseCronThread) injector.getInstance(Key.get(
 				BaseCronThread.class, Names.named(tpKey)));
 		boolean isStop = cron.isStop();
 		
 		if (isStop == true) {
 			cron.free();
-			return;
+			return 0;
 		}
 
 		int minu = cron.minute();
@@ -57,10 +59,14 @@ public class ThreadPoolRun implements Runnable {
 			System.out.println("continue key:" + tpKey + " sleepTime:"
 					+ sleepTime + " day:" + day + " hour:" + hour + " now:"
 					+ now);
-			return;
+			return 0;
 		}
 
-		cronMap.put(tpKey, newTime);
+		return newTime;
+	}
+	
+	private void ThreadRuns() {
+		
 		cron.Run();
 		cron.free();
 

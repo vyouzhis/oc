@@ -54,10 +54,12 @@ public class CronThread extends LibThread {
 			ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());
 			
 			for (String key : cronMap.keySet()) {
-				// System.out.print("KEY:"+key);
+				// System.out.print("KEY:"+key);	
+//				cronMap.put(key, newTime);
+//				
+//				cronMap.put(key, cachedThreadPool.etime());
 				
-				cachedThreadPool.execute(new ThreadPoolRun(key, cronMap.get(key)));
-										
+				cachedThreadPool.execute(new ThreadPoolRun(key, cronMap.get(key)));										
 			}
 			
 			cachedThreadPool.shutdown();
