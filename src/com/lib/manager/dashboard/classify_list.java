@@ -31,6 +31,12 @@ public class classify_list extends Permission implements BasePerminterface {
 			return;
 
 		rmc = porg.getRmc();
+		
+		int p=toInt(porg.getKey("p"));
+		if ( p>0 ) {
+			page = p;
+		}
+		
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);

@@ -1,12 +1,8 @@
 package org.ppl.core;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.ppl.etc.UrlClassList;
-import org.ppl.io.TimeClass;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -33,6 +29,9 @@ public class ACLRole extends ACLBase {
 
 		String role = aclfetchMyRole();
 		JSONObject jsonRole = JSON.parseObject(role);
+		if(jsonRole==null){
+			return false;
+		}
 		for (String key : jsonRole.keySet()) {
 			Object libObject = jsonRole.get(key);
 

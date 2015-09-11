@@ -19,6 +19,8 @@ public class mclt extends BaseCronThread {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
+		long id = myThreadId();
+		echo("my id:"+id);
 	}
 
 	@Override
@@ -55,8 +57,9 @@ public class mclt extends BaseCronThread {
 
 			try {
 				res = FetchAll(sql);
-				echo(res);
+				
 				if (res != null && res.size()>0) {
+					echo(res);
 					for (int i = 0; i < res.size(); i++) {
 						dd.Operation(res.get(i));
 					}

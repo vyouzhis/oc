@@ -3,6 +3,8 @@ package com.lib.manager;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.Rserve.RserveException;
 
 
 public class admin_login extends Permission {
@@ -29,7 +31,7 @@ public class admin_login extends Permission {
 	}
 
 	public void callRJava() {
-		System.loadLibrary("jri");
+		//System.loadLibrary("jri");
 		echo("new R");
 		// Rengine re = new Rengine(new String[] { "--no-save" }, false, null);
 		// Rengine re = Rengine.getMainEngine();
@@ -39,7 +41,7 @@ public class admin_login extends Permission {
 		// }else{
 		// echo("is not null");
 		// }
-		String newargs1[] = { "--no-save" };
+		//String newargs1[] = { "--no-save" };
 		//Rengine re = Rengine.getMainEngine();
 //		if (re == null) {
 //			re = new Rengine(newargs1, false, null);
@@ -48,19 +50,24 @@ public class admin_login extends Permission {
 //		}
 
 		//echo("ok R");
-		if (!globale_config.RengineJava.waitForR()) {
-			echo("Cannot load R");
-			return;
-		}
+		
 		// 打印变量
-		String version = globale_config.RengineJava.eval("R.version.string").asString();
+		
+		if(globale_config.rcoonnect == null) return;
+		try {
+			String version = globale_config.rcoonnect.eval("R.version.string").asString();
+			// 循环打印数组
+			double[] arr = globale_config.rcoonnect.eval("rnorm(10)").asDoubles();
+			for (double a : arr) {
+				echo(a + ",");
+			}
+		} catch (RserveException | REXPMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//echo(version);
 
-		// 循环打印数组
-		double[] arr = globale_config.RengineJava.eval("rnorm(10)").asDoubleArray();
-		for (double a : arr) {
-			echo(a + ",");
-		}
+		
 
 		//globale_config.RengineJava.end();
 		//re.destroy();

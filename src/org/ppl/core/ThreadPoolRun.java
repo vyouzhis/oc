@@ -10,7 +10,8 @@ import com.google.inject.name.Names;
 
 public class ThreadPoolRun implements Runnable {
 	private String tpKey;
-	int sTime = 0;
+	private int sTime = 0;
+	private boolean isRun=false;
 	private BaseCronThread cron;
 	
 	public ThreadPoolRun(String key, int now) {
@@ -22,10 +23,13 @@ public class ThreadPoolRun implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		System.out.println("i am run!");
 		ThreadRuns();
 	}
 	
 	public int etime() {
+		isRun=false;
+		System.out.println("i am etime!");
 		TimeClass tc = TimeClass.getInstance();
 		int now = (int) tc.time();
 
@@ -62,14 +66,17 @@ public class ThreadPoolRun implements Runnable {
 			return 0;
 		}
 
+		isRun = true;
 		return newTime;
 	}
 	
 	private void ThreadRuns() {
-		
-		cron.Run();
-		cron.free();
-
+		if(isRun){
+			cron.Run();
+			cron.free();
+		}else {
+			System.out.println("no run!");
+		}
 	}
 
 }

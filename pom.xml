@@ -257,21 +257,25 @@
 		</dependency>
 		<!-- generatoruuid end -->
 
-		<!-- rjava -->
-		<dependency>
-			<groupId>org.nuiton.thirdparty</groupId>
-			<artifactId>JRI</artifactId>
-			<version>0.8-4</version>
-		</dependency>
-		<!-- rjava -->
+		<!-- rjava <dependency> <groupId>org.nuiton.thirdparty</groupId> <artifactId>JRI</artifactId> 
+			<version>0.8-4</version> </dependency> rjava -->
 
-		<!-- office word ppt 
+		<!-- REngine -->
 		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.12</version>
+			<groupId>org.rosuda.REngine</groupId>
+			<artifactId>REngine</artifactId>
+			<version>2.1.0</version>
 		</dependency>
-		 office word ppt -->
+
+		<dependency>
+			<groupId>org.rosuda.REngine</groupId>
+			<artifactId>Rserve</artifactId>
+			<version>1.8.1</version>
+		</dependency>
+		<!-- REngine -->
+
+		<!-- office word ppt <dependency> <groupId>org.apache.poi</groupId> <artifactId>poi</artifactId> 
+			<version>3.12</version> </dependency> office word ppt -->
 
 
 	</dependencies>

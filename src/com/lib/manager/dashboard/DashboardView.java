@@ -9,6 +9,10 @@ import java.util.Map;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
+import org.ppl.etc.globale_config;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.RList;
+import org.rosuda.REngine.Rserve.RserveException;
 
 import com.alibaba.fastjson.JSON;
 
@@ -226,16 +230,35 @@ public class DashboardView extends Permission implements BasePerminterface {
 	private void cardioid() {
 
 		List<Double> xAxis = new ArrayList<>();
-		List<Double> yAxis = new ArrayList<>();
-
+		//List<Double> yAxis = new ArrayList<>();
+		double[] yAxis = null;
 		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
-			yAxis.add(Math.log(i) * 10);
+			//yAxis.add(Math.log(i) * 10);
 
 		}
-
-		setRoot("xAxis", JSON.toJSONString(yAxis));
-		setRoot("yAxis", JSON.toJSONString(xAxis));
+		try {
+			globale_config.rcoonnect.voidEval("mlg<-c(1:51)");
+			yAxis = globale_config.rcoonnect.eval("log(mlg)").asDoubles();
+		} catch (RserveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (REXPMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		if(yAxis != null){
+			setRoot("xAxis", JSON.toJSONString(yAxis));
+			String xy = JSON.toJSONString(yAxis);
+			echo(xy);
+			setRoot("yAxis", JSON.toJSONString(xAxis));
+			
+		}else {
+			setRoot("xAxis", "[]");
+			setRoot("yAxis", "[]");
+		}
 	}
 
 	private void cardioidg() {

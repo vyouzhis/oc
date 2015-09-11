@@ -58,11 +58,12 @@ public class CronThread extends LibThread {
 //				cronMap.put(key, newTime);
 //				
 //				cronMap.put(key, cachedThreadPool.etime());
-				
-				cachedThreadPool.execute(new ThreadPoolRun(key, cronMap.get(key)));										
+				ThreadPoolRun tpr = new ThreadPoolRun(key, cronMap.get(key));
+				cronMap.put(key, tpr.etime());
+				cachedThreadPool.execute(tpr);										
 			}
 			
-			cachedThreadPool.shutdown();
+			//cachedThreadPool.shutdown();
 			try {
 				Thread.sleep(60 * cronDelay * 1000);
 			} catch (InterruptedException e) {

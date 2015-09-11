@@ -38,9 +38,9 @@ public class sqlread extends Permission implements BasePerminterface {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
-		if (porg.getKey("p")!=null && porg.getKey("p").matches("\\d+")) {
-			page = Integer.parseInt(porg.getKey("p"));
+		int p=toInt(porg.getKey("p"));
+		if ( p>0 ) {
+			page = p;
 		}
 		
 		switch (rmc.get(1).toString()) {
