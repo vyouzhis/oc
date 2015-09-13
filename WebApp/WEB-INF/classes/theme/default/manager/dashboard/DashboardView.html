@@ -83,7 +83,7 @@
 											<div class="widget-toolbar no-border">
 												<ul id="recent-tab" class="nav nav-tabs">
 													<li class="active">
-														<a href="#task-tab" data-toggle="tab" aria-expanded="true">图开</a>
+														<a href="#task-tab" data-toggle="tab" aria-expanded="true">图形</a>
 													</li>
 	
 													<li class="">
@@ -198,7 +198,7 @@
 																	</div>
 																	<div class="checkbox">
 																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
+																			<input class="ace ace-checkbox-2" type="checkbox" name="math_mom" id="math_mom">
 																			<span class="lbl">环比</span>
 																		</label>
 																	</div>																
@@ -526,8 +526,7 @@
 								    console.log("is null:"+at);
 									$("#show_"+at).attr("class","hide");
 								});
-								
-						
+														
 								$("#show_"+val).attr("class","");
 					});
 
@@ -692,6 +691,11 @@
 						markLine_average=1;
 					}
 					
+					var math_mom=0;
+					if($('input[name="math_mom"]:checked').val()=="on"){
+						math_mom=1;
+					}
+					
 					var roseType=0;
 					if($('input[name="roseType"]:checked').val()=="on"){
 						roseType=1;
@@ -712,7 +716,7 @@
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
 						  data:{"ids":selectedItems,  "graph_type":$('input[name="graph_type"]:checked').val(), "itemStyle_lable":itemStyle_lable
-							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average,"roseType":roseType, "tmp_list":tmp_list},
+							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average,"roseType":roseType, "tmp_list":tmp_list,"math_mom":math_mom},
 						  success: function(result){
 							  console.log("success"+result);
 						  },

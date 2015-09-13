@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
-import com.github.abel533.echarts.Title;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
@@ -42,7 +41,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private GsonOption option = null;
 	private List<Map<String, String>> JsonIds = null;
 	private List<List<Map<String, Object>>> pieList = null;
-
+	private int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
+	private int math_mom = 0;
+	
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
@@ -154,12 +155,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			return "";
 		int m = 0;
 
-		int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
+		
 
 		itemStyle_lable = toInt(porg.getKey("itemStyle_lable"));
 		itemStyle_areaStyle = toInt(porg.getKey("itemStyle_areaStyle"));
 		markLine_average = toInt(porg.getKey("markLine_average"));
-
+		
+		math_mom = toInt(porg.getKey("math_mom"));
+		
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
 				continue;
@@ -281,7 +284,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 		}
-		if (JsonIds.size() == 1) {
+		if (math_mom == 1) {
 			mom();
 		}
 		option.xAxis(valueAxis);
@@ -318,6 +321,29 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			line.data((int) m);
 			front = x;
 
+		}
+		
+		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+			ItemStyle itemStyle = new ItemStyle();
+			Normal normal = new Normal();
+
+			if (itemStyle_lable == 1) {
+				Label label = new Label();
+				label.setShow(true);
+
+				normal.setLabel(label);
+			}
+			if (itemStyle_areaStyle == 1) {
+				AreaStyle aStyle = new AreaStyle();
+				normal.setAreaStyle(aStyle.typeDefault());
+			}
+
+			// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+			// label:{show:true}}},
+
+			itemStyle.setNormal(normal);
+
+			line.itemStyle(itemStyle);
 		}
 
 		option.series(line);

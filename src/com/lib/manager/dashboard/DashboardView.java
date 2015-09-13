@@ -10,6 +10,7 @@ import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
+import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RserveException;
@@ -234,6 +235,8 @@ public class DashboardView extends Permission implements BasePerminterface {
 		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
 		}
+		 new Rlan();
+		
 		try {
 			globale_config.rcoonnect.voidEval("mlg<-c(1:51)");
 			yAxis = globale_config.rcoonnect.eval("log(mlg)").asDoubles();
