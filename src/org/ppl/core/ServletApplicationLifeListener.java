@@ -47,13 +47,7 @@ public class ServletApplicationLifeListener extends PObject implements
 		HikariConnectionPool.getInstance();
 		globale_config.GDB = new HashMap<>();
 		//globale_config.RengineJava = new Rengine(new String[] { "--no-save" }, false, null); 
-		try {
-			globale_config.rcoonnect = new RConnection();
-		} catch (RserveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}
-		
+				
 		InitPackList();
 			
 		int autorun = mConfig.GetInt("autorun");

@@ -230,12 +230,9 @@ public class DashboardView extends Permission implements BasePerminterface {
 	private void cardioid() {
 
 		List<Double> xAxis = new ArrayList<>();
-		//List<Double> yAxis = new ArrayList<>();
 		double[] yAxis = null;
 		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
-			//yAxis.add(Math.log(i) * 10);
-
 		}
 		try {
 			globale_config.rcoonnect.voidEval("mlg<-c(1:51)");
@@ -252,7 +249,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		if(yAxis != null){
 			setRoot("xAxis", JSON.toJSONString(yAxis));
 			String xy = JSON.toJSONString(yAxis);
-			echo(xy);
+			
 			setRoot("yAxis", JSON.toJSONString(xAxis));
 			
 		}else {

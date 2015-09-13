@@ -74,50 +74,141 @@
 											<i class="icon-time bigger-120 blue"></i>
 											耗时：<span id="useTime" name="useTime"></span>										
 									</div>
-					       		<div class="col-xs-12 col-sm-12 well">
-						 
-						       		<#if graphList??>
-						       		<#list graphList as item>
-						       		<div class="col-sm-12">
-							       		<div class="radio">
-											<label>
-												<input <#if (item_index) = 0> checked </#if> type="radio" name="graph_type" id="graph_type" value="${item['graph']}"  />
-												<span class="lbl chart_1 chart_${item['graph']}" style="text-align: left; text-indent: 32px;">${item['name']}</span> 
-											</label>											
+									<div id="recent-box" class="widget-box transparent">
+										<div class="widget-header">
+											<h4 class="widget-title lighter smaller">
+												<i class="icon-asterisk orange"></i>分析方式
+											</h4>
+	
+											<div class="widget-toolbar no-border">
+												<ul id="recent-tab" class="nav nav-tabs">
+													<li class="active">
+														<a href="#task-tab" data-toggle="tab" aria-expanded="true">图开</a>
+													</li>
+	
+													<li class="">
+														<a href="#member-tab" data-toggle="tab" aria-expanded="false">算法</a>
+													</li>
+	
+													<li class="">
+														<a href="#comment-tab" data-toggle="tab" aria-expanded="false">Comments</a>
+													</li>
+												</ul>
 											</div>
 										</div>
-										</#list>
-										</#if>
-									 						       														
-						       	</div>
-						       	<div class="col-xs-12 col-sm-12 well">
-						       		<div id="show_line" name="show_line">
-							       		<div class="checkbox">
-											<label>
-												<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
-												<span class="lbl"> 显示数值</span>
-											</label>
-										</div>
-										
-										<div class="checkbox">
-											<label>
-												<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
-												<span class="lbl">显示区域</span>
-											</label>
-										</div>
-										<div class="checkbox">
-											<label>
-												<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
-												<span class="lbl">显示平均值</span>
-											</label>
-										</div>
-									</div>
-									<div class="checkbox">
-										<label>
-											<input class="ace ace-checkbox-2" type="checkbox" name="roseType" id="roseType">
-											<span class="lbl">南丁格尔玫瑰</span>
-										</label>
-									</div>
+										<div class="widget-body">
+											<div class="widget-main padding-4">
+												<div class="tab-content padding-8">
+													<div class="tab-pane active" id="task-tab">		
+										       		<div class="col-xs-12 col-sm-12 well">
+											 
+											       		<#if graphList??>
+											       		<#list graphList as item>
+											       		<div class="col-sm-12">
+												       		<div class="radio">
+																<label>
+																	<input <#if (item_index) = 0> checked </#if> type="radio" name="graph_type" id="graph_type" value="${item['graph']}"  />
+																	<span class="lbl chart_1 chart_${item['graph']}" style="text-align: left; text-indent: 32px;">${item['name']}</span> 
+																</label>											
+																</div>
+															</div>
+															</#list>
+															</#if>
+														 						       														
+											       	</div>	
+											       	<div class="col-xs-12 col-sm-12 well">
+											       		<div id="show_line" name="show_line">
+												       		<div class="checkbox">
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
+																		<span class="lbl"> 显示数值</span>
+																	</label>
+																</div>
+															
+																<div class="checkbox">
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
+																		<span class="lbl">显示区域</span>
+																	</label>
+																</div>
+																
+																<div class="checkbox">
+																		<label>
+																			<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
+																			<span class="lbl">平均值</span>
+																		</label>
+																</div>	
+																
+															</div>
+															<div  id="show_pie" name="show_pie" class="hide">
+																<div class="checkbox" >
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="roseType" id="roseType">
+																		<span class="lbl">南丁格尔玫瑰</span>
+																	</label>
+																</div>
+															</div>
+											       	</div>
+										       	</div>
+										       	<div class="tab-pane" id="member-tab">
+										       			<div class="col-xs-12 col-sm-12 well">
+											 					
+													       		<div class="col-sm-12">
+														       		<div class="radio">
+																		<label>
+																			<input type="radio" value="count" id="algo_count" name="algo_type" checked="">
+																			<span style="text-align: left; text-indent: 32px;">统计</span> 
+																		</label>											
+																		</div>
+																	</div>
+													       		<div class="col-sm-12">
+														       		<div class="radio">
+																		<label>
+																			<input type="radio" value="sequ" id="algo_sequ" name="algo_type">
+																			<span style="text-align: left; text-indent: 32px;">序列</span> 
+																		</label>											
+																		</div>
+																	</div>
+													       		<div class="col-sm-12">
+														       		<div class="radio">
+																		<label>
+																			<input type="radio" value="rule" id="algo_rule" name="algo_type">
+																			<span style="text-align: left; text-indent: 32px;">关联规则</span> 
+																		</label>											
+																		</div>
+																	</div>
+															 			       														
+												       	</div>
+										       	
+										       			<div class="col-xs-12 col-sm-12 well">
+										       				
+												       		<div id="show_count" name="show_count">
+													       		<div class="checkbox">
+																		<label>
+																			<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
+																			<span class="lbl">方差分析</span>
+																		</label>
+																	</div>
+																	
+																	<div class="checkbox">
+																		<label>
+																			<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
+																			<span class="lbl">线性混合模型</span>
+																		</label>
+																	</div>
+																	<div class="checkbox">
+																		<label>
+																			<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
+																			<span class="lbl">环比</span>
+																		</label>
+																	</div>																
+																</div>
+															</div>
+										       	</div>
+									       	
+									       	</div>
+							       		</div>
+							       	</div>
 						       	</div>
 						       	<div class="col-xs-12 col-sm-12 well">
 					       			<h5 class="bigger lighter">
@@ -142,7 +233,7 @@
 									</h5>
 					       		</div>
 					       		 -->
-					       		 <div class="col-xs-12 col-sm-12 well">
+					       		 <div class="col-xs-12 col-sm-12">
 
 									
 		
@@ -396,9 +487,6 @@
 						$("#docEdit").wordExport();
 					});
 					
-					 
-					
-
 					$('#tree1')
 						.ace_tree(
 								{
@@ -414,6 +502,35 @@
 									'unselected-icon' : 'icon-remove'
 								});
 					
+					$('.chart_1').on("click", function(){
+						var attr = $(this).attr("class").substr(18);
+			
+						$('.chart_1').each(
+								function(){
+									var at = $(this).attr("class").substr(18);
+									$("#show_"+at).attr("class","hide");
+
+								  }
+								);
+						$("#show_"+attr).attr("class","");
+					});
+					
+				
+					$('input[name="algo_type"]')
+					.change(
+							function(e) { // Select the radio input group
+								var val = $(this).val();
+								$('input[name="algo_type"]').each(function(){
+								    
+								    var at = $(this).val();
+								    console.log("is null:"+at);
+									$("#show_"+at).attr("class","hide");
+								});
+								
+						
+								$("#show_"+val).attr("class","");
+					});
+
 					//save data
 					$("#bootbox-options").on(ace.click_event, function() {
 						bootbox.prompt("保存标题: ", function(result) {
