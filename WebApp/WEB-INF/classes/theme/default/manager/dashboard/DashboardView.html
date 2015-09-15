@@ -298,7 +298,7 @@
 			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/ue/ueditor.config.js"></script>
     		<script type="text/javascript" charset="utf-8" src="${static_js_uri}/ue/ueditor.all.min.js"> </script>
      		-->
-			<script type="text/javascript" src="${static_js_uri}/echarts/esl.js"></script>
+			<script type="text/javascript" src="${static_js_uri}/echarts/echarts.js"></script>
 			
 			<script type="text/javascript" src="${static_js_uri}/fuelux/fuelux.tree.min.js"></script>
 			<script type="text/javascript" src="${static_js_uri}/bootbox.min.js"></script>
@@ -627,43 +627,77 @@
 					    ]
 					};
 	
-						
-				require.config({
-			        paths:{ 
-			            echarts:'${static_js_uri}/echarts/echarts-map',
-			            'echarts/chart/bar' : '${static_js_uri}/echarts/echarts-map',
-			            'echarts/chart/line' : '${static_js_uri}/echarts/echarts-map',  
-			            'echarts/chart/pie' : '${static_js_uri}/echarts/echarts-map',  
-			            'echarts/chart/map' : '${static_js_uri}/echarts/echarts-map',
-			            'echarts/chart/scatter' : '${static_js_uri}/echarts/echarts-map',
-			            'echarts/chart/funnel' : '${static_js_uri}/echarts/echarts-map',
-			            
-			        }
-			    });
 				
-				var f = 1;
-				var myChart4;
-				var startTime ; 
-				require([ 'echarts', 'echarts/chart/bar', 'echarts/chart/line',
-						'echarts/chart/pie', 'echarts/chart/scatter',
-						'echarts/chart/funnel', ], function(ec) {
-					myChart4 = ec.init(document
-							.getElementById('custom-container'));
-					myChart4.setOption(option_1, true);
+
+				var echarts;
+				var myChart;
+				var needRefresh = false;
+				var curTheme;
+				
+				function requireCallback (ec, defaultTheme) {
+					curTheme =  defaultTheme;
+				    echarts = ec;
+				    myChart = echarts.init(document
+							.getElementById('custom-container'), curTheme);
+					myChart.setOption(option_1, true);
 					
 					var ecConfig = require('echarts/config');
-					myChart4.on(ecConfig.EVENT.DBLCLICK, function (param){
+					
+					myChart.on(ecConfig.EVENT.DBLCLICK, function (param){
 						console.log("dial:"+param.name+"- volume:"+param.value);
 						//获取同一刻度下面的不同数据 对比
 						$("#juxtapose").attr("class", "col-xs-12 col-sm-12");
 					});
 					
+				    window.onresize = myChart.resize;
+				}
+				
+				// for echarts online home page
+				require.config({
+				    paths: {
+				        echarts: '${static_js_uri}/echarts',
+				    }
 				});
-				
-				
+				launchExample();
+
+
+				var isExampleLaunched;
+				function launchExample() {
+				    if (isExampleLaunched) {
+				        return;
+				    }
+
+				    // 按需加载
+				    isExampleLaunched = 1;
+				    require(
+				        [
+				            'echarts',
+				           // 'theme/' + hash.replace('-en', ''),
+				            'echarts/chart/line',
+				            'echarts/chart/bar',
+				            'echarts/chart/scatter',
+				            'echarts/chart/k',
+				            'echarts/chart/pie',
+				            'echarts/chart/radar',
+				            'echarts/chart/force',
+				            'echarts/chart/chord',
+				            'echarts/chart/gauge',
+				            'echarts/chart/funnel',
+				            'echarts/chart/eventRiver',
+				            'echarts/chart/venn',
+				            'echarts/chart/treemap',
+				            'echarts/chart/tree',
+				            'echarts/chart/wordCloud',
+				            'echarts/chart/heatmap',
+				            'echarts/chart/map' 
+				        ],
+				        requireCallback
+				    );
+				}
+								
 				function focusGraphic() {
 
-					myChart4.showLoading();
+					myChart.showLoading();
 					setTimeout(refresh, 1000);
 				}
 
@@ -724,14 +758,14 @@
 							  var chk = option.substring(1, 5);
 							  
 						      if(option.length > 2 && chk!='html'){
-							  	myChart4.clear();
-							  	myChart4.setOption(JSON.parse(option), true);
-							  	myChart4.refresh();
+						    	  myChart.clear();
+						    	  myChart.setOption(JSON.parse(option), true);
+						    	  myChart.refresh();
 						  	  }else{
 						  		alert("没数据!");
 						  	  }
 						      						      
-							  myChart4.hideLoading();
+						      myChart.hideLoading();
 							  
 							  if(chk=='html'){
 								  alert("还没登录或超时退出!");
@@ -748,14 +782,9 @@
 						});
 				}
 				
-								
-				/*
-				$("#dataEditor").ace_wysiwyg();
-				$("#dataEditor").css("height", "500px");
-				$("#dataEditor").css("max-height", "500px");
-				*/
+				
 				function SaveImg() {
-					var dataURL = myChart4.getDataURL();
+					var dataURL = myChart.getDataURL();
 					
 					$.ajax({
 						  url: "${saveimg_url}?jsoncallback=?",
@@ -786,46 +815,42 @@
 				
 				setTimeout(initEdits, 5000);
 				function initEdits(){
-				var initEDit = getCookie("cacheEdit");
+				   var initEDit = getCookie("cacheEdit");
 			       if(initEDit.length >0){			    	   
 			    	   CKEDITOR.instances.editor1.setData(unescape(initEDit));
 			       }
 			       
 			      // console.log("initEDit:"+initEDit);
 				}
-				  setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
+			   setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
 
-			       function myInterval()
-			       {
-			    	   var stemTxt=CKEDITOR.instances.editor1.getData();
-			    	   if(stemTxt.length > 1){
-			    	   		setCookie("cacheEdit", escape(stemTxt), 1);
-			       	   }
-			    	  // console.log("loop time:"+stemTxt);			    	   			    	   
-			        }
-				
-			       function setCookie(cname, cvalue, exdays) {
-			    	    var d = new Date();
-			    	    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-			    	    var expires = "expires="+d.toUTCString();
-			    	    document.cookie = cname + "=" + cvalue + "; " + expires;
-			       }
-			       
-			       function getCookie(cname) {
-			    	    var name = cname + "=";
-			    	    var ca = document.cookie.split(';');
-			    	    for(var i=0; i<ca.length; i++) {
-			    	        var c = ca[i];
-			    	        while (c.charAt(0)==' ') c = c.substring(1);
-			    	        if (c.indexOf(name) == 0) {
-			    	            return c.substring(name.length, c.length);
-			    	        }
-			    	    }
-			    	    return "";
-			    	}
-			       
-			    
-			       
-			       
-								
+		       function myInterval()
+		       {
+		    	   var stemTxt=CKEDITOR.instances.editor1.getData();
+		    	   if(stemTxt.length > 1){
+		    	   		setCookie("cacheEdit", escape(stemTxt), 1);
+		       	   }
+		    	  // console.log("loop time:"+stemTxt);			    	   			    	   
+		        }
+			
+		       function setCookie(cname, cvalue, exdays) {
+		    	    var d = new Date();
+		    	    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		    	    var expires = "expires="+d.toUTCString();
+		    	    document.cookie = cname + "=" + cvalue + "; " + expires;
+		       }
+		       
+		       function getCookie(cname) {
+		    	    var name = cname + "=";
+		    	    var ca = document.cookie.split(';');
+		    	    for(var i=0; i<ca.length; i++) {
+		    	        var c = ca[i];
+		    	        while (c.charAt(0)==' ') c = c.substring(1);
+		    	        if (c.indexOf(name) == 0) {
+		    	            return c.substring(name.length, c.length);
+		    	        }
+		    	    }
+		    	    return "";
+		    	}
+			
 			</script>

@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
+import com.github.abel533.echarts.axis.Axis;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
@@ -143,14 +144,18 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		categoryAxis.axisLine().onZero(false);
 		categoryAxis.setType(AxisType.value);
 		categoryAxis.axisLabel().formatter("{value}");
+		ValueAxis myAxis = new ValueAxis();
+		myAxis.scale(true);
+		option.yAxis(myAxis);
 		option.yAxis(categoryAxis);
+		
 		List<Object> valAxiList = new ArrayList<>();
 		option.tooltip().trigger(Trigger.axis);
 
 		boolean Xbool = true;
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
-
+		
 		if (pieList == null || pieList.size() == 0 || JsonIds.size() == 0)
 			return "";
 		int m = 0;
@@ -291,7 +296,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		if (math_var == 1){
 			math_var();
 		}
-		valueAxis.scale(true);
+		
+		
 		option.xAxis(valueAxis);
 
 		if (Xbool) {
