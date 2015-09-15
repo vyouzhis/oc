@@ -42,7 +42,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private List<Map<String, String>> JsonIds = null;
 	private List<List<Map<String, Object>>> pieList = null;
 	private int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
-	private int math_mom = 0;
+	private int math_mom = 0, math_var=0;
 	
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
@@ -162,6 +162,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		markLine_average = toInt(porg.getKey("markLine_average"));
 		
 		math_mom = toInt(porg.getKey("math_mom"));
+		math_var = toInt(porg.getKey("math_var"));
 		
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
@@ -285,8 +286,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		}
 		if (math_mom == 1) {
-			mom();
+			math_mom();
 		}
+		if (math_var == 1){
+			math_var();
+		}
+		valueAxis.scale(true);
 		option.xAxis(valueAxis);
 
 		if (Xbool) {
@@ -296,7 +301,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	}
 
 	// month-on-month
-	private void mom() {
+	private void math_mom() {
 		option.legend(_MLang("mom"));
 
 		List<Map<String, Object>> list = pieList.get(0);
@@ -346,6 +351,36 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			line.itemStyle(itemStyle);
 		}
 
+		option.series(line);
+	}
+	
+	private void math_var() {
+		option.legend(_MLang("mom"));
+
+		List<Map<String, Object>> list = pieList.get(0);
+
+		Line line = new Line();
+		line.smooth(true).name(_MLang("mom")).itemStyle().normal().lineStyle();
+
+		float front = 0;
+		float x = 0;
+		float m;
+		for (Map<String, Object> key : list) {
+
+			x = toFloat(key.get("volume"));
+
+			if (front == 0) {
+				m = 100;
+			} else {
+				m = (x - front) / front * 100;
+				// echo("front:" + front + " x:" + x + " m:" + m);
+			}
+
+			line.data((int) m);
+			front = x;
+
+		}
+		
 		option.series(line);
 	}
 

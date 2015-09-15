@@ -24,6 +24,9 @@
 						<li class="active">${name}</li>
 					</ul>
 					<!-- #nav-search -->
+					<div class="nav-search">
+						<a target='_blank' href='http://wpa.qq.com/msgrd?v=3&uin=3116991315&site=qq&menu=yes'>在线帮忙:<img border='0' src='http://wpa.qq.com/pa?p=2:3116991315:51' alt='太慢了，需要帮忙' title='在线帮忙'/></a>
+					</div>
 				</div>
 				<div class="page-content">
 					<!-- /.page-header -->
@@ -120,21 +123,21 @@
 											       		<div id="show_line" name="show_line">
 												       		<div class="checkbox">
 																	<label>
-																		<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_itemStyle_lable" id="arg_itemStyle_lable">
 																		<span class="lbl"> 显示数值</span>
 																	</label>
 																</div>
 															
 																<div class="checkbox">
 																	<label>
-																		<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_itemStyle_areaStyle" id="arg_itemStyle_areaStyle">
 																		<span class="lbl">显示区域</span>
 																	</label>
 																</div>
 																
 																<div class="checkbox">
 																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="markLine_average" id="markLine_average">
+																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_markLine_average" id="arg_markLine_average">
 																			<span class="lbl">平均值</span>
 																		</label>
 																</div>	
@@ -143,7 +146,7 @@
 															<div  id="show_pie" name="show_pie" class="hide">
 																<div class="checkbox" >
 																	<label>
-																		<input class="ace ace-checkbox-2" type="checkbox" name="roseType" id="roseType">
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_roseType" id="arg_roseType">
 																		<span class="lbl">南丁格尔玫瑰</span>
 																	</label>
 																</div>
@@ -185,20 +188,20 @@
 												       		<div id="show_count" name="show_count">
 													       		<div class="checkbox">
 																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_lable" id="itemStyle_lable">
-																			<span class="lbl">方差分析</span>
+																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_var" id="arg_math_var">
+																			<span class="lbl">样本方差</span>
 																		</label>
 																	</div>
 																	
 																	<div class="checkbox">
 																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="itemStyle_areaStyle" id="itemStyle_areaStyle">
+																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_lime" id="arg_math_lime">
 																			<span class="lbl">线性混合模型</span>
 																		</label>
 																	</div>
 																	<div class="checkbox">
 																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="math_mom" id="math_mom">
+																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_mom" id="arg_math_mom">
 																			<span class="lbl">环比</span>
 																		</label>
 																	</div>																
@@ -674,33 +677,11 @@
 					
 				function refresh() {
 					var o = $('#tree1').tree('selectedItems');
-									
+					var JsonData = {};
+					
 					var selectedItems = escape(JSON.stringify(o));
 					console.log( JSON.stringify(o) );
 										
-					var itemStyle_lable=0;
-					if($('input[name="itemStyle_lable"]:checked').val()=="on"){
-						itemStyle_lable=1;
-					}
-					var itemStyle_areaStyle=0;
-					if($('input[name="itemStyle_areaStyle"]:checked').val()=="on"){
-						itemStyle_areaStyle=1;
-					}
-					var markLine_average=0;
-					if($('input[name="markLine_average"]:checked').val()=="on"){
-						markLine_average=1;
-					}
-					
-					var math_mom=0;
-					if($('input[name="math_mom"]:checked').val()=="on"){
-						math_mom=1;
-					}
-					
-					var roseType=0;
-					if($('input[name="roseType"]:checked').val()=="on"){
-						roseType=1;
-					}
-					
 					var array = $("#tmp_list").getIdArray();
 					var tmp={};
 					for(var a in array){
@@ -711,12 +692,27 @@
 					var tmp_list = JSON.stringify(tmp);
 					 
 					startTime = new Date().getTime(); 
+					JsonData['ids'] = selectedItems;
+					JsonData['graph_type'] = $('input[name="graph_type"]:checked').val();
+					JsonData['tmp_list'] = tmp_list;
+
+					$("input:checked").each(function(index, element) {
+						var argname = $(this).attr('name');
+						var name = argname.substr(4);
+						var arg = argname.substr(0,4);
+						if(arg=='arg_'){						
+							JsonData[name] = 1;
+						}
+						
+				    });
+
+					//console.log("JsonData:"+JSON.stringify(JsonData));
+										
 					$.ajax({
 						  url: "${json_url}?jsoncallback=?",
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
-						  data:{"ids":selectedItems,  "graph_type":$('input[name="graph_type"]:checked').val(), "itemStyle_lable":itemStyle_lable
-							  ,"itemStyle_areaStyle":itemStyle_areaStyle, "markLine_average":markLine_average,"roseType":roseType, "tmp_list":tmp_list,"math_mom":math_mom},
+						  data:JsonData,
 						  success: function(result){
 							  console.log("success"+result);
 						  },
@@ -745,7 +741,7 @@
 							  var helpMsg = "";
 							  $("#showTime").attr("class", "col-xs-12 col-sm-12");
 							  if(useTime > 5) {
-								  helpMsg = ",<a href=''>太慢了，需要帮忙</a>";
+								  helpMsg = ",<a href=''>太慢了，需要帮忙</a> ";
 							  }
 							  $("#useTime").html(useTime+" 秒"+helpMsg);
 						  }

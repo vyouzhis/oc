@@ -146,7 +146,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		}
 
 		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
-				+ "usersql where sql_type=1 order by id desc";
+				+ "usersql where sql_type=1 order by id desc;";
 		try {
 			tRes = FetchAll(RootSql);
 			if (tRes != null) {
@@ -235,8 +235,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
 		}
-		 new Rlan();
-		
+				
 		try {
 			globale_config.rcoonnect.voidEval("mlg<-c(1:51)");
 			yAxis = globale_config.rcoonnect.eval("log(mlg)").asDoubles();
