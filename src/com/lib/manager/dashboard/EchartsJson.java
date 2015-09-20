@@ -138,17 +138,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		}
 		super.setHtml(EJson);
 	}
-
+	
+	@SuppressWarnings("rawtypes")
 	public String JsonLine() {
 		CategoryAxis categoryAxis = new CategoryAxis();
 		categoryAxis.axisLine().onZero(false);
 		categoryAxis.setType(AxisType.value);
 		categoryAxis.axisLabel().formatter("{value}");
+		
 		List<Axis> myaAxis = new ArrayList<>();
 		ValueAxis myAxis = new ValueAxis();
 		myAxis.scale(true);
 		
-		
+		int jCount=0;
 		List<Object> valAxiList = new ArrayList<>();
 		option.tooltip().trigger(Trigger.axis);
 
@@ -230,12 +232,19 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 					bar.itemStyle(itemStyle);
 				}
+				myaAxis.add(myAxis);
 				option.series(bar);
 			} else {
 				Line line = new Line();
 				line.smooth(true).name(id.get("name").toString()).itemStyle()
 						.normal().lineStyle();
-
+				if(jCount == 1 && JsonIds.size() == 2){					
+					line.yAxisIndex(1);
+				}
+				ValueAxis tAxis = new ValueAxis();
+				tAxis.name(id.get("name").toString());
+				myaAxis.add(tAxis);
+				jCount ++;
 				if (markLine_average == 1) {
 					Map<String, String> mkline = new HashMap<>();
 					mkline.put("type", "average");
@@ -294,7 +303,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 		}
-		myaAxis.add(myAxis);
+		
 		
 		if (math_mom == 1) {
 			ValueAxis momAxis = new ValueAxis();
@@ -409,6 +418,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			front = x;
 
 		}
+		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+			ItemStyle itemStyle = new ItemStyle();
+			Normal normal = new Normal();
+
+			if (itemStyle_lable == 1) {
+				Label label = new Label();
+				label.setShow(true);
+
+				normal.setLabel(label);
+			}
+			if (itemStyle_areaStyle == 1) {
+				AreaStyle aStyle = new AreaStyle();
+				normal.setAreaStyle(aStyle.typeDefault());
+			}
+
+			// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+			// label:{show:true}}},
+
+			itemStyle.setNormal(normal);
+
+			line.itemStyle(itemStyle);
+		}
 		
 		option.series(line);
 	}
@@ -436,6 +467,29 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			l++;
 			line.data(Float.valueOf(String.format("%.2f", m)));
 			
+		}
+		
+		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+			ItemStyle itemStyle = new ItemStyle();
+			Normal normal = new Normal();
+
+			if (itemStyle_lable == 1) {
+				Label label = new Label();
+				label.setShow(true);
+
+				normal.setLabel(label);
+			}
+			if (itemStyle_areaStyle == 1) {
+				AreaStyle aStyle = new AreaStyle();
+				normal.setAreaStyle(aStyle.typeDefault());
+			}
+
+			// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+			// label:{show:true}}},
+
+			itemStyle.setNormal(normal);
+
+			line.itemStyle(itemStyle);
 		}
 		
 		option.series(line);
