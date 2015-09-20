@@ -43,7 +43,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private List<Map<String, String>> JsonIds = null;
 	private List<List<Map<String, Object>>> pieList = null;
 	private int itemStyle_lable = 0, itemStyle_areaStyle = 0, markLine_average = 0;
-	private int math_mom = 0, math_var=0;
+	private int math_mom = 0, math_var=0, math_sma = 0, math_wma = 0;
 	
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
@@ -144,10 +144,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		categoryAxis.axisLine().onZero(false);
 		categoryAxis.setType(AxisType.value);
 		categoryAxis.axisLabel().formatter("{value}");
+		List<Axis> myaAxis = new ArrayList<>();
 		ValueAxis myAxis = new ValueAxis();
 		myAxis.scale(true);
-		option.yAxis(myAxis);
-		option.yAxis(categoryAxis);
+		
 		
 		List<Object> valAxiList = new ArrayList<>();
 		option.tooltip().trigger(Trigger.axis);
@@ -168,6 +168,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		
 		math_mom = toInt(porg.getKey("math_mom"));
 		math_var = toInt(porg.getKey("math_var"));
+		math_sma = toInt(porg.getKey("math_sma"));
+		math_wma = toInt(porg.getKey("math_wma"));
 		
 		for (Map<String, String> id : JsonIds) {
 			if (!id.get("id").toString().matches("[0-9]+"))
@@ -184,6 +186,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
 						.lineStyle();
+				myAxis.name(id.get("name").toString());
+				
 				if (markLine_average == 1) {
 					Map<String, String> mkline = new HashMap<>();
 					mkline.put("type", "average");
@@ -290,13 +294,29 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 		}
+		myaAxis.add(myAxis);
+		
 		if (math_mom == 1) {
+			ValueAxis momAxis = new ValueAxis();
+			momAxis.name(_MLang("mom"));
+			myaAxis.add(momAxis);
 			math_mom();
 		}
 		if (math_var == 1){
 			math_var();
 		}
+		if(math_sma == 1){
+			math_sma();
+		}
+		if(math_wma == 1){
+			math_wma();
+		}
 		
+		
+		myaAxis.add(categoryAxis);
+		option.yAxis(myaAxis);
+		
+		//option.yAxis();
 		
 		option.xAxis(valueAxis);
 
@@ -309,7 +329,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	// month-on-month
 	private void math_mom() {
 		option.legend(_MLang("mom"));
-
+		
+		
 		List<Map<String, Object>> list = pieList.get(0);
 
 		Line line = new Line();
@@ -356,7 +377,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			line.itemStyle(itemStyle);
 		}
-
+		line.yAxisIndex(1);
+		
+		
 		option.series(line);
 	}
 	
@@ -385,6 +408,63 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			line.data((int) m);
 			front = x;
 
+		}
+		
+		option.series(line);
+	}
+	
+	private void math_sma() {
+		option.legend(_MLang("sma"));
+
+		List<Map<String, Object>> list = pieList.get(0);
+
+		Line line = new Line();
+		line.smooth(true).name(_MLang("sma")).itemStyle().normal().lineStyle();
+
+		float front = 0;
+		float x = 0;
+		float m;
+		int l=1;
+		for (Map<String, Object> key : list) {
+
+			x = toFloat(key.get("volume"));
+			
+			front += x;
+
+			m = front / l ;
+				
+			l++;
+			line.data(Float.valueOf(String.format("%.2f", m)));
+			
+		}
+		
+		option.series(line);
+		
+	}
+	
+	private void math_wma() {
+		option.legend(_MLang("wma"));
+
+		List<Map<String, Object>> list = pieList.get(0);
+
+		Line line = new Line();
+		line.smooth(true).name(_MLang("wma")).itemStyle().normal().lineStyle();
+
+		float front = 0;
+		float x = 0;
+		float m;
+		int l=1;
+		for (Map<String, Object> key : list) {
+
+			x = toFloat(key.get("volume"));
+			
+			front += x;
+
+			m = front / l ;
+				
+			l++;
+			line.data(Float.valueOf(String.format("%.2f", m)));
+			
 		}
 		
 		option.series(line);
