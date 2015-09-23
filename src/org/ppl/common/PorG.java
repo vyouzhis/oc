@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -190,15 +191,22 @@ public class PorG  {
 	}
 	
 	public String GetIP() {
+		String ip = "";
+		//String stdClass="PorG";
+		
+		//Logger log = Logger.getLogger(stdClass);
+
 		for (String header : HEADERS_TO_TRY) {
-	        String ip = request.getHeader(header);
-	        if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
-	            return ip;
-	        }
+	        ip = request.getHeader(header);	 
+	        //log.info(header+" : "+ip);
 	    }
+		if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
 	    return request.getRemoteAddr();
 	}
 
+	
 	public String getMehtod() {
 		return mehtod;
 	}

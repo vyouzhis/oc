@@ -662,7 +662,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		String format = "select rule,volume,dial from "
 				+ DB_HOR_PRE
 				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
-
+		// why ?
 		List<Map<String, Object>> res = null;
 		String tmp_list = porg.getKey("tmp_list");
 		Map<String, String> tmp_map = null;

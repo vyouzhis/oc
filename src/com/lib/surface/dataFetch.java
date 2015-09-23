@@ -122,6 +122,7 @@ public class dataFetch extends BaseSurface {
 		
 		String json = JSON.toJSONString(BiData);
 		mgdb.SetCollection(Col);
+		
 		mgdb.Insert(json);
 	}
 
@@ -143,6 +144,7 @@ public class dataFetch extends BaseSurface {
 		IPSeeker seeker = null;
 		Path ipWry = null;
 		String ip = porg.GetIP();
+		
 		if (ip == null)
 			return;
 		try {
