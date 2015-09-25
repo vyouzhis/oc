@@ -1,12 +1,11 @@
 package org.ppl.core;
 
-import org.ppl.BaseClass.BaseRapidThread;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.ppl.BaseClass.LibThread;
 import org.ppl.etc.globale_config;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 public class RapidThread extends LibThread {
 
@@ -26,21 +25,11 @@ public class RapidThread extends LibThread {
 					e.printStackTrace();
 				}
 
+				ExecutorService cachedThreadPool = Executors.newFixedThreadPool(globale_config.RapidListQueue.size());
+				
 				for (String key : globale_config.RapidListQueue.keySet()) {
-
-					Injector injector = globale_config.injector;
-					BaseRapidThread rapid = (BaseRapidThread) injector
-							.getInstance(Key.get(BaseRapidThread.class,
-									Names.named(key)));
-
-					while (globale_config.RapidListQueue.get(key).size() > 0) {
-
-						Object o = globale_config.RapidListQueue.get(key).pop();
-						if(rapid.Stop()==true)continue;
-						rapid.mailbox(o);
-						rapid.Run();
-					}
-					rapid.free();
+					ThreadRapidRun trr = new ThreadRapidRun(key);
+					cachedThreadPool.execute(trr);					
 				}
 			}
 		}

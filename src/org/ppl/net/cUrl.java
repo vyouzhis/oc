@@ -34,11 +34,19 @@ import org.apache.http.util.EntityUtils;
 
 public class cUrl {
 	private List<NameValuePair> params = new ArrayList<NameValuePair>();
+	private List<Header> cHeader = new ArrayList<>();
+	private CloseableHttpClient httpclient = null;
 
-	public static String httpGet(String url) {
+	public String httpGet(String url) {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
 		HttpGet httpget = new HttpGet(url);
+
+		if (cHeader.size() > 0) {
+			for (Header mHeader : cHeader) {
+				httpget.addHeader(mHeader);
+			}
+		}
 
 		// Create a custom response handler
 		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -72,55 +80,65 @@ public class cUrl {
 	}
 
 	public String httpPost(String url) {
-		CloseableHttpClient httpclient = HttpClients.custom()
-				.addInterceptorFirst(new HttpRequestInterceptor() {
+		if (httpclient == null) {
+			httpclient = HttpClients.custom()
+					.addInterceptorFirst(new HttpRequestInterceptor() {
 
-					public void process(final HttpRequest request,
-							final HttpContext context) throws HttpException,
-							IOException {
-						if (!request.containsHeader("Accept-Encoding")) {
-							request.addHeader("Accept-Encoding", "gzip");
+						public void process(final HttpRequest request,
+								final HttpContext context)
+								throws HttpException, IOException {
+							if (!request.containsHeader("Accept-Encoding")) {
+								request.addHeader("Accept-Encoding", "gzip");
+							}
+
 						}
+					}).addInterceptorFirst(new HttpResponseInterceptor() {
 
-					}
-				}).addInterceptorFirst(new HttpResponseInterceptor() {
-
-					public void process(final HttpResponse response,
-							final HttpContext context) throws HttpException,
-							IOException {
-						HttpEntity entity = response.getEntity();
-						if (entity != null) {
-							Header ceheader = entity.getContentEncoding();
-							if (ceheader != null) {
-								HeaderElement[] codecs = ceheader.getElements();
-								for (int i = 0; i < codecs.length; i++) {
-									if (codecs[i].getName().equalsIgnoreCase(
-											"gzip")) {
-										response.setEntity(new GzipDecompressingEntity(
-												response.getEntity()));
-										return;
+						public void process(final HttpResponse response,
+								final HttpContext context)
+								throws HttpException, IOException {
+							HttpEntity entity = response.getEntity();
+							if (entity != null) {
+								
+								Header ceheader = entity.getContentEncoding();
+								if (ceheader != null) {
+									HeaderElement[] codecs = ceheader
+											.getElements();
+									for (int i = 0; i < codecs.length; i++) {
+										if (codecs[i].getName()
+												.equalsIgnoreCase("gzip")) {
+											response.setEntity(new GzipDecompressingEntity(
+													response.getEntity()));
+											return;
+										}
 									}
 								}
 							}
 						}
-					}
 
-				}).build();
-
+					}).build();
+			
+		}
 		HttpPost httppost = new HttpPost(url);
-
+		if (cHeader.size() > 0) {
+			for (Header mHeader : cHeader) {
+				httppost.addHeader(mHeader);
+			}
+		}
 		if (params.size() > 0) {
 			try {
 				httppost.setEntity(new UrlEncodedFormEntity(params, "utf-8"));
+				
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		CloseableHttpResponse response;
-		ByteArrayOutputStream bao = null;
+		//ByteArrayOutputStream bao = null;
+		StringBuilder sb1 = new StringBuilder(); 
 		InputStream bis = null;
-		byte[] buf = new byte[10240];
+		byte[] buf = new byte[1024];
 
 		String content = null;
 		try {
@@ -130,19 +148,21 @@ public class cUrl {
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				bis = response.getEntity().getContent();
 
-				//Header[] gzip = response.getHeaders("Content-Encoding");
+				// Header[] gzip = response.getHeaders("Content-Encoding");
+				
 				Header encoding = response.getEntity().getContentEncoding();
-
-				bao = new ByteArrayOutputStream();
+				
+				//bao = new ByteArrayOutputStream();
 				int count;
 				while ((count = bis.read(buf)) != -1) {
-					bao.write(buf, 0, count);
-
+					//bao.write(buf, 0, count);
+					String str = new String(buf, 0, count, "UTF-8");    
+	                sb1.append(str);    
 				}
 				bis.close();
-				
+
 				ByteArrayInputStream bai = new ByteArrayInputStream(
-						bao.toByteArray());
+						sb1.toString().getBytes());
 				if (encoding != null) {
 					if (encoding.getValue().equals("gzip")
 							|| encoding.getValue().equals("zip")
@@ -156,18 +176,20 @@ public class cUrl {
 							sb.append(new String(buf, 0, size, "utf-8"));
 						}
 						gzin.close();
-						bao.close();
+						//bao.close();
 
 						content = sb.toString();
+						System.out.println("gzip...");
+					}else {
+						System.out.println("no gzip....");
 					}
 				} else {
-
-					content = bao.toString();
+					System.out.println("bao.....");
+					content = new String(sb1);
 				}
 
 			}
 
-			httpclient.close();
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -186,7 +208,32 @@ public class cUrl {
 
 	}
 
+	public void closePost() {
+		try {
+			httpclient.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void clearParams() {
+		params.clear();
+	}
+
 	public void addParams(String key, String val) {
 		params.add(new BasicNameValuePair(key, val));
+	}
+
+	public List<Header> getcHeader() {
+		return cHeader;
+	}
+
+	public void setcHeader(Header mHeader) {
+		this.cHeader.add(mHeader);
+	}
+
+	public void clearHeader() {
+		this.cHeader.clear();
 	}
 }
