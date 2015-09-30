@@ -162,8 +162,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			return "";
 		int m = 0;
 
-		
-
 		itemStyle_lable = toInt(porg.getKey("itemStyle_lable"));
 		itemStyle_areaStyle = toInt(porg.getKey("itemStyle_areaStyle"));
 		markLine_average = toInt(porg.getKey("markLine_average"));
@@ -174,16 +172,17 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		math_wma = toInt(porg.getKey("math_wma"));
 		
 		for (Map<String, String> id : JsonIds) {
-			if (!id.get("id").toString().matches("[0-9]+"))
+			if (toInt(id.get("id"))==0){
 				continue;
+			}
 			option.legend(id.get("name").toString());
 
 			List<Map<String, Object>> list = pieList.get(m);
-
-			if (list.size() == 0)
-				continue;
 			m++;
-
+			if (list.size() == 0){
+				continue;
+			}
+			
 			if (JsonIds.size() == 1) {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
@@ -225,8 +224,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						AreaStyle aStyle = new AreaStyle();
 						normal.setAreaStyle(aStyle.typeDefault());
 					}
-					// itemStyle: {normal: {color:'rgba(193,35,43,1)',
-					// label:{show:true}}},
 
 					itemStyle.setNormal(normal);
 
@@ -255,7 +252,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					line.markLine().data(mkline);
 				}
 				int j = 0;
-				boolean xC=true;
+			
 				for (Map<String, Object> key : list) {
 
 					if (Xbool) {
@@ -263,13 +260,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						valAxiList.add(key.get("dial").toString());
 					}else{
 						//数据对齐
-						while (xC && j<valAxiList.size() && !valAxiList.get(j).toString()
+						while (j<valAxiList.size() && !valAxiList.get(j).toString()
 								.equals(key.get("dial").toString())) {
-							line.data("");
+							line.data(0);
 							j++;
 						}
-						xC = false;
+						j++;
 					}
+					
 					float val = toFloat(key.get("volume"));
 					if (val == 0) {
 						line.data(key.get("volume"));
