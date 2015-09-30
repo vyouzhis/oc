@@ -238,13 +238,15 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				if(jCount == 1){					
 					line.yAxisIndex(1);
 				}
+				ValueAxis tAxis = new ValueAxis();
+				
+				tAxis.scale(true);
 				if(JsonIds.size()==2){
-					ValueAxis tAxis = new ValueAxis();
 					tAxis.name(id.get("name").toString());
-					myaAxis.add(tAxis);
+					
 					jCount ++;
 				}
-				
+				myaAxis.add(tAxis);
 				if (markLine_average == 1) {
 					Map<String, String> mkline = new HashMap<>();
 					mkline.put("type", "average");
