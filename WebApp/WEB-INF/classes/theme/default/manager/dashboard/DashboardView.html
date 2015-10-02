@@ -798,12 +798,17 @@
 				
 				function SaveImg() {
 					var dataURL = myChart.getDataURL();
-					
-					$.ajax({
+					var step = 1000;
+					var len = Math.ceil(dataURL.length/step) ;
+					//console.log("dataURL:"+dataURL);
+					var timestamp = Date.parse(new Date());
+					for(var i=0;i<len;i++){
+						var datasplit = dataURL.substr(i*step, step);
+						$.ajax({
 						  url: "${saveimg_url}?jsoncallback=?",
 						  contentType: 'text/html;charset=utf-8',
 						  
-						  data:{"data":dataURL},
+						  data:{"data":datasplit,"n":i,"len":len,"name":timestamp},
 						  success: function(result){
 							  console.log("success"+result);
 						  },
@@ -811,19 +816,23 @@
 						    //alert(textStatus);
 						  },
 						  complete: function(request, textStatus) { //for additional info
-							  var option = request.responseText;
-							  option = option.replace(/[\r\n]/g, "");							  
-							  var imgs = "";
-						     imgs = "<img src='${data_uri}"+option+"' />";
-						    // UE.getEditor('editor').setContent(imgs, true);
-						   //var editor_data =
+							  console.log("complete len:"+len+"  i:"+i);
+							  if(i==len){
+							  	//var option = request.responseText;
+							  	//option = option.replace(/[\r\n]/g, "");							  
+							  	var imgs = "";
+						     	imgs = "<img src='${data_uri}"+timestamp+".png' />";
+						    	// UE.getEditor('editor').setContent(imgs, true);
+						   	//var editor_data =
 							   //CKEDITOR.instances.editor1.appendHtml(imgs); 
-						    var stemTxt=CKEDITOR.instances.editor1.getData(); 
-						   // console.log("editor_data:"+stemTxt);
+						    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
+						   	// console.log("editor_data:"+stemTxt);
 							 
-							CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+								CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+							  }
 						  }
 						});				
+					}
 				}
 				
 				setTimeout(initEdits, 5000);

@@ -56,17 +56,32 @@ public class SaveImg extends Permission implements BasePerminterface {
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
 		String data = porg.getKey("data");
+		String tmp="";
+		int n = toInt(porg.getKey("n"));
+		int len = toInt(porg.getKey("len"));
+		String name = porg.getKey("name")+".png.tmp";
+		String namepng = porg.getKey("name")+".png";
 		byte[] baseImg ;
 	
 		if(data!=null){
 			
-			baseImg = Base64.decodeFast(data.substring(22, data.length()));
-			
 			if(data.length()<1)return;
 			ProjectPath pp = ProjectPath.getInstance();
-			String name = time()+".png";
-			pp.SaveFile(name, baseImg);
-			super.setHtml(name);
+			echo("data:"+data);
+			pp.SaveFile(name, data.getBytes(), true);
+			
+			if(n==len-1){
+				tmp = pp.getFile(name);
+				echo(tmp);
+				tmp = tmp.substring(22, tmp.length());
+				baseImg = Base64.decodeFast(tmp);
+				pp.SaveFile(namepng, baseImg, false);
+				
+				super.setHtml("1");
+			}else {
+				super.setHtml("0");
+			}
+			
 		}
 	}
 

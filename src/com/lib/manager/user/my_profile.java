@@ -95,7 +95,7 @@ public class my_profile extends Permission {
 		byte[] val = porg.getUpload_string().get("user_logo_file");
 		if(val.length<1)return;
 		ProjectPath pp = ProjectPath.getInstance();
-		pp.SaveFile(name, val);
+		pp.SaveFile(name, val, true);
 
 	}
 

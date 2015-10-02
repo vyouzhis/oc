@@ -1,5 +1,6 @@
 package org.ppl.io;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -40,7 +41,7 @@ public class ProjectPath {
 		return p;
 	}
 
-	public void SaveFile(String name, byte[] val) {
+	public void SaveFile(String name, byte[] val, boolean apend) {
 		URI u = DataDir();
 		if(name==null)return;
 		if (val == null) {
@@ -49,7 +50,7 @@ public class ProjectPath {
 		String f = u.getPath() + name;
 		try {
 
-			FileOutputStream file = new FileOutputStream(f);
+			FileOutputStream file = new FileOutputStream(f,apend);
 			file.write(val);
 			file.flush();
 			file.close();
@@ -58,4 +59,26 @@ public class ProjectPath {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getFile(String name) {
+		URI u = DataDir();
+		String data="";
+		int len = 1024;
+
+		String f = u.getPath() + name;
+		try {
+			FileInputStream file = new FileInputStream(f);
+			byte[] bytes = new byte[len];			
+			while(file.read(bytes)!=-1){
+				data += new String(bytes);
+			}			
+			file.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return data;
+	}
+
 }
