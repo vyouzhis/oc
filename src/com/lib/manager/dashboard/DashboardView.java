@@ -10,9 +10,7 @@ import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
-import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RserveException;
 
 import com.alibaba.fastjson.JSON;
@@ -250,7 +248,6 @@ public class DashboardView extends Permission implements BasePerminterface {
 		
 		if(yAxis != null){
 			setRoot("xAxis", JSON.toJSONString(yAxis));
-			String xy = JSON.toJSONString(yAxis);
 			
 			setRoot("yAxis", JSON.toJSONString(xAxis));
 			

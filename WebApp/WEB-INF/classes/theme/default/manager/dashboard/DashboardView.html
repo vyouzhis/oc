@@ -1,4 +1,3 @@
-
 <body>
 	${navbar!""}
 	<div class="main-container" id="main-container">
@@ -50,6 +49,7 @@
 									</div>
 								</div>								
 							</div>
+							
 							<div id="juxtapose" name="juxtapose" class="col-xs-12 col-sm-12 hide">							
 								<div class="widget-box">
 									<div class="widget-header widget-header-flat">
@@ -124,7 +124,7 @@
 												       		<div class="checkbox">
 																	<label>
 																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_itemStyle_lable" id="arg_itemStyle_lable">
-																		<span class="lbl"> 显示数值</span>
+																		<span class="lbl">显示数值</span>
 																	</label>
 																</div>
 															
@@ -233,7 +233,7 @@
 										</a>
 										
 										<a href="javascript:void(0)" class=" btn btn-xs btn-app btn-primary"
-										onclick="SaveImg()"><i class="icon-th-large"></i> 保存图表</a>
+										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-th-large"></i> 保存图表</a>
 										
 										<a class="btn btn-success btn-xs btn-app"  id="bootbox-options"><i class="icon-ok bigger-110"></i>保存数据</a>
 										<a class="btn btn-success btn-xs btn-app"  id="bword"><i class="icon-ok bigger-110"></i>导出DOC</a>							
@@ -797,42 +797,47 @@
 				
 				
 				function SaveImg() {
+										
 					var dataURL = myChart.getDataURL();
-					var step = 1000;
-					var len = Math.ceil(dataURL.length/step) ;
+					var len = 3;
+					var step = Math.ceil(dataURL.length/len) ;
 					//console.log("dataURL:"+dataURL);
 					var timestamp = Date.parse(new Date());
+		
+					$("#loop_ico").attr("class","icon-spinner icon-spin orange bigger-125");
 					for(var i=0;i<len;i++){
+						
+					    
 						var datasplit = dataURL.substr(i*step, step);
 						$.ajax({
 						  url: "${saveimg_url}?jsoncallback=?",
 						  contentType: 'text/html;charset=utf-8',
-						  
+						  //async: false,
 						  data:{"data":datasplit,"n":i,"len":len,"name":timestamp},
 						  success: function(result){
-							  console.log("success"+result);
+							 // console.log("success:"+result);
 						  },
 						  error: function(request, textStatus, errorThrown) {
 						    //alert(textStatus);
 						  },
 						  complete: function(request, textStatus) { //for additional info
-							  console.log("complete len:"+len+"  i:"+i);
-							  if(i==len){
-							  	//var option = request.responseText;
-							  	//option = option.replace(/[\r\n]/g, "");							  
+							  var option = request.responseText;
+							  console.log("option:"+option);
+							  if(option==len-1){
+						  
 							  	var imgs = "";
 						     	imgs = "<img src='${data_uri}"+timestamp+".png' />";
-						    	// UE.getEditor('editor').setContent(imgs, true);
-						   	//var editor_data =
-							   //CKEDITOR.instances.editor1.appendHtml(imgs); 
+
 						    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
-						   	// console.log("editor_data:"+stemTxt);
-							 
+
 								CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+								$("#loop_ico").attr("class","icon-th-large");
+								
 							  }
 						  }
-						});				
+						});			
 					}
+					
 				}
 				
 				setTimeout(initEdits, 5000);
