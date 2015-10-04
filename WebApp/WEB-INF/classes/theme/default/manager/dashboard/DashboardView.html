@@ -233,7 +233,7 @@
 										</a>
 										
 										<a href="javascript:void(0)" class=" btn btn-xs btn-app btn-primary"
-										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-th-large"></i> 保存图表</a>
+										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-th-large"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
 										
 										<a class="btn btn-success btn-xs btn-app"  id="bootbox-options"><i class="icon-ok bigger-110"></i>保存数据</a>
 										<a class="btn btn-success btn-xs btn-app"  id="bword"><i class="icon-ok bigger-110"></i>导出DOC</a>							
@@ -795,48 +795,52 @@
 						});
 				}
 				
+				function ajaxLoog(o, dataName){
+					var dataURL = myChart.getDataURL();
+					var step = 1024;
+					var len = Math.ceil(dataURL.length/step) ;
+					if(o>=len) return;
+					
+					$("#loop_ico").attr("class","icon-spinner icon-spin orange bigger-125");
+
+					var datasplit = dataURL.substr(o*step, step);
+					$.ajax({
+					  url: "${saveimg_url}?jsoncallback=?",
+					  contentType: 'text/html;charset=utf-8',
+					  //async: false,
+					  data:{"data":datasplit,"n":o,"len":len,"name":dataName},
+					  success: function(result){
+						 // console.log("success:"+result);
+					  },
+					  error: function(request, textStatus, errorThrown) {
+					    //alert(textStatus);
+					  },
+					  complete: function(request, textStatus) { //for additional info
+						  var option = request.responseText;
+						 // console.log("option:"+option);
+						  $("#loop_name").html( Math.ceil(option/len*100) +"%");
+						  if(option==len-1){
+					  
+						  	var imgs = "";
+					     	imgs = "<img src='${data_uri}"+dataName+".png' />";
+
+					    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
+
+							CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+							$("#loop_ico").attr("class","icon-th-large");
+							$("#loop_name").html( "保存图表");
+						  }else{
+							  ajaxLoog(o+1, dataName);
+						  }
+					  }
+					});			
+					
+				}
 				
 				function SaveImg() {
 										
-					var dataURL = myChart.getDataURL();
-					var len = 3;
-					var step = Math.ceil(dataURL.length/len) ;
-					//console.log("dataURL:"+dataURL);
 					var timestamp = Date.parse(new Date());
-		
-					$("#loop_ico").attr("class","icon-spinner icon-spin orange bigger-125");
-					for(var i=0;i<len;i++){
-						
-					    
-						var datasplit = dataURL.substr(i*step, step);
-						$.ajax({
-						  url: "${saveimg_url}?jsoncallback=?",
-						  contentType: 'text/html;charset=utf-8',
-						  //async: false,
-						  data:{"data":datasplit,"n":i,"len":len,"name":timestamp},
-						  success: function(result){
-							 // console.log("success:"+result);
-						  },
-						  error: function(request, textStatus, errorThrown) {
-						    //alert(textStatus);
-						  },
-						  complete: function(request, textStatus) { //for additional info
-							  var option = request.responseText;
-							  console.log("option:"+option);
-							  if(option==len-1){
-						  
-							  	var imgs = "";
-						     	imgs = "<img src='${data_uri}"+timestamp+".png' />";
-
-						    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
-
-								CKEDITOR.instances.editor1.setData( stemTxt+imgs );
-								$("#loop_ico").attr("class","icon-th-large");
-								
-							  }
-						  }
-						});			
-					}
+					ajaxLoog(0, timestamp);
 					
 				}
 				

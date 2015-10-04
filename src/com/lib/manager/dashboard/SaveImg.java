@@ -61,7 +61,7 @@ public class SaveImg extends Permission implements BasePerminterface {
 		int len = toInt(porg.getKey("len"));
 		String name = porg.getKey("name")+".png";	
 		byte[] baseImg ;
-		echo("n:"+n);
+		//echo("n:"+n+" len:"+len);
 		if(data!=null){
 			
 			if(data.length()<1)return;
@@ -75,8 +75,7 @@ public class SaveImg extends Permission implements BasePerminterface {
 				tmp = tmp.substring(22, tmp.length());
 				baseImg = Base64.decodeFast(tmp);
 				pp.SaveFile(name, baseImg, false);
-				
-				
+
 			}
 				
 			super.setHtml(n+"");
