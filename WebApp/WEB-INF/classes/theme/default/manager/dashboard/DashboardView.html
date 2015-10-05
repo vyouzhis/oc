@@ -318,7 +318,7 @@
 		
 			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/FileSaver.js"></script>
     		<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/jquery.wordexport.js"> </script>
-			
+			<script src="${static_js_uri}/jquery.md5.js"></script>
 			<script type="text/javascript">
 
 			function demoFromHTML() {
@@ -797,7 +797,7 @@
 				
 				function ajaxLoog(o, dataName){
 					var dataURL = myChart.getDataURL();
-					var step = 1024;
+					var step = 1024*2;
 					var len = Math.ceil(dataURL.length/step) ;
 					if(o>=len) return;
 					
@@ -819,14 +819,8 @@
 						  var option = request.responseText;
 						 // console.log("option:"+option);
 						  $("#loop_name").html( Math.ceil(option/len*100) +"%");
-						  if(option==len-1){
-					  
-						  	var imgs = "";
-					     	imgs = "<img src='${data_uri}"+dataName+".png' />";
-
-					    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
-
-							CKEDITOR.instances.editor1.setData( stemTxt+imgs );
+						  if(parseInt(option)==len-1){					  
+							CreateImg(dataName);
 							$("#loop_ico").attr("class","icon-th-large");
 							$("#loop_name").html( "保存图表");
 						  }else{
@@ -837,10 +831,43 @@
 					
 				}
 				
+				function checkImg(ImgName){
+					$.ajax({
+						  url: "${searchimg_url}?jsoncallback=?",
+						  contentType: 'text/html;charset=utf-8',
+						  //async: false,
+						  data:{"ImgName":ImgName},
+						  success: function(result){
+							 // console.log("success:"+result);
+						  },
+						  error: function(request, textStatus, errorThrown) {
+						    //alert(textStatus);
+						  },
+						  complete: function(request, textStatus) { //for additional info
+							  var option = request.responseText;
+							 // console.log("option:"+option);
+							  if(parseInt(option)==1){						  
+								  CreateImg(ImgName);				
+							  }else{
+								  ajaxLoog(0, ImgName);
+							  }
+						  }
+						});		
+				}
+				
+				function CreateImg(ImgName){
+					var imgs = "";
+			     	imgs = "<img src='${data_uri}"+ImgName+".png' />";
+			    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
+					CKEDITOR.instances.editor1.setData( stemTxt+imgs );	
+				}
+				
 				function SaveImg() {
 										
-					var timestamp = Date.parse(new Date());
-					ajaxLoog(0, timestamp);
+					//var timestamp = Date.parse(new Date());
+					var md5Name = $.md5(myChart.getDataURL());
+					
+					checkImg(md5Name);
 					
 				}
 				

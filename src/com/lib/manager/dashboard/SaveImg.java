@@ -39,7 +39,9 @@ public class SaveImg extends Permission implements BasePerminterface {
 			create(null);
 			break;
 		
-
+		case "search":
+			search(null);
+			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -99,7 +101,14 @@ public class SaveImg extends Permission implements BasePerminterface {
 	@Override
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
-
+		String ImgName = porg.getKey("ImgName");
+		ProjectPath pp = ProjectPath.getInstance();
+		boolean  re = pp.fineFile(ImgName);
+		if(re==true){
+			super.setHtml("1");
+		}else {
+			super.setHtml("0");
+		}
 	}
 
 }

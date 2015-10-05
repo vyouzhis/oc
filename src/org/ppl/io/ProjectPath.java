@@ -1,11 +1,15 @@
 package org.ppl.io;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Logger;
+
+import com.lib.plug.echarts.echarts;
 
 public class ProjectPath {
 	static ProjectPath pp = null;
@@ -81,4 +85,24 @@ public class ProjectPath {
 		return data;
 	}
 
+	public boolean fineFile(String name) {
+		
+		URI u = DataDir();
+
+		String f = u.getPath();
+		File mf = new File(f);
+		
+		for(String key:mf.list()){
+			echo("key:"+key);
+			if(key.equals(name+".png"))return true;
+		}
+		return false;
+	}
+	
+	public void echo(Object o) {
+		//if (stdClass != null) {
+		
+			Logger log = Logger.getLogger(this.getClass().getName());
+			log.info(o.toString());
+	}
 }
