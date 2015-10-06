@@ -53,9 +53,10 @@ public class Escape{
         int len = s.length();    
         for (int i = 0; i < len; i++) {    
             int ch = s.charAt(i);    
-            if (ch == ' ') {                        // space : map to '+'     
-                sbuf.append('+');    
-            } else if ('A' <= ch && ch <= 'Z') {    // 'A'..'Z' : as it was    
+//            if (ch == ' ') {                        // space : map to '+'     
+//                sbuf.append('');    
+//            } else
+            if ('A' <= ch && ch <= 'Z') {    // 'A'..'Z' : as it was    
                 sbuf.append((char)ch);    
             } else if ('a' <= ch && ch <= 'z') {    // 'a'..'z' : as it was    
                 sbuf.append((char)ch);    
@@ -67,7 +68,7 @@ public class Escape{
                 || ch == '\'' || ch == '('    
                 || ch == ')') {    
                 sbuf.append((char)ch);    
-            } else if (ch <= 0x007F) {              // other ASCII : map to %XX    
+            } else if (ch <= 0x007F || ch == ' ') {              // other ASCII : map to %XX    
                 sbuf.append('%');    
                 sbuf.append(hex[ch]);    
             } else {                                // unicode : map to %uXXXX    
