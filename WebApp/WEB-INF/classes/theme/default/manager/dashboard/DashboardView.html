@@ -551,34 +551,36 @@
 
 					//save data
 					$("#bootbox-options").on(ace.click_event, function() {
-						bootbox.prompt("保存标题: ", function(result) {
-							if (result === null || result.length == 0) {
-								console.log("null");
-								
-							} else {
-								//console.log("is null:"+result);
-								//var doc = UE.getEditor('editor').getContent();
-								var doc=CKEDITOR.instances.editor1.getData();
-								var title = result;
-								$.ajax({
-									  url: "${doc_url}?jsoncallback=?",
-									  contentType: 'text/html;charset=utf-8',
-									  
-									  data:{"doc":doc, "title":title},
-									  success: function(result){
-										  console.log("success"+result);
-									  },
-									  error: function(request, textStatus, errorThrown) {
-									    //alert(textStatus);
-									  },
-									  complete: function(request, textStatus) { //for additional info
-										  var option = request.responseText;
-										  //option = option.replace(/[\r\n]/g, "");							  
+						bootbox.prompt({title:"保存标题: ",
+							value: "${bootbox_val!''}",
+							callback:function(result) {
+								if (result === null || result.length == 0) {
+									console.log("null");
+									
+								} else {
+									//console.log("is null:"+result);							
+									var doc=CKEDITOR.instances.editor1.getData();
+									var title = result;
+									$.ajax({
+										  url: "${doc_url}?jsoncallback=?",
+										  contentType: 'text/html;charset=utf-8',
 										  
-										  console.log("success:"+option);
-										  alert(option);
-									  }
-									});
+										  data:{"doc":doc, "title":title, "id":${edit_id!'-1'}},
+										  success: function(result){
+											  console.log("success"+result);
+										  },
+										  error: function(request, textStatus, errorThrown) {
+										    //alert(textStatus);
+										  },
+										  complete: function(request, textStatus) { //for additional info
+											  var option = request.responseText;
+											  //option = option.replace(/[\r\n]/g, "");							  
+											  
+											  console.log("success:"+option);
+											  alert(option);
+										  }
+										});
+								}
 							}
 						});
 						/*
@@ -876,8 +878,12 @@
 				
 				setTimeout(initEdits, 5000);
 				function initEdits(){
-				   var initEDit = getCookie("cacheEdit");
-			       if(initEDit.length >0){			    	   
+				  var initEDit = getCookie("cacheEdit");
+				  var editCon = "${cacheEdit!''}";
+				  if(editCon.length > 0){
+					   CKEDITOR.instances.editor1.setData(unescape(editCon));
+				   }
+				  else if(initEDit.length >0){			    	   
 			    	   CKEDITOR.instances.editor1.setData(unescape(initEDit));
 			       }
 			       

@@ -44,7 +44,9 @@ public class pptlist extends Permission implements BasePerminterface{
 		case "search":
 			search(null);
 			break;
-
+		case "remove":
+			remove(null);
+			return;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -61,8 +63,7 @@ public class pptlist extends Permission implements BasePerminterface{
 		if (page != 0) {
 			offset = (page - 1) * Limit;
 		}
-		
-		
+				
 		String format = "select * from "+DB_HOR_PRE+"doc order by id desc limit %d offset %d ";
 		String sql = String.format(format,  Limit, offset);
 		List<Map<String, Object>> res;
@@ -73,16 +74,17 @@ public class pptlist extends Permission implements BasePerminterface{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("remove_url", ucl.remove(SliceName(stdClass)));
+		setRoot("edit_url", ucl.edit("DashboardView"));
+		
 		SetPage();
 	}
 	
 	public String meescape(String e) {
 		//Escape escape = new Escape();
 		return Escape.escape(e);
-	}
-	
-	public String meunescape(String e) {
-		return Escape.unescape(e);
 	}
 	
 	private void SetPage() {
@@ -125,6 +127,19 @@ public class pptlist extends Permission implements BasePerminterface{
 	@Override
 	public void remove(Object arg) {
 		// TODO Auto-generated method stub
+		int id=toInt(porg.getKey("id"));
+		String format = "delete from "+DB_HOR_PRE+"doc where id=%d";
+		String sql = String.format(format, id);
+		UrlClassList ucl = UrlClassList.getInstance();
+		
+		try {
+			insert(sql);
+			TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_remove"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			TipMessage(ucl.create(SliceName(stdClass)), getErrorMsg());
+		}
 		
 	}
 

@@ -36,6 +36,9 @@ public class SaveDoc extends Permission implements BasePerminterface {
 		case "create":
 			create(null);
 			break;
+		case "edit":
+			edit(null);
+			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -105,7 +108,25 @@ public class SaveDoc extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
+		String doc = porg.getKey("doc");
+		String title = porg.getKey("title");
+		int id = toInt(porg.getKey("id"));
 
+		if (doc == null || title == null || id==0 || id==-1) {
+			super.setHtml(_CLang("error_null"));
+			return;
+		}
+
+		String format = "update "+DB_HOR_PRE+"doc SET title ='%s',doc='%s' where id=%d";
+		String sql = String.format(format, title, doc, id);
+
+		try {
+			insert(sql);
+			super.setHtml(_CLang("ok_save"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			super.setHtml(_CLang("error_save"));
+		}
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.common.Escape;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 import org.rosuda.REngine.REXPMismatchException;
@@ -46,7 +47,9 @@ public class DashboardView extends Permission implements BasePerminterface {
 		case "search":
 			search(null);
 			break;
-
+		case "edit":
+			edit(null);
+			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -212,7 +215,22 @@ public class DashboardView extends Permission implements BasePerminterface {
 	@Override
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
-
+		read(null);
+		
+		int id = toInt(porg.getKey("id"));
+		String format = "select * from "+DB_HOR_PRE+"doc where id=%d";
+		String sql = String.format(format, id);
+		
+		Map<String, Object> res;
+		
+		res = FetchOne(sql);
+		setRoot("bootbox_val", res.get("title").toString());
+		setRoot("edit_id", id);
+		setRoot("cacheEdit", Escape.escape(res.get("doc").toString()));
+		
+		UrlClassList ucl = UrlClassList.getInstance();
+		setRoot("doc_url", ucl.edit("SaveDoc"));
+		
 	}
 
 	@Override

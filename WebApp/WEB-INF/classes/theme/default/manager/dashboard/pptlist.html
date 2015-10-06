@@ -54,12 +54,14 @@
 										<tr>
 											<td class="center">
 												<label>
-													<input type="text"  value="${fun.meescape(item.doc)}" name="doc_${item.id}" id="doc_${item.id}" style="display:none;">													
+														<input type="checkbox" value="${item.id}" name="checkbox" class="ace">
+													<span class="lbl"></span>												
 												</label>
 											</td>
 														
 											<td class="center">
 												${item_index + 1}
+												<input type="text"  value="${fun.meescape(item.doc)}" name="doc_${item.id}" id="doc_${item.id}" style="display:none;">
 											</td>			
 											<td>
 												<a href="javascript:void(0)" onclick="showdoc(${item.id})">${item.title}</a>
@@ -67,7 +69,7 @@
 											
 											<td>${fun.DateFormat(item.ctime, "yyyy-MM-dd HH:mm")}</td>
 										
-											<td><a href="md5=${item.id}">删除缓存</a> </td>
+											<td><a href="${remove_url}?id=${item.id}">删除</a>|<a href="${edit_url}?id=${item.id}">编辑</a> </td>
 										</tr>
 										</#list>
 										</#if>
