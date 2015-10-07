@@ -238,7 +238,7 @@
 										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-th-large"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
 										
 										<a class="btn btn-success btn-xs btn-app"  id="bootbox-options"><i class="icon-ok bigger-110"></i>保存数据</a>
-										<a class="btn btn-success btn-xs btn-app"  id="bword"><i class="icon-ok bigger-110"></i>生成表格</a>	
+										<a class="btn btn-success btn-xs btn-app" href="javascript:void(0)" onclick="buildTable()" ><i class="icon-ok bigger-110"></i>生成表格</a>	
 										<a class="btn btn-success btn-xs btn-app"  id="bword"><i class="icon-ok bigger-110"></i>导出DOC</a>							
 									</h5>
 									
@@ -321,7 +321,7 @@
 		
 			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/FileSaver.js"></script>
     		<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jQuery_Word_Export/jquery.wordexport.js"> </script>
-			<script src="${static_js_uri}/jquery.md5.js"></script>
+			<script type="text/javascript" charset="utf-8" src="${static_js_uri}/jquery.md5.js"></script>
 			<script type="text/javascript">
 
 			function demoFromHTML() {
@@ -718,7 +718,7 @@
 					myChart.showLoading();
 					setTimeout(refresh, 1000);
 				}
-
+				
 				jQuery.fn.getIdArray = function() {
 					  var ret = [];
 					  $('[id]', this).each(function() {
@@ -727,7 +727,55 @@
 					  return ret;
 					};
 					
-				function refresh() {
+				function buildTable(){
+					var JsonData = TreeJson();
+					
+					$.ajax({
+						  url: "${table_url}?jsoncallback=?",
+						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+						  dataType: 'json',
+						  data:JsonData,
+						  success: function(result){
+							  console.log("success"+result);
+						  },
+						  error: function(request, textStatus, errorThrown) {
+						    //alert(textStatus);
+						  },
+						  complete: function(request, textStatus) { //for additional info
+							  var option = request.responseText;
+							  var chk = option.substring(1, 5);
+							  
+						     if(option.length > 2 && chk!='html'){
+						    	  
+						  	  }else{
+						  		alert("没数据!");
+						  	  }
+							  
+							  if(chk=='html'){
+								  alert("还没登录或超时退出!");
+							  }
+							 var o = $('#tree1').tree('selectedItems');
+							 //console.log("name:"+o[0].name);
+							 var editTable = "<table border='1' align='center' cellpadding='1' cellspacing='1' style='width:500px' summary='"+o[0].name+"'><caption>"+o[0].name+"</caption>";
+							  
+							 var table = JSON.parse(option);
+							 var cont = "";
+							 cont += "<tr><td>数据</td><td>标题</td></tr>";
+							 for(var i in table){//用javascript的for/in循环遍历对象的属性									 
+							 	for(var n in table[i]){
+								
+									//console.log(table[i][n].volume+"--"+table[i][n].dial);
+								   cont += "<tr><td>"+table[i][n].volume+"</td><td>"+table[i][n].dial+"</td></tr>";
+								 }
+							 } 
+						    editTable += cont +"</table>"; 
+							 var stemTxt=CKEDITOR.instances.editor1.getData(); 
+							 CKEDITOR.instances.editor1.setData( stemTxt+editTable );	
+						  }
+						});
+				}
+					
+				function TreeJson(){
 					var o = $('#tree1').tree('selectedItems');
 					var JsonData = {};
 					
@@ -757,6 +805,12 @@
 						}
 						
 				    });
+					
+					return JsonData;
+				}
+					
+				function refresh() {
+					var JsonData = TreeJson();
 
 					//console.log("JsonData:"+JSON.stringify(JsonData));
 										

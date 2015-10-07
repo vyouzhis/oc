@@ -66,6 +66,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		ListMainClassify();
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("json_url", ucl.read("EchartsJson"));
+		setRoot("table_url", ucl.search("EchartsJson"));
 		setRoot("saveimg_url", ucl.create("SaveImg"));
 		setRoot("searchimg_url", ucl.search("SaveImg"));
 		setRoot("doc_url", ucl.create("SaveDoc"));

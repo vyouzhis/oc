@@ -138,7 +138,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		}
 		super.setHtml(EJson);
 	}
-	
+		
 	@SuppressWarnings("rawtypes")
 	public String JsonLine() {
 		CategoryAxis categoryAxis = new CategoryAxis();
@@ -886,7 +886,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	@Override
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
+		PaserJson();
 
+		List<List<Map<String, Object>>> eList = getEcharts();
+		String listJson = JSON.toJSONString(eList);
+		
+		super.setHtml(listJson);
 	}
 
 }
