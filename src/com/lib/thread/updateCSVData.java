@@ -76,11 +76,12 @@ public class updateCSVData extends BaseRapidThread {
 				echo("error file get string");
 				return;
 			}
-			if(bytesAsString==null) return;
+			if(bytesAsString==null) break;
 			
 			readers = new StringReader(bytesAsString);
 			reader = new BufferedReader(readers);
 			try {
+				
 				line = reader.readLine();
 				line = line.replace(" ", "_");
 
@@ -103,6 +104,8 @@ public class updateCSVData extends BaseRapidThread {
 				field = field.trim();
 				field = field.substring(0, field.length()-1);
 				asName = asName.substring(0, asName.length()-1);
+				
+				reader.reset();
 				
 				if (copyManager != null) {
 					copyManager.copyIn("COPY " + DB_HOR_PRE + "class (" + field
