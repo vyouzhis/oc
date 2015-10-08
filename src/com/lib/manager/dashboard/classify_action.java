@@ -67,7 +67,7 @@ public class classify_action extends Permission implements BasePerminterface{
 	 * i am lazy :(
 	 */
 	private void listPid() {
-		String sql = "select id,name from "+DB_HOR_PRE+"classify where pid=1";
+		String sql = "select id,name from "+DB_HOR_PRE+"classify where pid=1 and "+UserPermi();
 		List<Map<String, Object>> res;
 				
 		try {
@@ -93,9 +93,9 @@ public class classify_action extends Permission implements BasePerminterface{
 		}
 		
 		String format = "insert INTO " + DB_HOR_PRE + "classify "
-				+ "(pid ,name,ctime)"
-				+ "values(%d,'%s', %d);";
-		String sql = String.format(format, pid, name, time());
+				+ "(pid ,name,ctime, uid)"
+				+ "values(%d,'%s', %d, %d);";
+		String sql = String.format(format, pid, name, time(),aclGetUid());
 
 		try {
 			insert(sql);

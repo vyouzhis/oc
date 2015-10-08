@@ -62,7 +62,7 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 			offset = (page-1)*Limit;
 		}
 		
-		String format = "select * from "+DB_HOR_PRE+"mongodbrule order by id desc  limit %d offset %d";
+		String format = "select * from "+DB_HOR_PRE+"mongodbrule where "+UserPermi()+" order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 		
 		List<Map<String, Object>> res, tmp;
@@ -100,7 +100,7 @@ public class mongo_purge_list extends Permission implements BasePerminterface {
 	}
 	
 	private int Tol() {
-		String sql ="select count(*) as count from "+DB_HOR_PRE+"mongodbrule limit 1";
+		String sql ="select count(*) as count from "+DB_HOR_PRE+"mongodbrule where "+UserPermi()+" limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		//echo(sql);

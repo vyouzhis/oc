@@ -737,7 +737,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		int qaction = 0;
 		String format = "select rule,volume,dial from "
 				+ DB_HOR_PRE
-				+ "webvisitcount  where rule = %d and dial > 2015011100 order by rule, dial ;";
+				+ "webvisitcount  where rule = %d and dial > 2015011100 and "+UserPermi()+" order by rule, dial ;";
 		// why ?
 		List<Map<String, Object>> res = null;
 		String tmp_list = porg.getKey("tmp_list");
@@ -758,7 +758,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			if (qaction == 4) {
 
 				String usql = "select sql,dtype from " + DB_HOR_PRE
-						+ "usersql where id=" + tid + " LIMIT 1";
+						+ "usersql where id=" + tid + " and "+UserPermi()+" LIMIT 1";
 				Map<String, Object> ures;
 
 				ures = FetchOne(usql);
@@ -773,7 +773,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from "
 						+ DB_HOR_PRE + "sqltmp t, " + DB_HOR_PRE
-						+ "usersql u where t.sid=u.id and t.id=" + tid
+						+ "usersql u where t.sid=u.id and (u.uid = "+aclGetUid() +" or u.isshare=1) and t.id=" + tid
 						+ " limit 1";
 
 				Map<String, Object> tres;
@@ -805,7 +805,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				if (tmp_map == null)
 					continue;
 				sql = "SELECT sql,dtype from " + DB_HOR_PRE
-						+ "usersql where id=" + tid + " limit 1";
+						+ "usersql where id=" + tid + " and "+UserPermi()+" limit 1";
 				Map<String, Object> tmpRes;
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
@@ -861,7 +861,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		String md5Key = ec.MD5(key);
 		String json = "";
 		String format = "select json from " + DB_HOR_PRE
-				+ "cache where md5='%s'";
+				+ "cache where md5='%s' and "+UserPermi();
 		String csql = String.format(format, md5Key);
 
 		List<Map<String, Object>> res = null;
@@ -906,7 +906,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
-				+ "dbsource where id=%d limit 1";
+				+ "dbsource where id=%d "+UserPermi()+" limit 1";
 		String dsql = String.format(format, id);
 
 		Map<String, Object> dres;

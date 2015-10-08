@@ -69,8 +69,8 @@ public class api_secret_action extends Permission implements BasePerminterface  
 		Encrypt en = Encrypt.getInstance();		
 		password = en.MD5(password); 
 		
-		String format = "INSERT INTO "+DB_HOR_PRE+"apisecret (title,idesc,username,passwd,secret, ctime)values('%s','%s','%s','%s','%s',%d);";
-		String sql = String.format(format, title,desc, username, password,secret, time());
+		String format = "INSERT INTO "+DB_HOR_PRE+"apisecret (title,idesc,username,passwd,secret, ctime, uid)values('%s','%s','%s','%s','%s',%d, %d);";
+		String sql = String.format(format, title,desc, username, password,secret, time(), aclGetUid());
 		echo(sql);
 		try {
 			insert(sql);

@@ -75,7 +75,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 	}
 	
 	private void ListTmp() {
-		String sql = "select id,name from "+DB_HOR_PRE+"usersql where sql_type=1 order by id desc";
+		String sql = "select id,name from "+DB_HOR_PRE+"usersql where sql_type=1 and "+UserPermi()+" order by id desc";
 		List<Map<String, Object>> res;
 		
 		try {
@@ -103,7 +103,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 			return;
 		}
 		
-		String sql = "select sqltmp from "+DB_HOR_PRE+"usersql where id="+id+" limit 1";
+		String sql = "select sqltmp from "+DB_HOR_PRE+"usersql where id="+id+" and "+UserPermi()+" limit 1";
 		Map<String, Object> t ;
 		t = FetchOne(sql);
 		
@@ -119,8 +119,8 @@ public class sqlTmp extends Permission implements BasePerminterface{
 		String varRes = JSON.toJSONString(tmpVal);
 		//echo(varRes);
 		
-		String format  = "insert INTO "+DB_HOR_PRE+"sqltmp (sid,name,sqltmp)values(%d, '%s', '%s')";
-		sql = String.format(format, id,name, varRes);
+		String format  = "insert INTO "+DB_HOR_PRE+"sqltmp (sid,name,sqltmp,uid)values(%d, '%s', '%s', %d)";
+		sql = String.format(format, id,name, varRes, aclGetUid());
 		
 		try {
 			insert(sql);
@@ -139,7 +139,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 	public void edit(Object arg) {
 		// TODO Auto-generated method stub
 		int id = toInt(porg.getKey("id"));
-		String format = "select sqltmp,sid from "+DB_HOR_PRE+"sqltmp where id=%d limit 1";
+		String format = "select sqltmp,sid from "+DB_HOR_PRE+"sqltmp where id=%d and "+UserPermi()+" limit 1";
 		String sql = String.format(format, id);
 		
 		Map<String, Object> res;
@@ -184,7 +184,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 		// TODO Auto-generated method stub
 		int id = (int) arg;
 		
-		String sql = "select * from "+DB_HOR_PRE+"sqltmp where sid="+id +" order by id desc";
+		String sql = "select * from "+DB_HOR_PRE+"sqltmp where sid="+id +" and "+UserPermi()+" order by id desc";
 		
 		List<Map<String, Object>> res;
 		
@@ -197,7 +197,7 @@ public class sqlTmp extends Permission implements BasePerminterface{
 			e.printStackTrace();
 		}
 		
-		sql = "select sqltmp from "+DB_HOR_PRE+"usersql where id="+id+" limit 1";
+		sql = "select sqltmp from "+DB_HOR_PRE+"usersql where id="+id+" and "+UserPermi()+" limit 1";
 		Map<String, Object> t ;
 		t = FetchOne(sql);
 		

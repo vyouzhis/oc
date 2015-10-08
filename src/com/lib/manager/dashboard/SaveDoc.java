@@ -65,8 +65,8 @@ public class SaveDoc extends Permission implements BasePerminterface {
 		//BuildDoc(doc);
 
 		String format = "insert into " + DB_HOR_PRE
-				+ "doc(title,doc,ctime)VALUES('%s','%s', %d)";
-		String sql = String.format(format, title, doc, time());
+				+ "doc(title,doc,ctime, uid)VALUES('%s','%s', %d, %d)";
+		String sql = String.format(format, title, doc, time(), aclGetUid());
 
 		try {
 			insert(sql);

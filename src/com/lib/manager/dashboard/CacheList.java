@@ -59,7 +59,7 @@ public class CacheList extends Permission implements BasePerminterface {
 		}
 
 		String format = "select * from " + DB_HOR_PRE
-				+ "cache order by ctime desc  limit %d offset %d";
+				+ "cache  where "+UserPermi()+"  order by ctime desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 
 		List<Map<String, Object>> res;
@@ -91,7 +91,7 @@ public class CacheList extends Permission implements BasePerminterface {
 
 	private int Tol() {
 		String sql = "select count(*) as count from " + DB_HOR_PRE
-				+ "cache limit 1";
+				+ "cache where "+UserPermi()+" limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if (res != null)
@@ -122,7 +122,7 @@ public class CacheList extends Permission implements BasePerminterface {
 			return ;
 		}
 		String sql = "";
-		String format = "delete from "+DB_HOR_PRE+"cache where md5";
+		String format = "delete from "+DB_HOR_PRE+"cache where  md5";
 		if(md5!=null){
 			format += "='%s';";
 			sql = String.format(format, md5);

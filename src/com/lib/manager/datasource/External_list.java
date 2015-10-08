@@ -57,7 +57,7 @@ public class External_list extends Permission implements BasePerminterface {
 		}
 
 		String format = "select * from " + DB_HOR_PRE
-				+ "dbsource order by id desc  limit %d offset %d";
+				+ "dbsource where "+UserPermi()+" order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 
 		List<Map<String, Object>> res;
@@ -89,7 +89,7 @@ public class External_list extends Permission implements BasePerminterface {
 
 	private int Tol() {
 		String sql = "select count(*) as count from " + DB_HOR_PRE
-				+ "dbsource limit 1";
+				+ "dbsource where "+UserPermi()+" limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if (res != null)

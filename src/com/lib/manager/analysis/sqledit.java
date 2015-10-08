@@ -123,7 +123,7 @@ public class sqledit extends Permission implements BasePerminterface {
 	@SuppressWarnings("unchecked")
 	private void readEditId(int id) {
 
-		String sql = "select * from " + DB_HOR_PRE + "usersql where id=" + id;
+		String sql = "select * from " + DB_HOR_PRE + "usersql where id=" + id + " and "+UserPermi();
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if (res == null)
@@ -223,7 +223,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		UserCoreDB ucdb = new UserCoreDB();
 
 		String format = "select * from " + DB_HOR_PRE
-				+ "dbsource where id=%d limit 1";
+				+ "dbsource where id=%d  and "+UserPermi()+" limit 1";
 		String dsql = String.format(format, id);
 
 		Map<String, Object> dres;
@@ -272,7 +272,7 @@ public class sqledit extends Permission implements BasePerminterface {
 
 	private void dbList() {
 		String sql = "select id,title from " + DB_HOR_PRE
-				+ "dbsource order by id desc; ";
+				+ "dbsource where "+UserPermi()+" order by id desc; ";
 		List<Map<String, Object>> res;
 
 		try {
@@ -316,9 +316,9 @@ public class sqledit extends Permission implements BasePerminterface {
 
 		String format = " insert INTO "
 				+ DB_HOR_PRE
-				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d);";
+				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
 		String sql = String.format(format, name, usql, save_id, sql_type,
-				jsonTmp, is_get_data, nview, cid);
+				jsonTmp, is_get_data, nview, cid, aclGetUid());
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String msg = _CLang("ok_save");
@@ -417,7 +417,7 @@ public class sqledit extends Permission implements BasePerminterface {
 
 	private void ListTip(String n, String m, String l) {
 		String sql = "select id," + n + " from " + DB_HOR_PRE + m
-				+ " order by id desc";
+				+ "where "+UserPermi()+" order by id desc";
 
 		List<Map<String, Object>> res;
 
@@ -438,7 +438,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		setRoot("pid", pid);
 
 		String sql = "select id,name from " + DB_HOR_PRE
-				+ "classify order by id desc";
+				+ "classify where "+UserPermi()+" order by id desc";
 		List<Map<String, Object>> res;
 
 		try {

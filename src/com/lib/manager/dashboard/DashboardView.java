@@ -78,7 +78,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 	private void ListMainClassify() {
 		String sql = "select id,name,pid,(select name from " + DB_HOR_PRE
 				+ "classify h where h.id=c.pid ) as pname from " + DB_HOR_PRE
-				+ "classify c where displays=0 order by pid,id";
+				+ "classify c where displays=0 and "+UserPermi()+" order by pid,id";
 
 		List<Map<String, Object>> res;
 
@@ -89,14 +89,14 @@ public class DashboardView extends Permission implements BasePerminterface {
 		List<String> formats = new ArrayList<>();
 		formats.add("SELECT id,name,cid,qaction FROM "
 				+ DB_HOR_PRE
-				+ "mongodbrule where qaction in (2,3) and snap=0 and cid=%s order by id desc;");
+				+ "mongodbrule where qaction in (2,3) and snap=0 and cid=%s and "+UserPermi()+" order by id desc;");
 		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
-				+ "usersql where sql_type=0 and input_data=0 and cid=%s");
+				+ "usersql where sql_type=0 and input_data=0 and "+UserPermi()+" and cid=%s");
 		formats.add("select s.id,s.name,u.cid from "
 				+ DB_HOR_PRE
 				+ "sqltmp s, "
 				+ DB_HOR_PRE
-				+ "usersql u where u.id=s.sid  and u.cid= %s order by s.id desc");
+				+ "usersql u where u.id=s.sid  and (u.uid = "+aclGetUid() +" or u.isshare=1) and u.cid= %s order by s.id desc");
 
 		try {			
 			res = FetchAll(sql);
@@ -149,7 +149,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		}
 
 		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
-				+ "usersql where sql_type=1 order by id desc;";
+				+ "usersql where sql_type=1 and "+UserPermi()+" order by id desc;";
 		try {
 			tRes = FetchAll(RootSql);
 			if (tRes != null) {
@@ -219,7 +219,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		read(null);
 		
 		int id = toInt(porg.getKey("id"));
-		String format = "select * from "+DB_HOR_PRE+"doc where id=%d";
+		String format = "select * from "+DB_HOR_PRE+"doc where id=%d and "+UserPermi();
 		String sql = String.format(format, id);
 		
 		Map<String, Object> res;

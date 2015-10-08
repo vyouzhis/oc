@@ -62,7 +62,7 @@ public class External_DB extends Permission implements BasePerminterface {
 		} else {
 
 			String format = "select  title,dcname,url as urls_name,username from "
-					+ DB_HOR_PRE + "dbsource where id=%d";
+					+ DB_HOR_PRE + "dbsource where id=%d and "+UserPermi();
 			String sql = String.format(format, id);
 
 			Map<String, Object> res = FetchOne(sql);
@@ -107,10 +107,10 @@ public class External_DB extends Permission implements BasePerminterface {
 		}
 
 		String format = "insert INTO " + DB_HOR_PRE + "dbsource "
-				+ "(title ,username,password,url,dcname,ctime)"
-				+ "values('%s','%s','%s','%s','%s', %d);";
+				+ "(title ,username,password,url,dcname,ctime, uid)"
+				+ "values('%s','%s','%s','%s','%s', %d, %d);";
 		String sql = String.format(format, title, username, password, url,
-				dcname, time());
+				dcname, time(), aclGetUid());
 
 		try {
 			insert(sql);

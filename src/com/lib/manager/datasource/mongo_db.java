@@ -125,11 +125,11 @@ public class mongo_db extends Permission implements BasePerminterface {
 		}
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
-				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime, snap,cid)"
-				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d, %d, %d)";
+				+ "mongodbrule(name, collention, qaction, query, field, sort, ctime, stime, etime, snap,cid, uid)"
+				+ "VALUES ('%s','%s','%s','%s','%s','%s',%d, %d, %d, %d, %d, %d)";
 		String sql = String.format(format, project_name, db_collection,
 				fetch_query, where_query, field_query, sort_query, now, stime,
-				stime, snap, cid);
+				stime, snap, cid, aclGetUid());
 
 		
 		//echo(sql);
@@ -176,7 +176,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 
 		if (db_collection == null || db_collection.length() == 0) {
 			String format = "select * from " + DB_HOR_PRE
-					+ "mongodbrule  where id=%d limit 1";
+					+ "mongodbrule  where id=%d and "+UserPermi()+" limit 1";
 			String sql = String.format(format, eid);
 			Map<String, Object> res;
 
@@ -402,7 +402,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		setRoot("cid", cid);
 
 		String sql = "select id,name from " + DB_HOR_PRE
-				+ "classify order by id desc";
+				+ "classify where "+UserPermi()+" order by id desc";
 		List<Map<String, Object>> res;
 
 		try {

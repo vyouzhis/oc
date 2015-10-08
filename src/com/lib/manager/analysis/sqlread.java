@@ -72,7 +72,7 @@ public class sqlread extends Permission implements BasePerminterface {
 			offset = (page-1)*Limit;
 		}
 		
-		String format = "select * from "+DB_HOR_PRE+"usersql order by id desc  limit %d offset %d";
+		String format = "select * from "+DB_HOR_PRE+"usersql  where "+UserPermi()+" order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 		
 		List<Map<String, Object>> res;
@@ -106,7 +106,7 @@ public class sqlread extends Permission implements BasePerminterface {
 	}
 	
 	private int Tol() {
-		String sql ="select count(*) as count from "+DB_HOR_PRE+"usersql limit 1";
+		String sql ="select count(*) as count from "+DB_HOR_PRE+"usersql  where "+UserPermi()+" limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if(res!=null)return Integer.valueOf( res.get("count").toString());
@@ -155,7 +155,7 @@ public class sqlread extends Permission implements BasePerminterface {
 		UserCoreDB ucdb = new UserCoreDB();
 		
 		
-		String format = "select * from "+DB_HOR_PRE+"dbsource where id=%d limit 1";
+		String format = "select * from "+DB_HOR_PRE+"dbsource where id=%d and "+UserPermi()+" limit 1";
 		String dsql = String.format(format, id);
 		
 		Map<String, Object> dres ;
@@ -195,7 +195,7 @@ public class sqlread extends Permission implements BasePerminterface {
 	}
 
 	private void dbList() {
-		String sql = "select id,title from "+DB_HOR_PRE+"dbsource order by id desc; ";
+		String sql = "select id,title from "+DB_HOR_PRE+"dbsource where "+UserPermi()+" order by id desc; ";
 		List<Map<String, Object>> res;
 		
 		
@@ -232,8 +232,8 @@ public class sqlread extends Permission implements BasePerminterface {
 		//echo(usql);
 		
 		String format = " insert INTO " + DB_HOR_PRE
-				+ "usersql (name,sql, dtype)values('%s','%s', %d);";
-		String sql = String.format(format, name, usql, save_id);
+				+ "usersql (name,sql, dtype, uid)values('%s','%s', %d, %d);";
+		String sql = String.format(format, name, usql, save_id, aclGetUid());
 
 		try {
 			insert(sql);

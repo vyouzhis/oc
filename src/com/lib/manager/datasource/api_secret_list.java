@@ -61,7 +61,7 @@ public class api_secret_list extends Permission implements BasePerminterface {
 		}
 
 		String format = "select * from " + DB_HOR_PRE
-				+ "apisecret order by id desc  limit %d offset %d";
+				+ "apisecret where "+UserPermi()+" order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
 
 		List<Map<String, Object>> res;
@@ -93,7 +93,7 @@ public class api_secret_list extends Permission implements BasePerminterface {
 
 	private int Tol() {
 		String sql = "select count(*) as count from " + DB_HOR_PRE
-				+ "apisecret limit 1";
+				+ "apisecret where "+UserPermi()+" limit 1";
 		Map<String, Object> res;
 		res = FetchOne(sql);
 		if (res != null)

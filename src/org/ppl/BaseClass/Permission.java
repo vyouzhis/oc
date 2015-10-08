@@ -151,5 +151,9 @@ public class Permission extends BaseTheme {
 		TipMessage(ok_url, msg);
 		
 	}
+	
+	public String UserPermi() {
+		return " (uid = "+aclGetUid() +" or isshare=1) ";
+	}
 
 }

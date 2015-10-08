@@ -106,8 +106,8 @@ public class csvDb extends Permission implements BasePerminterface {
 		
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
-				+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
-		String sql = String.format(format, title, view_name, idesc, now);
+				+ "classinfo (title,view_name,idesc,ctime, uid)values ('%s','%s','%s', %d, %d)";
+		String sql = String.format(format, title, view_name, idesc, now,aclGetUid());
 
 		try {
 			long id = eid;
@@ -138,7 +138,7 @@ public class csvDb extends Permission implements BasePerminterface {
 
 		String sql = "select * from "
 				+ DB_HOR_PRE
-				+ "classinfo where id="+id;
+				+ "classinfo where id="+id +" and "+UserPermi();
 		Map<String, Object> res;
 		
 		res = FetchOne(sql);
