@@ -47,7 +47,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private int itemStyle_lable = 0, itemStyle_areaStyle = 0,
 			markLine_average = 0;
 	private int math_mom = 0, math_var = 0, math_sma = 0, math_wma = 0;
-
+	
+	
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
@@ -828,17 +829,21 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					ret.add(res);
 					continue;
 				}
-
+				int start = time();
 				if (dtype == 0) {
 
 					res = FetchAll(sql);
 				} else {
 					res = CustomDB(sql, dtype);
 				}
-
+				int end = time();
+				
 				if (res != null) {
 					ret.add(res);
-					setCache(sql, id.get("name").toString(), res);
+					
+					if(end - start > mConfig.GetInt("cache.time")){
+						setCache(sql, id.get("name").toString(), res);
+					}
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
