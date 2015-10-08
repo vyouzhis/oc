@@ -47,6 +47,7 @@ public class updateCSVData extends BaseRapidThread {
 				.get("csv_file");
 		long rule = (long) ThreadMail.get("rule");
 		String view_name = (String) ThreadMail.get("view_name");
+		int is_field = (int) ThreadMail.get("is_field");
 
 		CopyManager copyManager = null;
 		String bytesAsString = null;
@@ -76,12 +77,14 @@ public class updateCSVData extends BaseRapidThread {
 				echo("error file get string");
 				return;
 			}
-			if(bytesAsString==null) break;
-			
+			if (bytesAsString == null)
+				break;
+
 			readers = new StringReader(bytesAsString);
+			
 			reader = new BufferedReader(readers);
+
 			try {
-				
 				line = reader.readLine();
 				line = line.replace(" ", "_");
 
@@ -92,39 +95,50 @@ public class updateCSVData extends BaseRapidThread {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				String[] lines = line.split(",");
 				String act = "";
 				String asName = "";
 				for (int m = 0; m < lines.length; m++) {
 					act = "act_v" + Integer.toHexString(m);
-					asName += act +" as "+lines[m]+",";
-					field +=  act+ ", ";
+					if (is_field == 0) {
+						asName += act + ",";
+					} else {
+						asName += act + " as " + lines[m].trim().toLowerCase()
+								+ ",";
+
+					}
+					field += act + ", ";
 				}
 				field = field.trim();
-				field = field.substring(0, field.length()-1);
-				asName = asName.substring(0, asName.length()-1);
-				
-				reader.reset();
-				
+				field = field.substring(0, field.length() - 1);
+				asName = asName.substring(0, asName.length() - 1);
+
+				if (is_field == 0) {
+					reader.close();
+					readers.close();
+					readers = new StringReader(bytesAsString);
+					reader = new BufferedReader(readers);
+					// reset
+				}
+
 				if (copyManager != null) {
 					copyManager.copyIn("COPY " + DB_HOR_PRE + "class (" + field
-							+ ") FROM STDIN DELIMITER ',' ", reader);	
-										
+							+ ") FROM STDIN DELIMITER ',' ", reader);
+
 					format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
 							+ "class WHERE rule=%d";
 					Sql = String.format(format, view_name, asName, rule);
-					
+
 					dbcreate(Sql);
-									
+
 					Sql = "update " + DB_HOR_PRE + "class  set rule=" + rule
 							+ " where rule=0";
-					
+
 					update(Sql);
-				}else {
+				} else {
 					echo("error");
 				}
-								
 
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

@@ -32,16 +32,33 @@
          <div class="form-group"> 
           <div class="col-sm-12"> 
            <label class="col-sm-3 control-label">视图名:</label> 
-           <input type="text" name="view_name"  id="view_name" class="col-sm-4" value='${view_name!""}' <#if isedit?? > readonly</#if> /> 
-           <span class="col-sm-4">(只能英文,数字或下划线)</span> 
+           <div class="col-sm-4"> 
+           <input type="text" name="view_name"  id="view_name" value='${view_name!""}' <#if isedit?? > readonly</#if> />            
+           </div> 
+           <div class="col-sm-4"> 
+           <span >(只能英文,数字或下划线)</span>
+           </div>
           </div> 
          </div> 
          <div class="form-group"> 
           <div class="col-sm-12"> 
            <label class="col-sm-3 control-label">名称:</label> 
-           <input type="text" name="title" id="title" class="col-sm-4" value='${title!""}' /> 
+           <div class="col-sm-4"> 
+           <input type="text" name="title" id="title"  value='${title!""}' />
+           </div> 
           </div> 
          </div> 
+         <div class="form-group"> 
+          <div class="col-sm-12"> 
+           	<label class="col-sm-3 control-label">是否存在字段名:</label> 
+           	<div class="col-sm-4"> 
+           	<label> <input type="radio" id="field_1" name="form-field-radio" checked="" value="1" class="ace"> <span class="lbl">存在字段名</span>
+			</label>
+			<label> <input type="radio" id="field_0" name="form-field-radio"  value="0" class="ace"> <span class="lbl">不存在字段名</span>
+			</label>
+			</div>
+          </div> 
+         </div>
          <div class="form-group"> 
           <div class="col-sm-12"> 
            <label class="col-sm-3 control-label">描述:</label> 
@@ -50,6 +67,7 @@
            </div> 
           </div> 
          </div> 
+          
          <div class="form-group"> 
           <span class="col-sm-4"></span> 
           <button class="btn btn-sm btn-default" type="submit"> <i class="icon-ok bigger-110"></i> 保存 </button> 

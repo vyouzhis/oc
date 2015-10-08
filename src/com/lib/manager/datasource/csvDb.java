@@ -72,9 +72,12 @@ public class csvDb extends Permission implements BasePerminterface {
 
 		//Map<String, String> name = porg.getUpload_name();
 		
-		CreateInfo();
-		
-		TipMessage(ucl.read("viewDb_List"), _CLang("ok_save"));
+		int i = CreateInfo();
+		if(i == 0){
+			TipMessage(ucl.read("viewDb_List"), _CLang("ok_save"));
+		}else {
+			TipMessage(ucl.read("viewDb_List"), _CLang("error_null"));
+		}
 	}
 
 	private void CreateView(long rule) {
@@ -85,20 +88,22 @@ public class csvDb extends Permission implements BasePerminterface {
 		ThreadMail.put("view_name", porg.getKey("view_name"));
 		ThreadMail.put("csv_file", file);
 		ThreadMail.put("rule", rule);
+		ThreadMail.put("is_field", toInt(porg.getKey("form-field-radio")));
 		//echo(ThreadMail);
 		TellPostMan("updateCSVData", ThreadMail);
 	}
 
-	private void CreateInfo() {
+	private int CreateInfo() {
 		String title = porg.getKey("title");
 		String view_name = porg.getKey("view_name");
 		String idesc = porg.getKey("idesc");
 		int eid = toInt(porg.getKey("id"));
 		
 		int now = time();
-		if (title == null || view_name == null || idesc == null)
-			return;
-
+		if (title == null || view_name == null || idesc == null){
+			return -1;
+		}
+		
 		String format = "INSERT INTO "
 				+ DB_HOR_PRE
 				+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
@@ -117,8 +122,11 @@ public class csvDb extends Permission implements BasePerminterface {
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			return -1;
 		}
+		
+		return 0;
 	}
 
 	@Override
