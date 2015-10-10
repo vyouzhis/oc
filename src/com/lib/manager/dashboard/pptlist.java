@@ -128,7 +128,7 @@ public class pptlist extends Permission implements BasePerminterface{
 	public void remove(Object arg) {
 		// TODO Auto-generated method stub
 		int id=toInt(porg.getKey("id"));
-		String format = "delete from "+DB_HOR_PRE+"doc where id=%d";
+		String format = "delete from "+DB_HOR_PRE+"doc where "+UserPermi()+" and id=%d";
 		String sql = String.format(format, id);
 		UrlClassList ucl = UrlClassList.getInstance();
 		

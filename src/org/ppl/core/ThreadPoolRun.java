@@ -29,7 +29,7 @@ public class ThreadPoolRun implements Runnable {
 	
 	public int etime() {
 		isRun=false;
-		System.out.println("i am etime!");
+		//System.out.println("i am etime!");
 		TimeClass tc = TimeClass.getInstance();
 		int now = (int) tc.time();
 

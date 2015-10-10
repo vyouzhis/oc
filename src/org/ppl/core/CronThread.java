@@ -10,12 +10,6 @@ import org.ppl.BaseClass.LibThread;
 import org.ppl.etc.Config;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
-import org.ppl.io.TimeClass;
-
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
-import com.lib.plug.echarts.echarts;
 
 public class CronThread extends LibThread {
 	private Map<String, Integer> cronMap;
@@ -55,9 +49,6 @@ public class CronThread extends LibThread {
 			
 			for (String key : cronMap.keySet()) {
 				// System.out.print("KEY:"+key);	
-//				cronMap.put(key, newTime);
-//				
-//				cronMap.put(key, cachedThreadPool.etime());
 				ThreadPoolRun tpr = new ThreadPoolRun(key, cronMap.get(key));
 				cronMap.put(key, tpr.etime());
 				cachedThreadPool.execute(tpr);										
@@ -72,8 +63,6 @@ public class CronThread extends LibThread {
 			}
 		}
 	}
-
-	
 
 	private String SliceName(String k) {
 		String[] name = k.split("\\.");

@@ -1,7 +1,6 @@
 package org.ppl.net;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -138,7 +137,7 @@ public class cUrl {
 		//ByteArrayOutputStream bao = null;
 		StringBuilder sb1 = new StringBuilder(); 
 		InputStream bis = null;
-		byte[] buf = new byte[1024];
+		byte[] buf = new byte[65535];
 
 		String content = null;
 		try {
@@ -147,18 +146,15 @@ public class cUrl {
 
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				bis = response.getEntity().getContent();
-
-				// Header[] gzip = response.getHeaders("Content-Encoding");
-				
-				Header encoding = response.getEntity().getContentEncoding();
-				
-				//bao = new ByteArrayOutputStream();
+				Header encoding = response.getEntity().getContentEncoding();				
 				int count;
-				while ((count = bis.read(buf)) != -1) {
-					//bao.write(buf, 0, count);
+				
+				while ((count = bis.read(buf)) != -1) {				
 					String str = new String(buf, 0, count, "UTF-8");    
-	                sb1.append(str);    
+					sb1.append(str); 
 				}
+				
+				
 				bis.close();
 
 				ByteArrayInputStream bai = new ByteArrayInputStream(
@@ -179,12 +175,10 @@ public class cUrl {
 						//bao.close();
 
 						content = sb.toString();
-						System.out.println("gzip...");
-					}else {
-						System.out.println("no gzip....");
+						
 					}
 				} else {
-					System.out.println("bao.....");
+					
 					content = new String(sb1);
 				}
 

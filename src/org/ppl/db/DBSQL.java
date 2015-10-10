@@ -149,8 +149,20 @@ public class DBSQL extends BaseLang {
 		}
 	}
 
-	public List<Map<String, Object>> FetchAll(String sql) throws SQLException {
+	public List<Map<String, Object>> Fetch(String sql) throws SQLException {
 		return query(sql);
+	}
+	
+	public List<Map<String, Object>> FetchAll(String sql) throws SQLException {
+		List<Map<String, Object>> tmp, res;
+		res = new ArrayList<>();
+		while (true) {
+			tmp = query(sql);
+			res.addAll(tmp);
+			if (isFetchFinal())
+				break;
+		}
+		return res;
 	}
 
 	public Map<String, Object> FetchOne(String sql) {

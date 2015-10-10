@@ -234,7 +234,7 @@
 											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>生成图表
 										</a>
 										
-										<a href="javascript:void(0)" class=" btn btn-xs btn-app btn-primary"
+										<a href="javascript:void(0)" id="saveImg" name="saveImg" class=" btn btn-xs btn-app btn-primary"
 										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-th-large"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
 										
 										<a class="btn btn-success btn-xs btn-app"  id="bootbox-options"><i class="icon-ok bigger-110"></i>保存数据</a>
@@ -742,33 +742,35 @@
 						    //alert(textStatus);
 						  },
 						  complete: function(request, textStatus) { //for additional info
-							  var option = request.responseText;
-							  var chk = option.substring(1, 5);
+							 var option = request.responseText;
+							 var chk = option.substring(1, 5);
 							  
-						     if(option.length > 2 && chk!='html'){
+						  	 if(option.length > 2 && chk!='html'){
 						    	  
-						  	  }else{
+						  	 }else{
 						  		alert("没数据!");
-						  	  }
+						  	 }
 							  
-							  if(chk=='html'){
-								  alert("还没登录或超时退出!");
-							  }
+							 if(chk=='html'){
+								alert("还没登录或超时退出!");
+							 }
 							 var o = $('#tree1').tree('selectedItems');
-							 //console.log("name:"+o[0].name);
-							 var editTable = "<table border='1' align='center' cellpadding='1' cellspacing='1' style='width:500px' summary='"+o[0].name+"'><caption>"+o[0].name+"</caption>";
-							  
 							 var table = JSON.parse(option);
-							 var cont = "";
-							 cont += "<tr><td>数据</td><td>标题</td></tr>";
-							 for(var i in table){//用javascript的for/in循环遍历对象的属性									 
-							 	for(var n in table[i]){
-								
+							 var editTable = "";
+							 for(var m in o){
+								 //console.log("name:"+o[0].name);
+								 editTable += "<table border='1' align='center' cellpadding='1' cellspacing='1' style='width:500px' summary='"+o[m].name+"'><caption>"+o[m].name+"</caption>";
+								  								 
+								 var cont = "";
+								 cont += "<tr><td>数据</td><td>标题</td></tr>";
+																 
+							 	 for(var n in table[m]){								
 									//console.log(table[i][n].volume+"--"+table[i][n].dial);
-								   cont += "<tr><td>"+table[i][n].volume+"</td><td>"+table[i][n].dial+"</td></tr>";
+								   cont += "<tr><td>"+table[m][n].volume+"</td><td>"+table[m][n].dial+"</td></tr>";
 								 }
-							 } 
-						    editTable += cont +"</table>"; 
+								 
+							     editTable += cont +"</table>"; 
+							 }
 							 var stemTxt=CKEDITOR.instances.editor1.getData(); 
 							 CKEDITOR.instances.editor1.setData( stemTxt+editTable );	
 						  }
@@ -919,10 +921,11 @@
 			     	imgs = "<img src='${data_uri}"+ImgName+".png' />";
 			    	var stemTxt=CKEDITOR.instances.editor1.getData(); 
 					CKEDITOR.instances.editor1.setData( stemTxt+imgs );	
+					$("#saveImg").attr("class", "btn btn-xs btn-app btn-primary");
 				}
 				
 				function SaveImg() {
-										
+					$("#saveImg").attr("class", "disabled btn btn-xs btn-app btn-primary");
 					//var timestamp = Date.parse(new Date());
 					var md5Name = $.md5(myChart.getDataURL());
 					

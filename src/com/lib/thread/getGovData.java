@@ -1,14 +1,10 @@
 package com.lib.thread;
 
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javassist.expr.NewArray;
-
-import org.apache.commons.lang3.text.StrBuilder;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.net.cUrl;
 
@@ -80,7 +76,7 @@ public class getGovData extends BaseRapidThread{
 			
 			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
 			//echo(TreeJson);
-			idk = 1;
+			//idk = 1;
 
 			for (Map<String, Object> tj : TreeJson) {
 				if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
@@ -94,12 +90,12 @@ public class getGovData extends BaseRapidThread{
 					SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
 
 					for (Map<String, Object> sj : SubTreeJson) {
-						DataSave(sj.get("id").toString(), idk); // 保存数据
-						idk++;
+						DataSave(sj.get("id").toString()); // 保存数据
+						//idk++;
 					}
 				} else {
-					DataSave(tj.get("id").toString(), idk); // 保存数据
-					idk++;
+					DataSave(tj.get("id").toString()); // 保存数据
+					//idk++;
 				}
 			}
 		}
@@ -107,21 +103,34 @@ public class getGovData extends BaseRapidThread{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private  void DataSave(String id, int i) {
+	private  void DataSave(String id) {
 		Map<String, Object> resJson;
+		String dfwds = "[{\"wdcode\":\"zb\",\"valuecode\":\"" + id +  "\"}]";
+		
 		curl.clearParams();
-		curl.addParams("colcode", "zb");
+		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
-		curl.addParams("dfwds", "[{\"wdcode\":\"zb\",\"valuecode\":\"" + id
-				+ String.format("%02d", i) + "\"}]");
+		curl.addParams("dfwds", dfwds);
 		curl.addParams("k1", "1443084595325");
 		curl.addParams("m", "QueryData");
-		curl.addParams("rowcode", "sj");
+		curl.addParams("rowcode", "zb");
+		curl.addParams("wds", "[]");
+		curl.httpPost(SearchUrl);
+		
+		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\"LAST24\"}]";
+		curl.clearParams();
+		curl.addParams("colcode", "sj");
+		curl.addParams("dbcode", "hgyd");
+		curl.addParams("dfwds", dfwds);
+		curl.addParams("k1", "1443084595325");
+		curl.addParams("m", "QueryData");
+		curl.addParams("rowcode", "zb");
 		curl.addParams("wds", "[]");
 		String res = curl.httpPost(SearchUrl);
 		
+		
 		String format = " insert INTO " + DB_HOR_PRE
-							+ "class (rule,act_v0,act_v1)values(%d, '%s','%s')";
+							+ "class (rule,act_v0,act_v1, act_v2)values(%d, '%s','%s', '%s')";
 		String sql ="";
 		resJson = JSON.parseObject(res, Map.class);
 		
@@ -136,6 +145,9 @@ public class getGovData extends BaseRapidThread{
 		Map<String, Object> mapNodes = (Map<String, Object>) wdnodes.get(0);
 		List<Map<String, Object>> nodes = (List<Map<String, Object>>) mapNodes.get("nodes");
 		Map<String, Object> NameList = new HashMap<String, Object>();
+		Map<String, Object> UnitList = new HashMap<String, Object>();
+		
+		if(datanodes.size() == 0) return;
 		
 		for (Map<String, Object> map : nodes) {
 			//echo(map.get("name")+"--"+map.get("code")+"--"+map.get("memo"));
@@ -148,13 +160,14 @@ public class getGovData extends BaseRapidThread{
 				cid = insert(sqlI, true);
 				echo(cid);
 				CommitDB();	
-				String view =  "act_v0 as data, act_v1 as month";
-				formatI = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
+				String view =  "act_v0 as data, act_v1 as month, act_v2 as unit ";
+				formatI = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
 							+ "class WHERE rule=%d";
-				sqlI = String.format(formatI, map.get("code").toString(), view, (int)cid);
+				sqlI = String.format(formatI, map.get("code").toString().toLowerCase(), view, (int)cid);
 				//echo(sqlI);
 				dbcreate(sqlI);
 				NameList.put(map.get("code").toString(), cid);
+				UnitList.put(map.get("code").toString(), map.get("unit").toString());
 			}catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -174,7 +187,7 @@ public class getGovData extends BaseRapidThread{
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0,4)+"-"+dtime.substring(4);
 			
-			sql = String.format(format, NameList.get(dname),val,dtime);
+			sql = String.format(format, NameList.get(dname),val,dtime, UnitList.get(dname));
 			
 			//echo(sql);
 			try {
@@ -184,6 +197,8 @@ public class getGovData extends BaseRapidThread{
 				e.printStackTrace();
 			}
 		}
+		
+		
 		
 	}
 

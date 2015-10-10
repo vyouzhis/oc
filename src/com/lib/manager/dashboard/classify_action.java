@@ -91,11 +91,11 @@ public class classify_action extends Permission implements BasePerminterface{
 			TipMessage(ucl.create(SliceName(stdClass)), _CLang("error_null"));
 			return;
 		}
-		
+		int is_share = toInt(porg.getKey("is_share"));
 		String format = "insert INTO " + DB_HOR_PRE + "classify "
-				+ "(pid ,name,ctime, uid)"
-				+ "values(%d,'%s', %d, %d);";
-		String sql = String.format(format, pid, name, time(),aclGetUid());
+				+ "(pid ,name,ctime, uid, isshare)"
+				+ "values(%d,'%s', %d, %d, %d);";
+		String sql = String.format(format, pid, name, time(),aclGetUid(), is_share);
 
 		try {
 			insert(sql);

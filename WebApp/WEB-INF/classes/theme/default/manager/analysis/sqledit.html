@@ -71,8 +71,8 @@
 											data-original-title="说明">?</span>
 									</h3>
 									<select id="form-field-select-1"> <#if ListView??>
-										<#list ListView as item>
-										<option value="">${item.view_name}_${item.title}</option>
+										<#list ListView as vitem>
+										<option value="">${vitem.view_name}_${vitem.title}</option>
 										</#list> </#if>
 									</select>
 								</div>
@@ -85,8 +85,8 @@
 											data-original-title="说明">?</span>
 									</h3>
 									<select id="form-field-select-2"> <#if ListRule??>
-										<#list ListRule as item>
-										<option value="">${item.id}_${item.name}</option> </#list>
+										<#list ListRule as litem>
+										<option value="">${litem.id}_${litem.name}</option> </#list>
 										</#if>
 									</select>
 								</div>
@@ -115,11 +115,15 @@
 								<div class="dropdown col-xs-12 col-sm-6">
 									<h3>数据源:</h3>
 									<select id="select_db" name="select_db">
-										<option<#if (dbid)?number==0 > selected="selected"
-											</#if> value="0">默认</option> <#if dblist??> <#list dblist as item>
+										<option <#if (dbid)?number==0 > selected="selected"
+											   </#if> value="0">
+											  默认
+									    </option> 
+									    <#if dblist??> 
+									    <#list dblist as dbitem>
 
-										<option<#if (dbid)?number==item.id >
-											selected="selected" </#if> value="${item.id}">${item.title}</option>
+										<option<#if (dbid)?number==dbitem.id >
+											selected="selected" </#if> value="${dbitem.id}">${dbitem.title}</option>
 										</#list> </#if>
 									</select>
 
@@ -134,8 +138,8 @@
 										<select id="cid_list" name="cid_list">
 											
 											<#if pid_list??>
-								           		<#list pid_list as item>		
-												<option value="${item.id}" <#if item.id == pid>  selected </#if> >${item.name}</option>
+								           		<#list pid_list as pitem>		
+												<option value="${pitem.id}" <#if pitem.id == pid>  selected </#if> >${pitem.name!""}</option>
 												</#list>
 											</#if>	
 										</select>

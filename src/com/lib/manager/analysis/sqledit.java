@@ -253,7 +253,7 @@ public class sqledit extends Permission implements BasePerminterface {
 			try {
 				List<Map<String, Object>> tmp;
 				while (true) {
-					tmp = ucdb.FetchAll(sql);
+					tmp = ucdb.Fetch(sql);
 
 					res.addAll(tmp);
 					if (ucdb.isFetchFinal())
@@ -313,7 +313,7 @@ public class sqledit extends Permission implements BasePerminterface {
 
 		if (nview == null)
 			nview = "";
-
+		int is_share = toInt(porg.getKey("is_share"));
 		String format = " insert INTO "
 				+ DB_HOR_PRE
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
@@ -417,10 +417,10 @@ public class sqledit extends Permission implements BasePerminterface {
 
 	private void ListTip(String n, String m, String l) {
 		String sql = "select id," + n + " from " + DB_HOR_PRE + m
-				+ "where "+UserPermi()+" order by id desc";
+				+ " where "+UserPermi()+" order by id desc";
 
 		List<Map<String, Object>> res;
-
+		
 		try {
 			res = FetchAll(sql);
 			if (res != null) {

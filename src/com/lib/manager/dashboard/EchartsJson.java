@@ -213,7 +213,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					}
 					float val = toFloat(key.get("volume"));
 					if (val == 0) {
-						bar.data(key.get("volume"));
+						
+						//bar.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
+						bar.data(0);
 					} else {
 						bar.data(Float.valueOf(String.format("%.2f", val)));
 					}
@@ -284,7 +286,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 					float val = toFloat(key.get("volume"));
 					if (val == 0) {
-						line.data(key.get("volume"));
+						//line.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
+						line.data(0);
 					} else {
 						line.data(Float.valueOf(String.format("%.2f", val)));
 					}

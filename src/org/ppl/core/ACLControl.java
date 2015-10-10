@@ -9,7 +9,6 @@ import org.ppl.BaseClass.BasePrograma;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
-import org.ppl.io.TimeClass;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
