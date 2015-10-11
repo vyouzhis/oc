@@ -10,11 +10,11 @@ import org.ppl.net.cUrl;
 
 import com.alibaba.fastjson.JSON;
 
-public class getGovData extends BaseRapidThread{
-	 cUrl curl;
-	 String SearchUrl = "http://data.stats.gov.cn/easyquery.htm";
-	 String LoginUrl = "http://data.stats.gov.cn/login.htm?m=login";
-	
+public class getGovData extends BaseRapidThread {
+	cUrl curl;
+	String SearchUrl = "http://data.stats.gov.cn/easyquery.htm";
+	String LoginUrl = "http://data.stats.gov.cn/login.htm?m=login";
+
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
@@ -38,9 +38,9 @@ public class getGovData extends BaseRapidThread{
 	@Override
 	public void mailbox(Object o) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void govFetch() {
 		curl = new cUrl();
@@ -60,10 +60,10 @@ public class getGovData extends BaseRapidThread{
 		curl.addParams("wdcode", "zb");
 
 		res = curl.httpPost(SearchUrl);
-		//echo(res);
+		// echo(res);
 
 		govJson = JSON.parseObject(res, List.class); // 获取所有的主树
-		//echo(govJson);
+		// echo(govJson);
 		int idk = 1;
 
 		for (Map<String, Object> key : govJson) {
@@ -73,10 +73,10 @@ public class getGovData extends BaseRapidThread{
 			curl.addParams("m", "getTree");
 			curl.addParams("wdcode", "zb");
 			res = curl.httpPost(SearchUrl);
-			
+
 			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
-			//echo(TreeJson);
-			//idk = 1;
+			// echo(TreeJson);
+			// idk = 1;
 
 			for (Map<String, Object> tj : TreeJson) {
 				if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
@@ -86,27 +86,27 @@ public class getGovData extends BaseRapidThread{
 					curl.addParams("m", "getTree");
 					curl.addParams("wdcode", "zb");
 					String subRes = curl.httpPost(SearchUrl);
-					
+
 					SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
 
 					for (Map<String, Object> sj : SubTreeJson) {
 						DataSave(sj.get("id").toString()); // 保存数据
-						//idk++;
+						// idk++;
 					}
 				} else {
 					DataSave(tj.get("id").toString()); // 保存数据
-					//idk++;
+					// idk++;
 				}
 			}
 		}
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private  void DataSave(String id) {
+	private void DataSave(String id) {
 		Map<String, Object> resJson;
-		String dfwds = "[{\"wdcode\":\"zb\",\"valuecode\":\"" + id +  "\"}]";
-		
+		String dfwds = "[{\"wdcode\":\"zb\",\"valuecode\":\"" + id + "\"}]";
+
 		curl.clearParams();
 		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
@@ -116,7 +116,7 @@ public class getGovData extends BaseRapidThread{
 		curl.addParams("rowcode", "zb");
 		curl.addParams("wds", "[]");
 		curl.httpPost(SearchUrl);
-		
+
 		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\"LAST24\"}]";
 		curl.clearParams();
 		curl.addParams("colcode", "sj");
@@ -127,69 +127,91 @@ public class getGovData extends BaseRapidThread{
 		curl.addParams("rowcode", "zb");
 		curl.addParams("wds", "[]");
 		String res = curl.httpPost(SearchUrl);
-		
-		
-		String format = " insert INTO " + DB_HOR_PRE
-							+ "class (rule,act_v0,act_v1, act_v2)values(%d, '%s','%s', '%s')";
-		String sql ="";
+
+		String format = " insert INTO "
+				+ DB_HOR_PRE
+				+ "class (rule,act_v0,act_v1, act_v2)values(%d, '%s','%s', '%s')";
+		String sql = "";
+		String formatI = "INSERT INTO "
+				+ DB_HOR_PRE
+				+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
+		String view = "act_v0 as data, act_v1 as month, act_v2 as unit ";
+		String viewformat = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM "
+				+ DB_HOR_PRE + "class WHERE rule=%d";
+
 		resJson = JSON.parseObject(res, Map.class);
-		
-		if(resJson.get("returndata").toString().length()<21)return;
-		
-		Map<String, Object> returndata = JSON.parseObject(resJson.get("returndata").toString(),Map.class);
+
+		if (resJson.get("returndata").toString().length() < 21)
+			return;
+
+		Map<String, Object> returndata = JSON.parseObject(
+				resJson.get("returndata").toString(), Map.class);
 		List<Object> datanodes = (List<Object>) returndata.get("datanodes");
 		List<Object> wdnodes = (List<Object>) returndata.get("wdnodes");
 
-		int now = 1;
-		
+		int now = time();
+
 		Map<String, Object> mapNodes = (Map<String, Object>) wdnodes.get(0);
-		List<Map<String, Object>> nodes = (List<Map<String, Object>>) mapNodes.get("nodes");
-		Map<String, Object> NameList = new HashMap<String, Object>();
+		List<Map<String, Object>> nodes = (List<Map<String, Object>>) mapNodes
+				.get("nodes");
+		// Map<String, Object> NameList = new HashMap<String, Object>();
 		Map<String, Object> UnitList = new HashMap<String, Object>();
-		
-		if(datanodes.size() == 0) return;
-		
+
+		Map<String, String> classList = new HashMap<>();
+		// Map<String, String> viewList = new HashMap<>();
+
+		if (datanodes.size() == 0)
+			return;
+
 		for (Map<String, Object> map : nodes) {
-			//echo(map.get("name")+"--"+map.get("code")+"--"+map.get("memo"));
-			String formatI = "INSERT INTO " + DB_HOR_PRE
-							+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
-			String sqlI = String.format(formatI, map.get("name"), map.get("code"), map.get("memo"), now);
-			//echo(map.get("name"));
-			try {
-				long cid;
-				cid = insert(sqlI, true);
-				echo(cid);
-				CommitDB();	
-				String view =  "act_v0 as data, act_v1 as month, act_v2 as unit ";
-				formatI = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
-							+ "class WHERE rule=%d";
-				sqlI = String.format(formatI, map.get("code").toString().toLowerCase(), view, (int)cid);
-				//echo(sqlI);
-				dbcreate(sqlI);
-				NameList.put(map.get("code").toString(), cid);
-				UnitList.put(map.get("code").toString(), map.get("unit").toString());
-			}catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			// echo(map.get("name")+"--"+map.get("code")+"--"+map.get("memo"));
+
+			String sqlI = String.format(formatI, map.get("name"),
+					map.get("code"), map.get("memo"), now);
+			// echo(map.get("name"));
+
+			classList.put(map.get("code").toString(), sqlI);
+
+			UnitList.put(map.get("code").toString(), map.get("unit").toString());
+
 		}
-		
+		long cid = 0;
+		String val = "";
 		for (int j = 0; j < datanodes.size(); j++) {
-			Map<String, Object> listMap = (Map<String, Object>) datanodes.get(j);
-			Map<String, Object> data = (Map<String, Object>) listMap.get("data");
-			String val = "";
-			if(data.get("data").toString().length()>0){
-				val =	String.format("%.2f", toFloat(data.get("data")));
+
+			Map<String, Object> listMap = (Map<String, Object>) datanodes
+					.get(j);
+			Map<String, Object> data = (Map<String, Object>) listMap
+					.get("data");
+			val = "";
+			if (data.get("data").toString().length() > 0) {
+				val = String.format("%.2f", toFloat(data.get("data")));
 			}
 			String code = listMap.get("code").toString();
 			String[] nt = code.split("_");
 			String dname = nt[0].substring(3);
 			String dtime = nt[1].substring(3);
-			dtime = dtime.substring(0,4)+"-"+dtime.substring(4);
-			
-			sql = String.format(format, NameList.get(dname),val,dtime, UnitList.get(dname));
-			
-			//echo(sql);
+			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
+
+			try {
+
+				cid = insert(classList.get(dname), true);
+				echo(cid);
+				CommitDB();
+
+				String vsql = String.format(viewformat, dname.toLowerCase(),
+						view, (int) cid);
+				// echo(sqlI);
+				dbcreate(vsql);
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			sql = String.format(format, cid, val, dtime, UnitList.get(dname));
+
+			// echo(sql);
 			try {
 				insert(sql);
 			} catch (SQLException e) {
@@ -197,9 +219,7 @@ public class getGovData extends BaseRapidThread{
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
+
 	}
 
 }
