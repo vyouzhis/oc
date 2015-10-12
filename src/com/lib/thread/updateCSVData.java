@@ -70,7 +70,17 @@ public class updateCSVData extends BaseRapidThread {
 		for (String key : file.keySet()) {
 
 			try {
-				bytesAsString = new String(file.get(key), "UTF-8");
+				byte[] bt = file.get(key);
+				echo(new String(bt));
+				//echo(new String(bt,"UTF-8"));
+				String nt = new String(bt,"GBK");
+				//echo(nt.length());
+				//echo(new String(bt,"G2312"));
+				
+				//echo(new String(bt,"ISO8859_1"));
+				
+				
+				bytesAsString = new String(bt, "UTF-8");
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				// e1.printStackTrace();
@@ -79,13 +89,13 @@ public class updateCSVData extends BaseRapidThread {
 			}
 			if (bytesAsString == null)
 				break;
-
+			
 			readers = new StringReader(bytesAsString);
 			
 			reader = new BufferedReader(readers);
 
 			try {
-				line = reader.readLine();
+				line = reader.readLine();				
 				line = line.replace(" ", "_");
 
 				dropview = "drop view if exists " + view_name;

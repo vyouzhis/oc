@@ -64,7 +64,6 @@ public class getGovData extends BaseRapidThread {
 
 		govJson = JSON.parseObject(res, List.class); // 获取所有的主树
 		// echo(govJson);
-		int idk = 1;
 
 		for (Map<String, Object> key : govJson) {
 			curl.clearParams();
@@ -75,10 +74,10 @@ public class getGovData extends BaseRapidThread {
 			res = curl.httpPost(SearchUrl);
 
 			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
-			// echo(TreeJson);
-			// idk = 1;
 
 			for (Map<String, Object> tj : TreeJson) {
+				if(tj.get("name").toString().indexOf("2003")>0 || tj.get("name").toString().indexOf("2004")>0|| tj.get("name").toString().indexOf("2001")>0)continue;
+				echo(tj.get("name").toString());
 				if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
 					curl.clearParams();
 					curl.addParams("dbcode", "hgyd");
@@ -88,14 +87,14 @@ public class getGovData extends BaseRapidThread {
 					String subRes = curl.httpPost(SearchUrl);
 
 					SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
-
+										
 					for (Map<String, Object> sj : SubTreeJson) {
-						DataSave(sj.get("id").toString()); // 保存数据
-						// idk++;
+						if(sj.get("name").toString().indexOf("2003")>0 || sj.get("name").toString().indexOf("2004")>0|| sj.get("name").toString().indexOf("2001")>0)continue;
+						DataSave(sj.get("id").toString()); // 保存数据						
 					}
 				} else {
 					DataSave(tj.get("id").toString()); // 保存数据
-					// idk++;
+
 				}
 			}
 		}
@@ -117,7 +116,7 @@ public class getGovData extends BaseRapidThread {
 		curl.addParams("wds", "[]");
 		curl.httpPost(SearchUrl);
 
-		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\"LAST24\"}]";
+		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\"LAST36\"}]";
 		curl.clearParams();
 		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
@@ -177,6 +176,7 @@ public class getGovData extends BaseRapidThread {
 		}
 		long cid = 0;
 		String val = "";
+		String dnameo = "", dnamet = "";
 		for (int j = 0; j < datanodes.size(); j++) {
 
 			Map<String, Object> listMap = (Map<String, Object>) datanodes
@@ -192,23 +192,30 @@ public class getGovData extends BaseRapidThread {
 			String dname = nt[0].substring(3);
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
+			dnameo = dname;
+			if(!dnameo.equals(dnamet)){
+				dnamet = dnameo;
+				try {
 
-			try {
+					long cidt = insert(classList.get(dname), true);
+					if(cidt != -1){
+						cid = cidt;
+						//echo(cid);
+						CommitDB();
 
-				cid = insert(classList.get(dname), true);
-				echo(cid);
-				CommitDB();
-
-				String vsql = String.format(viewformat, dname.toLowerCase(),
-						view, (int) cid);
-				// echo(sqlI);
-				dbcreate(vsql);
-
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+						String vsql = String.format(viewformat,
+								dname.toLowerCase(), view, (int) cid);
+						// echo(sqlI);
+						dbcreate(vsql);
+					}else {
+						continue;
+					}								
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
 			}
-
 			sql = String.format(format, cid, val, dtime, UnitList.get(dname));
 
 			// echo(sql);
