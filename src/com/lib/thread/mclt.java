@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
+import org.ppl.etc.globale_config;
 
 import com.lib.plug.echarts.DataDig;
 
@@ -14,13 +15,14 @@ import com.lib.plug.echarts.DataDig;
  * 
  */
 public class mclt extends BaseCronThread {
-
+	private String className;
 	public mclt() {
 		// TODO Auto-generated constructor stub
-		String className = this.getClass().getCanonicalName();
+		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 		long id = myThreadId();
 		echo("my id:"+id);
+		globale_config.CronListQueue.put(SliceName(className), 1);
 	}
 
 	@Override
@@ -75,6 +77,7 @@ public class mclt extends BaseCronThread {
 
 		}
 		echo("mclt...end");
+		globale_config.CronListQueue.put(SliceName(className), 0);
 
 	}
 

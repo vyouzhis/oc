@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
+import org.ppl.etc.globale_config;
 
 import com.lib.plug.echarts.DataDig;
 
@@ -14,11 +15,12 @@ import com.lib.plug.echarts.DataDig;
  *
  */
 public class mflt extends BaseCronThread  {
-	
+	private String className;
 	public mflt() {
 		// TODO Auto-generated constructor stub
-		String className = this.getClass().getCanonicalName();
+		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
+		globale_config.CronListQueue.put(SliceName(className), 1);
 	}
 
 	@Override
@@ -59,6 +61,7 @@ public class mflt extends BaseCronThread  {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		globale_config.CronListQueue.put(SliceName(className), 0);
 	}
 
 	@Override

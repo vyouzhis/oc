@@ -36,6 +36,7 @@ public class CronThread extends LibThread {
 				if (clazz.getSuperclass().equals(BaseCronThread.class)) {
 					String name = SliceName(ps);
 					cronMap.put(name, 0);
+					globale_config.CronListQueue.put(name, 0);
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
+import org.ppl.etc.globale_config;
 
 import com.lib.plug.echarts.GroupDataDig;
 
@@ -15,11 +16,12 @@ import com.lib.plug.echarts.GroupDataDig;
  * 
  */
 public class melt extends BaseCronThread {
-
+	private String className;
 	public melt() {
 		// TODO Auto-generated constructor stub
-		String className = this.getClass().getCanonicalName();
+		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
+		globale_config.CronListQueue.put(SliceName(className), 1);
 	}
 
 	@Override
@@ -72,6 +74,7 @@ public class melt extends BaseCronThread {
 
 		}
 
+		globale_config.CronListQueue.put(SliceName(className), 0);
 	}
 
 	@Override
