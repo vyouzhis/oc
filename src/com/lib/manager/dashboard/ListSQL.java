@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 
@@ -15,6 +16,9 @@ public class ListSQL extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private Map<String, Map<String, Object>> TreeObject;
 	private int lid;
+	private String pname = "";
+	private String RootSQL = "";
+
 	// private Map<String, Map<String, Map<String, String>>> Mongo;
 
 	public ListSQL() {
@@ -33,7 +37,10 @@ public class ListSQL extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		if (super.Init() == -1)
 			return;
+
 		lid = toInt(porg.getKey("id"));
+		pname = porg.getKey("pname");
+
 		rmc = porg.getRmc();
 		if (rmc.size() != 2) {
 			Msg(_CLang("error_role"));
@@ -59,133 +66,196 @@ public class ListSQL extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		int n = time();
 		String json = ListMainClassify();
-		
+
 		super.setHtml(json);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private String ListMainClassify() {
-		String sql = "select id,name,pid,(select name from " + DB_HOR_PRE
-				+ "classify h where h.id=c.pid ) as pname from " + DB_HOR_PRE
-				+ "classify c where displays=0 and "+UserPermi()+" order by pid,id";
 
-		List<Map<String, Object>> res;
-
+		RootSQL = "select id,name from hor_classify where pid=%d and "
+				+ UserPermi() + " order by id";
 		TreeObject = new HashMap<>();
+//
+//		String sql = "select id,name,pid,(select name from " + DB_HOR_PRE
+//				+ "classify h where h.id=c.pid ) as pname from " + DB_HOR_PRE
+//				+ "classify c where displays=0 and " + UserPermi()
+//				+ " order by pid,id";
+//
+//		List<Map<String, Object>> res;
+//
 		
-		Map<String, Object> SubTree;
-		List<Map<String, Object>> RootRes = null, tRes;
-		String RootSql = null;
-		List<String> formats = new ArrayList<>();
-		formats.add("SELECT id,name,cid,qaction FROM "
-				+ DB_HOR_PRE
-				+ "mongodbrule where qaction in (2,3) and snap=0 and cid=%s and "+UserPermi()+" order by id desc;");
-		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
-				+ "usersql where sql_type=0 and input_data=0 and "+UserPermi()+" and cid=%s");
-		formats.add("select s.id,s.name,u.cid from "
-				+ DB_HOR_PRE
-				+ "sqltmp s, "
-				+ DB_HOR_PRE
-				+ "usersql u where u.id=s.sid  and (u.uid = "+aclGetUid() +" or u.isshare=1) and u.cid= %s order by s.id desc");
-		/*
-		try {			
-			res = FetchAll(sql);
-			if (res != null) {
-				for (Map<String, Object> map : res) {
+//
+//		Map<String, Object> SubTree;
+//		List<Map<String, Object>> RootRes = null, tRes;
+//		String RootSql = null;
+//		List<String> formats = new ArrayList<>();
+//		formats.add("SELECT id,name,cid,qaction FROM "
+//				+ DB_HOR_PRE
+//				+ "mongodbrule where qaction in (2,3) and snap=0 and cid=%s and "
+//				+ UserPermi() + " order by id desc;");
+//		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
+//				+ "usersql where sql_type=0 and input_data=0 and "
+//				+ UserPermi() + " and cid=%s");
+//		formats.add("select s.id,s.name,u.cid from " + DB_HOR_PRE
+//				+ "sqltmp s, " + DB_HOR_PRE
+//				+ "usersql u where u.id=s.sid  and (u.uid = " + aclGetUid()
+//				+ " or u.isshare=1) and u.cid= %s order by s.id desc");
+//
+//		try {
+//			res = FetchAll(sql);
+//			if (res != null) {
+//				for (Map<String, Object> map : res) {
+//					for (String tsql : formats) {
+//						RootSql = String.format(tsql, map.get("id").toString());
+//						try {
+//							tRes = FetchAll(RootSql);
+//							if (RootRes != null) {
+//								if (tRes != null) {
+//									RootRes.addAll(tRes);
+//								}
+//							} else {
+//								RootRes = tRes;
+//							}
+//						} catch (SQLException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//					}
+//					if (toInt(map.get("pid")) == 1) {
+//						SubTree = new HashMap<>();
+//						SubTree.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
+//						SubTree.put("name", map.get("name").toString());
+//						SubTree.put("type", "folder");
+//						TreeObject.put(map.get("name").toString(), SubTree);
+//
+//					} else {
+//						Map<String, Object> Item = new HashMap<>();
+//						Item.put("type", "folder");
+//						Item.put("name", map.get("name"));
+//						Item.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
+//
+//						Map<String, Map<String, Object>> file = new HashMap<>();
+//
+//						file = (Map<String, Map<String, Object>>) TreeObject.get(map.get("pname").toString()).get("additionalParameters");
+//						file.get("children").put(map.get("name").toString(), Item);
+//
+//					}
+//					RootRes = null;
+//				}
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
-					for (String tsql : formats) {
-						RootSql = String.format(tsql, map.get("id").toString());
-						try {
-							tRes = FetchAll(RootSql);
-							if (RootRes != null) {
-								if (tRes != null) {
-									RootRes.addAll(tRes);
-								}
-							} else {
-								RootRes = tRes;
-							}
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-					if (toInt(map.get("pid")) == 1) {
-						SubTree = new HashMap<>();
-						SubTree.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
-						SubTree.put("name", map.get("name").toString());
-						SubTree.put("type", "folder");
-						TreeObject.put(map.get("name").toString(), SubTree);
-						
-					} else {
-						Map<String, Object> Item = new HashMap<>();
-						Item.put("type", "folder");
-						Item.put("name", map.get("name"));
-						Item.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
-						
-						Map<String, Map<String, Object>> file = new HashMap<>();
-												
-						file = (Map<String, Map<String, Object>>) TreeObject.get(map.get("pname").toString()).get("additionalParameters");
-						file.get("children").put(map.get("name").toString(), Item);
-						
-					}
-					RootRes = null;
+		if (lid == 0) {
+			String json = tmpSQL();
+			return json;
+		} else if (lid > 0) {
+			subTreeRoot();
+		} else {
+			DefaultRoot();
+		}
 
-				}
+		String treeObjectJson = JSON.toJSONString(TreeObject);
+		return treeObjectJson;
 
+	}
+
+	private void subTreeRoot() {
+		Map<String, Object> SubTree, FloderTree, RootTree;
+
+		String sql = String.format(RootSQL, lid);
+		List<Map<String, Object>> RRes;
+		FloderTree = new HashMap<String, Object>();
+		RootTree = new HashMap<String, Object>();
+		try {
+			RRes = FetchAll(sql);
+			for (Map<String, Object> map : RRes) {
+				SubTree = new HashMap<>();
+				SubTree.put("name", map.get("name"));
+				SubTree.put("type", "folder");
+				SubTree.put("id", map.get("id"));
+
+				FloderTree.put(map.get("name").toString(), SubTree);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		FloderTree.put(pname, ItemTree());
 		
-		if(lid==0){
-			tmpSQL();
-		}else {
-			SubTree = new HashMap<>();
-			SubTree.put("name", _MLang("tmp"));
-			SubTree.put("type", "folder");
+		if(FloderTree.size()>0){
+			RootTree.put("children", FloderTree);
+		
+			TreeObject.put("additionalParameters", RootTree);
+		}
+		
+	}
+	
+	private Map<String, Object> ItemTree() {
+		List<Map<String, Object>> RootRes = null, tRes;
+		
+		List<String> formats = new ArrayList<>();
+		formats.add("SELECT id,name,cid,qaction FROM "
+				+ DB_HOR_PRE
+				+ "mongodbrule where qaction in (2,3) and snap=0 and cid="+lid+" and "
+				+ UserPermi() + " order by id desc;");
+		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
+				+ "usersql where sql_type=0 and input_data=0 and "
+				+ UserPermi() + " and cid="+lid);
+		formats.add("select s.id,s.name,u.cid from " + DB_HOR_PRE
+				+ "sqltmp s, " + DB_HOR_PRE
+				+ "usersql u where u.id=s.sid  and (u.uid = " + aclGetUid()
+				+ " or u.isshare=1) and u.cid= "+lid+" order by s.id desc");
+		
+		
+		for (String tsql : formats) {
 			
-			List<Map<String, Object>>  tRest = new ArrayList<>();
-			SubTree.put("additionalParameters", SetTree(tRest, 0));
-
-			TreeObject.put(_MLang("tmp"), SubTree);
-		}
-		*/
-		
-		if(lid== 0){
-			String json=tmpSQL();
-			return json;
-		}
-		else if (lid >0) {
-				
-		}
-		else{
-			defaultRoot();			
+			try {
+				tRes = FetchAll(tsql);
+				if (RootRes != null) {
+					if (tRes != null) {
+						RootRes.addAll(tRes);
+					}
+				} else {
+					RootRes = tRes;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
-		String treeObjectJson = JSON.toJSONString(TreeObject);
-		return treeObjectJson;
-
+		Map<String, Object> Item = new HashMap<>();
+		Item.put("type", "folder");
+		Item.put("name", pname);
+		Item.put("id", lid);
+		
+		return SetTree(RootRes, lid, pname);
+		//RootTree = new HashMap<String, Object>();
+		
+		//TreeObject.put("additionalParameters", SetTree(RootRes, lid, pname));
+		
 	}
 	
-	private void subTree() {
-		
-	}
-	
-	private void defaultRoot() {
+
+	private void DefaultRoot() {
 		Map<String, Object> SubTree;
-		
-		String sql = "select id,name from hor_classify where pid=1 and "+UserPermi()+" order by id";
-		List<Map<String, Object>>  RRes;
+
+		String sql = String.format(RootSQL, 1);
+		List<Map<String, Object>> RRes;
 		try {
 			RRes = FetchAll(sql);
-			for (Map<String, Object> map:RRes) {
+			for (Map<String, Object> map : RRes) {
 				SubTree = new HashMap<>();
 				SubTree.put("name", map.get("name"));
 				SubTree.put("type", "folder");
+				SubTree.put("id", map.get("id"));
 				
-				List<Map<String, Object>>  tRest = new ArrayList<>();
-				SubTree.put("additionalParameters", SetTree(tRest, toInt(map.get("id"))));
+				List<Map<String, Object>> tRest = new ArrayList<>();
+				SubTree.put("additionalParameters",SetTree(tRest, toInt(map.get("id")), map.get("name").toString()));
 
 				TreeObject.put(map.get("name").toString(), SubTree);
 			}
@@ -193,23 +263,24 @@ public class ListSQL extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		SubTree = new HashMap<>();
 		SubTree.put("name", _MLang("tmp"));
 		SubTree.put("type", "folder");
-		
-		List<Map<String, Object>>  tRest = new ArrayList<>();
-		SubTree.put("additionalParameters", SetTree(tRest, 0));
+
+		List<Map<String, Object>> tRest = new ArrayList<>();
+		SubTree.put("additionalParameters", SetTree(tRest, 0, _MLang("tmp")));
 
 		TreeObject.put(_MLang("tmp"), SubTree);
 	}
-	
+
 	private String tmpSQL() {
 		String RootSql;
-		List<Map<String, Object>>  tRes;
+		List<Map<String, Object>> tRes;
 		Map<String, Object> SubTree;
 		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
-				+ "usersql where sql_type=1 and "+UserPermi()+" order by id desc;";
+				+ "usersql where sql_type=1 and " + UserPermi()
+				+ " order by id desc;";
 		try {
 			tRes = FetchAll(RootSql);
 			if (tRes != null) {
@@ -217,9 +288,10 @@ public class ListSQL extends Permission implements BasePerminterface {
 				SubTree = new HashMap<>();
 				SubTree.put("name", _MLang("tmp"));
 				SubTree.put("type", "folder");
-				SubTree.put("additionalParameters", SetTree(tRes, 0));
+				SubTree.put("additionalParameters",
+						SetTree(tRes, 0, _MLang("tmp")));
 
-				return  JSON.toJSONString(SubTree);
+				return JSON.toJSONString(SubTree);
 
 			}
 		} catch (SQLException e) {
@@ -229,8 +301,8 @@ public class ListSQL extends Permission implements BasePerminterface {
 		return null;
 	}
 
-	private Map<String, Object> SetTree(
-			List<Map<String, Object>> res, int id) {
+	private Map<String, Object> SetTree(List<Map<String, Object>> res, int id,
+			String name) {
 		Map<String, Map<String, String>> file = new HashMap<>();
 
 		for (Map<String, Object> map : res) {
@@ -261,6 +333,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		Mongo = new HashMap<String, Object>();
 
 		Mongo.put("children", file);
+		Mongo.put("name", name);
 		Mongo.put("id", id);
 		return Mongo;
 	}

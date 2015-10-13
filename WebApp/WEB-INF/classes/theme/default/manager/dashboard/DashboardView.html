@@ -404,7 +404,7 @@
 	            DataSourceTree.prototype.data = function (options, callback) {
 	                var self = this;
 	                var $data = null;
-	
+						 var pname = "";
 	                var param = -1;
 	
 	                if (!("name" in options) && !("type" in options)) {
@@ -436,12 +436,13 @@
 								&& "children" in options.additionalParameters) {
 							$data = options.additionalParameters.children;
 							param = options.additionalParameters.id;
+							pname = options.additionalParameters.name;
 							console.log("param:"+JSON.stringify(param));
-							
+							console.log("pname:"+JSON.stringify(pname));
 							$.ajax({
 		                        url: this.url+"?jsoncallback=?",
 		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-		                        data: 'id=' + param,
+		                        data: 'id=' + param+"&pname="+pname,
 		                        type: 'POST',
 		                        dataType: 'json',
 		                        success: function (response) {
