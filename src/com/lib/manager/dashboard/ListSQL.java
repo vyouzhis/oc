@@ -184,17 +184,20 @@ public class ListSQL extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		FloderTree.put(pname, ItemTree());
-		
+		//	FloderTree.put(pname, ItemTree());
+		List<Map<String, Object>> RootRes;
+		RootRes = ItemTree();
 		if(FloderTree.size()>0){
-			RootTree.put("children", FloderTree);
-		
-			TreeObject.put("additionalParameters", RootTree);
+			//RootTree.put("children", FloderTree);
+			RootRes.addAll(FloderTree);			
 		}
+		
+		TreeObject.put("additionalParameters", SetTree(RootRes, lid, pname));
+		
 		
 	}
 	
-	private Map<String, Object> ItemTree() {
+	private List<Map<String, Object>> ItemTree() {
 		List<Map<String, Object>> RootRes = null, tRes;
 		
 		List<String> formats = new ArrayList<>();
@@ -227,17 +230,8 @@ public class ListSQL extends Permission implements BasePerminterface {
 				e.printStackTrace();
 			}
 		}
-		
-		Map<String, Object> Item = new HashMap<>();
-		Item.put("type", "folder");
-		Item.put("name", pname);
-		Item.put("id", lid);
-		
-		return SetTree(RootRes, lid, pname);
-		//RootTree = new HashMap<String, Object>();
-		
-		//TreeObject.put("additionalParameters", SetTree(RootRes, lid, pname));
-		
+		return RootRes;
+				
 	}
 	
 
