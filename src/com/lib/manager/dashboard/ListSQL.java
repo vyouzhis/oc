@@ -189,7 +189,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		RootRes = ItemTree();
 		if(FloderTree.size()>0){
 			//RootTree.put("children", FloderTree);
-			RootRes.addAll(FloderTree);			
+			RootRes.add(FloderTree);			
 		}
 		
 		TreeObject.put("additionalParameters", SetTree(RootRes, lid, pname));
