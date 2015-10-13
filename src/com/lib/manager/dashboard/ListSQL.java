@@ -157,7 +157,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 			return json;
 		}
 		else if (lid >0) {
-					
+				
 		}
 		else{
 			defaultRoot();			
@@ -166,6 +166,10 @@ public class ListSQL extends Permission implements BasePerminterface {
 		String treeObjectJson = JSON.toJSONString(TreeObject);
 		return treeObjectJson;
 
+	}
+	
+	private void subTree() {
+		
 	}
 	
 	private void defaultRoot() {
