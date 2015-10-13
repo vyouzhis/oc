@@ -13,7 +13,8 @@ import com.alibaba.fastjson.JSON;
 
 public class ListSQL extends Permission implements BasePerminterface {
 	private List<String> rmc;
-
+	private Map<String, Map<String, Object>> TreeObject;
+	private int lid;
 	// private Map<String, Map<String, Map<String, String>>> Mongo;
 
 	public ListSQL() {
@@ -32,7 +33,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		if (super.Init() == -1)
 			return;
-
+		lid = toInt(porg.getKey("id"));
 		rmc = porg.getRmc();
 		if (rmc.size() != 2) {
 			Msg(_CLang("error_role"));
@@ -70,7 +71,8 @@ public class ListSQL extends Permission implements BasePerminterface {
 
 		List<Map<String, Object>> res;
 
-		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
+		TreeObject = new HashMap<>();
+		
 		Map<String, Object> SubTree;
 		List<Map<String, Object>> RootRes = null, tRes;
 		String RootSql = null;
@@ -85,7 +87,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 				+ "sqltmp s, "
 				+ DB_HOR_PRE
 				+ "usersql u where u.id=s.sid  and (u.uid = "+aclGetUid() +" or u.isshare=1) and u.cid= %s order by s.id desc");
-
+		/*
 		try {			
 			res = FetchAll(sql);
 			if (res != null) {
@@ -119,9 +121,9 @@ public class ListSQL extends Permission implements BasePerminterface {
 						Item.put("type", "folder");
 						Item.put("name", map.get("name"));
 						Item.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
+						
 						Map<String, Map<String, Object>> file = new HashMap<>();
-						
-						
+												
 						file = (Map<String, Map<String, Object>>) TreeObject.get(map.get("pname").toString()).get("additionalParameters");
 						file.get("children").put(map.get("name").toString(), Item);
 						
@@ -135,7 +137,73 @@ public class ListSQL extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		if(lid==0){
+			tmpSQL();
+		}else {
+			SubTree = new HashMap<>();
+			SubTree.put("name", _MLang("tmp"));
+			SubTree.put("type", "folder");
+			
+			List<Map<String, Object>>  tRest = new ArrayList<>();
+			SubTree.put("additionalParameters", SetTree(tRest, 0));
 
+			TreeObject.put(_MLang("tmp"), SubTree);
+		}
+		*/
+		
+		if(lid== 0){
+			String json=tmpSQL();
+			return json;
+		}
+		else if (lid >0) {
+					
+		}
+		else{
+			defaultRoot();			
+		}
+		
+		String treeObjectJson = JSON.toJSONString(TreeObject);
+		return treeObjectJson;
+
+	}
+	
+	private void defaultRoot() {
+		Map<String, Object> SubTree;
+		
+		String sql = "select id,name from hor_classify where pid=1 and "+UserPermi()+" order by id";
+		List<Map<String, Object>>  RRes;
+		try {
+			RRes = FetchAll(sql);
+			for (Map<String, Object> map:RRes) {
+				SubTree = new HashMap<>();
+				SubTree.put("name", map.get("name"));
+				SubTree.put("type", "folder");
+				
+				List<Map<String, Object>>  tRest = new ArrayList<>();
+				SubTree.put("additionalParameters", SetTree(tRest, toInt(map.get("id"))));
+
+				TreeObject.put(map.get("name").toString(), SubTree);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		SubTree = new HashMap<>();
+		SubTree.put("name", _MLang("tmp"));
+		SubTree.put("type", "folder");
+		
+		List<Map<String, Object>>  tRest = new ArrayList<>();
+		SubTree.put("additionalParameters", SetTree(tRest, 0));
+
+		TreeObject.put(_MLang("tmp"), SubTree);
+	}
+	
+	private String tmpSQL() {
+		String RootSql;
+		List<Map<String, Object>>  tRes;
+		Map<String, Object> SubTree;
 		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
 				+ "usersql where sql_type=1 and "+UserPermi()+" order by id desc;";
 		try {
@@ -147,17 +215,14 @@ public class ListSQL extends Permission implements BasePerminterface {
 				SubTree.put("type", "folder");
 				SubTree.put("additionalParameters", SetTree(tRes, 0));
 
-				TreeObject.put(_MLang("tmp"), SubTree);
+				return  JSON.toJSONString(SubTree);
 
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		String treeObjectJson = JSON.toJSONString(TreeObject);
-		return treeObjectJson;
-
+		return null;
 	}
 
 	private Map<String, Object> SetTree(

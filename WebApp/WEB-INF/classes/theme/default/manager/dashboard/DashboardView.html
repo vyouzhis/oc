@@ -405,7 +405,7 @@
 	                var self = this;
 	                var $data = null;
 	
-	                var param = null
+	                var param = -1;
 	
 	                if (!("name" in options) && !("type" in options)) {
 
@@ -437,10 +437,31 @@
 							$data = options.additionalParameters.children;
 							param = options.additionalParameters.id;
 							console.log("param:"+JSON.stringify(param));
+							
+							$.ajax({
+		                        url: this.url+"?jsoncallback=?",
+		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+		                        data: 'id=' + param,
+		                        type: 'POST',
+		                        dataType: 'json',
+		                        success: function (response) {
+		                        	console.log(response.status);
+		                            if (response.status == "OK") 
+		                                callback({ data: response.data });
+		                        },
+		                        complete: function(request, textStatus) {
+		                        	var datas = JSON.parse(request.responseText);
+		                        	console.log(datas);
+		                           callback({ data:  datas.additionalParameters.children });
+		                        },
+		                        error: function (response) {
+		                            //console.log(response);
+		                        }
+		                    })
 						} else
 							$data = {}//no data
 	                }
-	                
+	                /*
 	                if ($data != null){//this setTimeout is only for mimicking some random delay
 						setTimeout(function() {                  
 	                	callback({
@@ -448,7 +469,7 @@
 							});
 						}, parseInt(Math.random() * 500) + 200);
 	                }
-	                
+	                */
 	                
 	            };
 				//没搞定
