@@ -46,7 +46,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private List<List<Map<String, Object>>> pieList = null;
 	private int itemStyle_lable = 0, itemStyle_areaStyle = 0,
 			markLine_average = 0;
-	private int math_mom = 0, math_var = 0, math_sma = 0, math_wma = 0;
+	private int math_mom = 0, math_var = 0, math_sma = 0, math_wma = 0,
+			math_diff=0;
+	private int order_desc=0;
 	
 	
 	public EchartsJson() {
@@ -181,6 +183,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		math_var = toInt(porg.getKey("math_var"));
 		math_sma = toInt(porg.getKey("math_sma"));
 		math_wma = toInt(porg.getKey("math_wma"));
+		math_diff = toInt(porg.getKey("math_diff"));
+		
+		order_desc = toInt(porg.getKey("order_desc"));
 
 		for (Map<String, String> id : JsonIds) {
 			if (toInt(id.get("id")) == 0) {
@@ -194,7 +199,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				continue;
 			}
 
-			if (JsonIds.size() == 1) {
+			if (JsonIds.size() == 1 || (JsonIds.size()==2 && (math_var == 1 || math_diff == 1))) {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
 						.lineStyle();
@@ -254,7 +259,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				ValueAxis tAxis = new ValueAxis();
 
 				tAxis.scale(true);
-				if (JsonIds.size() == 2) {
+				if (JsonIds.size() == 2 ) {
 					tAxis.name(id.get("name").toString());
 
 					jCount++;
@@ -328,7 +333,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			myaAxis.add(momAxis);
 			math_mom();
 		}
-		if (math_var == 1) {
+		if (math_var == 1 && JsonIds.size()==2) {
 			math_var();
 		}
 		if (math_sma == 1) {
@@ -336,6 +341,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		}
 		if (math_wma == 1) {
 			math_wma();
+		}
+		if(math_diff==1 && JsonIds.size()==2){
+			math_diff();
 		}
 
 		myaAxis.add(categoryAxis);
@@ -407,29 +415,32 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	}
 
 	private void math_var() {
-		option.legend(_MLang("mom"));
+		
 
-		List<Map<String, Object>> list = pieList.get(0);
+		List<Map<String, Object>> oneList = pieList.get(0);
+		List<Map<String, Object>> twoList = pieList.get(1);
+		
+		Line pOption = new Line();
+		
+		float o,t, m;
+		int max = twoList.size();
+		if(twoList.size()>oneList.size()){
+			max = oneList.size();
+		}
+		
+		for (int l=0;l<max;l++) {
 
-		Line line = new Line();
-		line.smooth(true).name(_MLang("mom")).itemStyle().normal().lineStyle();
-
-		float front = 0;
-		float x = 0;
-		float m;
-		for (Map<String, Object> key : list) {
-
-			x = toFloat(key.get("volume"));
-
-			if (front == 0) {
-				m = 100;
-			} else {
-				m = (x - front) / front * 100;
-				// echo("front:" + front + " x:" + x + " m:" + m);
+			o = toFloat(oneList.get(l).get("volume"));
+			t = toFloat(twoList.get(l).get("volume"));
+			
+			if(order_desc==0){
+				m = (o - t) / t * 100;
+			}else {
+				m = (t - o) / o * 100;
 			}
-
-			line.data((int) m);
-			front = x;
+				// echo("front:" + front + " x:" + x + " m:" + m);
+			
+			pOption.data(Float.valueOf(String.format("%.2f", m)));
 
 		}
 		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
@@ -452,10 +463,72 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			itemStyle.setNormal(normal);
 
-			line.itemStyle(itemStyle);
+			pOption.itemStyle(itemStyle);
 		}
+		pOption.smooth(true).name(_MLang("var")).itemStyle().normal().lineStyle();
+		option.legend(_MLang("var"));
+		pOption.yAxisIndex(1);
+		option.series(pOption);
+	}
+	
+	private void math_diff() {
+		
+		float tol=0;
+		List<Map<String, Object>> oneList = pieList.get(0);
+		List<Map<String, Object>> twoList = pieList.get(1);
 
-		option.series(line);
+		Line pOption = new Line();
+		
+		float o,t, m;
+		int max = twoList.size();
+		if(twoList.size()>oneList.size()){
+			max = oneList.size();
+		}
+		
+		for (int l=0;l<max;l++) {
+
+			o = toFloat(oneList.get(l).get("volume"));
+			t = toFloat(twoList.get(l).get("volume"));
+			
+			if(order_desc==0){
+				m = o - t;
+			}else {
+				m = t-o;
+			}
+				// echo("front:" + front + " x:" + x + " m:" + m);
+			tol+= m;
+			pOption.data(Float.valueOf(String.format("%.2f", m)));
+
+		}
+		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+			ItemStyle itemStyle = new ItemStyle();
+			Normal normal = new Normal();
+
+			if (itemStyle_lable == 1) {
+				Label label = new Label();
+				label.setShow(true);
+
+				normal.setLabel(label);
+			}
+			if (itemStyle_areaStyle == 1) {
+				AreaStyle aStyle = new AreaStyle();
+				normal.setAreaStyle(aStyle.typeDefault());
+			}
+
+			// itemStyle: {normal: {color:'rgba(193,35,43,1)',
+			// label:{show:true}}},
+
+			itemStyle.setNormal(normal);
+
+			pOption.itemStyle(itemStyle);
+		}
+		pOption.yAxisIndex(1);
+		
+		pOption.name(_MLang("diff")+tol+")").itemStyle().normal().lineStyle();
+		
+		option.legend(_MLang("diff")+tol+")");
+				
+		option.series(pOption);
 	}
 
 	private void math_sma() {

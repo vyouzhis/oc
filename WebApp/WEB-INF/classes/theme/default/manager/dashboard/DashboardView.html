@@ -181,7 +181,7 @@
 																			<span style="text-align: left; text-indent: 32px;">关联规则</span> 
 																		</label>											
 																		</div>
-																	</div>
+																</div>
 															 			       														
 												       	</div>
 										       	
@@ -189,39 +189,56 @@
 										       				
 												       		<div id="show_count" name="show_count">
 													       		<div class="checkbox">
-																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_var" id="arg_math_var">
-																			<span class="lbl">同比增长率</span>
-																		</label>
-																	</div>
-																	
-																	<div class="checkbox">
-																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_mom" id=" arg_math_mom">
-																			<span class="lbl">环比增长率</span>
-																		</label>
-																	</div>
-																	<div class="checkbox">
-																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_lime" id="arg_math_lime">
-																			<span class="lbl">定基比增长率</span>
-																		</label>
-																	</div>	
-																	<div class="checkbox">
-																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_sma" id="arg_math_sma">
-																			<span class="lbl">移动平均(SMA)</span>
-																		</label>
-																	</div>
-																	<!-- <div class="checkbox">
-																		<label>
-																			<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_wma" id="arg_math_wma">
-																			<span class="lbl">加权移动平均(WMA)</span>
-																		</label>
-																	</div>
-																	 -->															
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_var" id="arg_math_var">
+																		<span class="lbl">同比增长率</span>
+																	</label>
 																</div>
+																
+																<div class="checkbox">
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_mom" id=" arg_math_mom">
+																		<span class="lbl">环比增长率</span>
+																	</label>
+																</div>
+																<div class="checkbox">
+																	
+																	<label >
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_diff" id="arg_math_diff">
+																		<span class="lbl">差额增长量</span>
+																	</label>
+																	
+																</div>	
+																<div class="checkbox">
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_sma" id="arg_math_sma">
+																		<span class="lbl">移动平均(SMA)</span>
+																	</label>
+																</div>
+																<!-- <div class="checkbox">
+																	<label>
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_math_wma" id="arg_math_wma">
+																		<span class="lbl">加权移动平均(WMA)</span>
+																	</label>
+																</div>
+																 -->															
 															</div>
+														</div>
+														<div class="col-xs-12 col-sm-12 well">
+										       				
+												       		<div id="show_count" name="show_count">
+													       		
+																<div class="checkbox">
+																	
+																	<label >
+																		<input class="ace ace-checkbox-2" type="checkbox" name="arg_order_desc" id="arg_order_desc">
+																		<span class="lbl">反序</span>
+																	</label>
+																	
+																</div>	
+																															
+															</div>
+														</div>
 										       	</div>
 									       	
 									       	</div>
@@ -267,13 +284,13 @@
 												</a>
 												 -->
 											</div>
-											<!-- 
+											
 											<div class="widget-toolbar">
 												<a href="javascript:void(0)" onclick="updateTree()"> <i
 													class="icon-refresh"></i>
 												</a>
 												</div>
-												 -->
+												 
 										</div>		
 										<div class="widget-body">		
 											<div class="widget-main no-padding">
@@ -335,7 +352,7 @@
 				
 				
 			}
-											
+				/*							
 				var DataSourceTree = function(options) {
 					this._data = options.data;
 					this._delay = options.delay;
@@ -377,7 +394,63 @@
 				var treeDataSource = new DataSourceTree({
 					data : tree_data
 				});
+				*/
 				
+				var DataSourceTree = function (options) {
+	                this.url = options.url;
+	                //this._delay = options.delay;
+	            }
+
+	            DataSourceTree.prototype.data = function (options, callback) {
+	                var self = this;
+	                var $data = null;
+	
+	                var param = null
+	
+	                if (!("name" in options) && !("type" in options)) {
+
+						$.ajax({
+	                        url: this.url+"?jsoncallback=?",
+	                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+	                        data: 'id=' + param,
+	                        type: 'POST',
+	                        dataType: 'json',
+	                        success: function (response) {
+	                        	console.log(response.status);
+	                            if (response.status == "OK") 
+	                                callback({ data: response.data });
+	                        },
+	                        complete: function(request, textStatus) {
+	                        	$data = JSON.parse(request.responseText);
+	                        	console.log("1");
+	                            callback({ data:  $data });
+	                        },
+	                        error: function (response) {
+	                            //console.log(response);
+	                        }
+	                    })
+						return;
+	                }
+	                else if ("type" in options && options.type == "folder") {
+	                	if ("additionalParameters" in options
+								&& "children" in options.additionalParameters) {
+							$data = options.additionalParameters.children;
+							param = options.additionalParameters.id;
+							console.log("param:"+JSON.stringify(param));
+						} else
+							$data = {}//no data
+	                }
+	                
+	                if ($data != null){//this setTimeout is only for mimicking some random delay
+						setTimeout(function() {                  
+	                	callback({
+								data : $data
+							});
+						}, parseInt(Math.random() * 500) + 200);
+	                }
+	                
+	                
+	            };
 				//没搞定
 				function updateTree(){
 					$.ajax({
@@ -391,18 +464,18 @@
 						    //alert(textStatus);
 						  },
 						  complete: function(request, textStatus) { //for additional info
-							  var option = eval(request.responseText);
-							  console.log("option:"+option);
+							  //var option = eval(request.responseText);
+							  console.log("option:"+request.responseText);
 							  							  						
-							  $('#tree1 .tree-folder:visible').remove();
-							  $('#tree1 .tree-folder-content:visible').remove();
-							  $('#tree1 .tree-item:visible').remove();
+							 // $('#tree1 .tree-folder:visible').remove();
+							 // $('#tree1 .tree-folder-content:visible').remove();
+							 // $('#tree1 .tree-item:visible').remove();
 								// 2. remove assigned data from template element object
-								delete($('#tree1').data().tree);
-								delete($('#tree1').data());
+								//delete($('#tree1').data().tree);
+								//delete($('#tree1').data());
 								var t = Math.floor((Math.random() * 10) + 1);
 								
-							var MyData = {									
+								tree_data = {									
 									t:{
 										name:t,
 										type:'folder',										
@@ -411,21 +484,9 @@
 									
 								}
 						
-							var UrlDataSource = new DataSourceTree({
-								data : MyData, delay: 400
-							});
-				
-							// 3. Refactor Tree UI
-							$('#tree1').ace_tree({										
-								dataSource: UrlDataSource,
-								loadingHTML : '<div class="tree-loading"><i class="icon-refresh icon-spin blue"></i></div>',
-								selectable: true,
-								multiSelect : true,
-								'open-icon' : 'icon-minus',
-								'close-icon' : 'icon-plus',
-								'selected-icon' : 'icon-ok',
-								'unselected-icon' : 'icon-remove'
-							});							
+							
+							 $('#tree1').ace_tree('reload');
+							
 						  }
 						});
 				}
@@ -506,17 +567,17 @@
 						$("#docEdit").wordExport();
 					});
 					
+					
 					$('#tree1')
 						.ace_tree(
 								{
-									dataSource : treeDataSource,
+									//dataSource : treeDataSource,
+									dataSource : new DataSourceTree({ url: "${listSQL_url}" }),
 									loadingHTML : '<div class="tree-loading"><i class="icon-refresh icon-spin blue"></i></div>',
 									'selectable' : true,
-									multiSelect : true,
-									
+									multiSelect : true,									
 									'open-icon' : 'icon-minus',
-									'close-icon' : 'icon-plus',
-									
+									'close-icon' : 'icon-plus',									
 									'selected-icon' : 'icon-ok',
 									'unselected-icon' : 'icon-remove'
 								});
