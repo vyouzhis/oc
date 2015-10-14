@@ -3,6 +3,7 @@ package org.ppl.core;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -49,7 +50,7 @@ public class ServletApplicationLifeListener extends PObject implements
 		new Rlan();
 		
 		globale_config.RapidListQueue = new HashMap<String, LinkedList<Object>>();
-		globale_config.CronListQueue = new HashMap<String, Object>();
+		globale_config.CronListQueue = new HashMap<String, Map<String, Object>>();
 		
 		if (autorun == 1) {
 			Thread dt = new Thread(new RapidThread(), "dt_");		

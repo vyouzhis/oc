@@ -16,13 +16,13 @@ import com.lib.plug.echarts.DataDig;
  */
 public class mclt extends BaseCronThread {
 	private String className;
+	Map<String, Object> arg;
 	public mclt() {
 		// TODO Auto-generated constructor stub
 		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 		long id = myThreadId();
-		echo("my id:"+id);
-		globale_config.CronListQueue.put(SliceName(className), 1);
+		echo("my id:"+id);	
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class mclt extends BaseCronThread {
 
 		}
 		echo("mclt...end");
-		globale_config.CronListQueue.put(SliceName(className), 0);
+		
 
 	}
 
@@ -90,7 +90,7 @@ public class mclt extends BaseCronThread {
 	@Override
 	public String title() {
 		// TODO Auto-generated method stub
-		return "mclt";
+		return SliceName(className);
 	}
 
 }

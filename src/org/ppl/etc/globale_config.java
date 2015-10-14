@@ -51,7 +51,7 @@ public class globale_config {
 	public static Map<String, LinkedList<Object>> RapidListQueue;
 	
 	//CrontList
-	public static Map<String, Object> CronListQueue;
+	public static Map<String, Map<String, Object>> CronListQueue;
 		
 	public static globale_config getInstance() {
 		if (config == null) {

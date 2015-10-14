@@ -1,5 +1,8 @@
 package org.ppl.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ppl.BaseClass.BaseCronThread;
 import org.ppl.etc.globale_config;
 import org.ppl.io.TimeClass;
@@ -32,22 +35,42 @@ public class ThreadCronRun implements Runnable {
 		//System.out.println("i am etime!");
 		TimeClass tc = TimeClass.getInstance();
 		int now = (int) tc.time();
-
+		Map<String, Object> arg;
+		
 		int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
 		int nowDay = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "dd"));
 		Injector injector = globale_config.injector;
 		cron = (BaseCronThread) injector.getInstance(Key.get(
 				BaseCronThread.class, Names.named(tpKey)));
+		
+		String title = cron.title();
+		int minu = cron.minute();
+		int hour = cron.hour();
+		int day = cron.day();
 		boolean isStop = cron.isStop();
 		
+		if(globale_config.CronListQueue.containsKey(title)){
+			 minu = (int)globale_config.CronListQueue.get(title).get("minute");
+			 hour = (int)globale_config.CronListQueue.get(title).get("hour");
+			 day = (int)globale_config.CronListQueue.get(title).get("day");
+			 isStop = (boolean)globale_config.CronListQueue.get(title).get("isStop");
+		}else{
+			arg = new HashMap<String, Object>();
+			arg.put("title", title);
+			arg.put("minute", minu);
+			arg.put("hour", hour);
+			arg.put("day", day);
+			arg.put("isStop", isStop);
+			
+			synchronized (globale_config.CronListQueue) {				
+				globale_config.CronListQueue.put(title, arg);
+			}
+		}
+					
 		if (isStop == true) {
 			cron.free();
 			return 0;
 		}
-
-		int minu = cron.minute();
-		int hour = cron.hour();
-		int day = cron.day();
 
 		int sleepTime = sTime;
 		

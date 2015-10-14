@@ -37,14 +37,14 @@ public class CronThread extends LibThread {
 					arg = new HashMap<>();
 					String name = SliceName(ps);
 					cronMap.put(name, 0);
-					arg.put("title", clazz.title());
+					globale_config.CronListQueue.put(name, arg);
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		globale_config.CronListQueue.put(name, 0);
+		
 		
 		while (true) {
 			System.out.println("start...");
