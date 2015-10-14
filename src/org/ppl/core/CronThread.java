@@ -25,7 +25,7 @@ public class CronThread extends LibThread {
 	public void ListQueue() {
 		// TODO Auto-generated method stub
 		UrlClassList ucl = UrlClassList.getInstance();
-		
+		Map<String, Object> arg;
 		cronMap = new HashMap<String, Integer>();
 		Config mConfig = new Config(globale_config.Config);
 		int cronDelay = mConfig.GetInt("cronDelay");
@@ -34,16 +34,18 @@ public class CronThread extends LibThread {
 				Class<?> clazz = Class.forName(ps);
 
 				if (clazz.getSuperclass().equals(BaseCronThread.class)) {
+					arg = new HashMap<>();
 					String name = SliceName(ps);
 					cronMap.put(name, 0);
-					globale_config.CronListQueue.put(name, 0);
+					arg.put("title", clazz.title());
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
+		globale_config.CronListQueue.put(name, 0);
+		
 		while (true) {
 			System.out.println("start...");
 			ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());

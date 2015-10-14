@@ -9,6 +9,7 @@ public abstract class BaseCronThread extends DBSQL{
 		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
 		hcp.GetCon();
 	}
+	public abstract String title();
 	public abstract int minute();
 	public abstract int hour();
 	public abstract int day();

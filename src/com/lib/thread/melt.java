@@ -83,4 +83,10 @@ public class melt extends BaseCronThread {
 		return true;
 	}
 
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		return "melt_title";
+	}
+
 }

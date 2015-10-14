@@ -87,4 +87,10 @@ public class mclt extends BaseCronThread {
 		return true;
 	}
 
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		return "mclt";
+	}
+
 }
