@@ -64,90 +64,16 @@ public class ListSQL extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		int n = time();
 		String json = ListMainClassify();
 
 		super.setHtml(json);
 	}
 
-	@SuppressWarnings("unchecked")
 	private String ListMainClassify() {
 
 		RootSQL = "select id,name from hor_classify where pid=%d and "
 				+ UserPermi() + " order by id";
 		TreeObject = new HashMap<>();
-//
-//		String sql = "select id,name,pid,(select name from " + DB_HOR_PRE
-//				+ "classify h where h.id=c.pid ) as pname from " + DB_HOR_PRE
-//				+ "classify c where displays=0 and " + UserPermi()
-//				+ " order by pid,id";
-//
-//		List<Map<String, Object>> res;
-//
-		
-//
-//		Map<String, Object> SubTree;
-//		List<Map<String, Object>> RootRes = null, tRes;
-//		String RootSql = null;
-//		List<String> formats = new ArrayList<>();
-//		formats.add("SELECT id,name,cid,qaction FROM "
-//				+ DB_HOR_PRE
-//				+ "mongodbrule where qaction in (2,3) and snap=0 and cid=%s and "
-//				+ UserPermi() + " order by id desc;");
-//		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
-//				+ "usersql where sql_type=0 and input_data=0 and "
-//				+ UserPermi() + " and cid=%s");
-//		formats.add("select s.id,s.name,u.cid from " + DB_HOR_PRE
-//				+ "sqltmp s, " + DB_HOR_PRE
-//				+ "usersql u where u.id=s.sid  and (u.uid = " + aclGetUid()
-//				+ " or u.isshare=1) and u.cid= %s order by s.id desc");
-//
-//		try {
-//			res = FetchAll(sql);
-//			if (res != null) {
-//				for (Map<String, Object> map : res) {
-//					for (String tsql : formats) {
-//						RootSql = String.format(tsql, map.get("id").toString());
-//						try {
-//							tRes = FetchAll(RootSql);
-//							if (RootRes != null) {
-//								if (tRes != null) {
-//									RootRes.addAll(tRes);
-//								}
-//							} else {
-//								RootRes = tRes;
-//							}
-//						} catch (SQLException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//					}
-//					if (toInt(map.get("pid")) == 1) {
-//						SubTree = new HashMap<>();
-//						SubTree.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
-//						SubTree.put("name", map.get("name").toString());
-//						SubTree.put("type", "folder");
-//						TreeObject.put(map.get("name").toString(), SubTree);
-//
-//					} else {
-//						Map<String, Object> Item = new HashMap<>();
-//						Item.put("type", "folder");
-//						Item.put("name", map.get("name"));
-//						Item.put("additionalParameters", SetTree(RootRes, toInt(map.get("id"))));
-//
-//						Map<String, Map<String, Object>> file = new HashMap<>();
-//
-//						file = (Map<String, Map<String, Object>>) TreeObject.get(map.get("pname").toString()).get("additionalParameters");
-//						file.get("children").put(map.get("name").toString(), Item);
-//
-//					}
-//					RootRes = null;
-//				}
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 
 		if (lid == 0) {
 			String json = tmpSQL();
@@ -163,13 +89,18 @@ public class ListSQL extends Permission implements BasePerminterface {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void subTreeRoot() {
-		Map<String, Object> SubTree, FloderTree, RootTree;
-
+		Map<String, Object> SubTree, FloderTree;
+		Map<String, Object> RootTree;
 		String sql = String.format(RootSQL, lid);
 		List<Map<String, Object>> RRes;
 		FloderTree = new HashMap<String, Object>();
-		RootTree = new HashMap<String, Object>();
+		
+		List<Map<String, Object>> RootRes;
+		RootRes = ItemTree();
+		FloderTree = SetTree(RootRes, lid, pname);
+		RootTree = (Map<String, Object>) FloderTree.get("children");
 		try {
 			RRes = FetchAll(sql);
 			for (Map<String, Object> map : RRes) {
@@ -178,22 +109,14 @@ public class ListSQL extends Permission implements BasePerminterface {
 				SubTree.put("type", "folder");
 				SubTree.put("id", map.get("id"));
 
-				FloderTree.put(map.get("name").toString(), SubTree);
+				RootTree.put(map.get("name").toString(), SubTree);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//	FloderTree.put(pname, ItemTree());
-		List<Map<String, Object>> RootRes;
-		RootRes = ItemTree();
-		if(FloderTree.size()>0){
-			//RootTree.put("children", FloderTree);
-			RootRes.add(FloderTree);			
-		}
-		
-		TreeObject.put("additionalParameters", SetTree(RootRes, lid, pname));
-		
+
+		TreeObject.put("additionalParameters", FloderTree);
 		
 	}
 	
@@ -213,10 +136,10 @@ public class ListSQL extends Permission implements BasePerminterface {
 				+ "usersql u where u.id=s.sid  and (u.uid = " + aclGetUid()
 				+ " or u.isshare=1) and u.cid= "+lid+" order by s.id desc");
 		
-		
 		for (String tsql : formats) {
 			
 			try {
+			
 				tRes = FetchAll(tsql);
 				if (RootRes != null) {
 					if (tRes != null) {

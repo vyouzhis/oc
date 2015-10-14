@@ -67,7 +67,7 @@ public class classify_action extends Permission implements BasePerminterface{
 	 * i am lazy :(
 	 */
 	private void listPid() {
-		String sql = "select id,name from "+DB_HOR_PRE+"classify where pid=1 and "+UserPermi();
+		String sql = "select id,name from "+DB_HOR_PRE+"classify where "+UserPermi()+" order by id";
 		List<Map<String, Object>> res;
 				
 		try {

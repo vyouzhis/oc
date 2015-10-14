@@ -284,13 +284,13 @@
 												</a>
 												 -->
 											</div>
-											
+											<!-- 
 											<div class="widget-toolbar">
 												<a href="javascript:void(0)" onclick="updateTree()"> <i
 													class="icon-refresh"></i>
 												</a>
-												</div>
-												 
+											</div>
+											--> 
 										</div>		
 										<div class="widget-body">		
 											<div class="widget-main no-padding">
@@ -352,63 +352,19 @@
 				
 				
 			}
-				/*							
-				var DataSourceTree = function(options) {
-					this._data = options.data;
-					this._delay = options.delay;
-				}
 
-				DataSourceTree.prototype.data = function(options, callback) {
-					var self = this;
-					var $data = null;
-
-					if (!("name" in options) && !("type" in options)) {
-						$data = this._data;//the root tree
-
-						callback({
-							data : $data
-						});
-						return;
-					} else if ("type" in options && options.type == "folder") {
-						if ("additionalParameters" in options
-								&& "children" in options.additionalParameters) {
-							$data = options.additionalParameters.children;
-						} else
-							$data = {}//no data
-					}
-
-					if ($data != null)//this setTimeout is only for mimicking some random delay
-						setTimeout(function() {
-							callback({
-								data : $data
-							});
-					}, parseInt(Math.random() * 500) + 200);
-
-					//we have used static data here
-					//but you can retrieve your data dynamically from a server using ajax call
-					//checkout examples/treeview.html and examples/treeview.js for more info
-				};
-
-				var tree_data = ${treeObjectJson!""};
-					
-				var treeDataSource = new DataSourceTree({
-					data : tree_data
-				});
-				*/
-				
 				var DataSourceTree = function (options) {
 	                this.url = options.url;
-	                //this._delay = options.delay;
 	            }
 
 	            DataSourceTree.prototype.data = function (options, callback) {
 	                var self = this;
 	                var $data = null;
-						 var pname = "";
+				    var pname = "";
 	                var param = -1;
 	
 	                if (!("name" in options) && !("type" in options)) {
-
+	                	//console.log("1");
 						$.ajax({
 	                        url: this.url+"?jsoncallback=?",
 	                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -416,13 +372,13 @@
 	                        type: 'POST',
 	                        dataType: 'json',
 	                        success: function (response) {
-	                        	console.log(response.status);
+	                        	//console.log(response.status);
 	                            if (response.status == "OK") 
 	                                callback({ data: response.data });
 	                        },
 	                        complete: function(request, textStatus) {
 	                        	$data = JSON.parse(request.responseText);
-	                        	console.log("1");
+	                        	//console.log("1");
 	                            callback({ data:  $data });
 	                        },
 	                        error: function (response) {
@@ -437,8 +393,9 @@
 							$data = options.additionalParameters.children;
 							param = options.additionalParameters.id;
 							pname = options.additionalParameters.name;
-							console.log("param:"+JSON.stringify(param));
-							console.log("pname:"+JSON.stringify(pname));
+							//console.log("param:"+JSON.stringify(param));
+							//console.log("pname:"+JSON.stringify(pname));
+							//console.log("2");
 							$.ajax({
 		                        url: this.url+"?jsoncallback=?",
 		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -446,72 +403,56 @@
 		                        type: 'POST',
 		                        dataType: 'json',
 		                        success: function (response) {
-		                        	console.log(response.status);
+		                        	//console.log(response.status);
 		                            if (response.status == "OK") 
 		                                callback({ data: response.data });
 		                        },
 		                        complete: function(request, textStatus) {
 		                        	var datas = JSON.parse(request.responseText);
-		                        	console.log(datas);
+		                        	//console.log(datas);
 		                           callback({ data:  datas.additionalParameters.children });
 		                        },
 		                        error: function (response) {
 		                            //console.log(response);
 		                        }
 		                    })
-						} else
-							$data = {}//no data
+						} else{
+							//console.log("3");
+							//console.log(options);
+							
+							param = options.id;
+							pname = options.name;
+							console.log("param:"+JSON.stringify(param));
+							console.log("pname:"+JSON.stringify(pname));
+							//console.log("2");
+							$.ajax({
+		                        url: this.url+"?jsoncallback=?",
+		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+		                        data: 'id=' + param+"&pname="+pname,
+		                        type: 'POST',
+		                        dataType: 'json',
+		                        success: function (response) {
+		                        	//console.log(response.status);
+		                            if (response.status == "OK") 
+		                                callback({ data: response.data });
+		                        },
+		                        complete: function(request, textStatus) {
+		                        	var datas = JSON.parse(request.responseText);
+		                        	//console.log(datas);
+		                           callback({ data:  datas.additionalParameters.children });
+		                        },
+		                        error: function (response) {
+		                            //console.log(response);
+		                        }
+		                    })
+						}
 	                }
-	                /*
-	                if ($data != null){//this setTimeout is only for mimicking some random delay
-						setTimeout(function() {                  
-	                	callback({
-								data : $data
-							});
-						}, parseInt(Math.random() * 500) + 200);
-	                }
-	                */
-	                
+
 	            };
-				//没搞定
-				function updateTree(){
-					$.ajax({
-						  url: "${listSQL_url}?jsoncallback=?",
-						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-						  dataType: 'json',					  
-						  success: function(result){
-							  console.log("success"+result);
-						  },
-						  error: function(request, textStatus, errorThrown) {
-						    //alert(textStatus);
-						  },
-						  complete: function(request, textStatus) { //for additional info
-							  //var option = eval(request.responseText);
-							  console.log("option:"+request.responseText);
-							  							  						
-							 // $('#tree1 .tree-folder:visible').remove();
-							 // $('#tree1 .tree-folder-content:visible').remove();
-							 // $('#tree1 .tree-item:visible').remove();
-								// 2. remove assigned data from template element object
-								//delete($('#tree1').data().tree);
-								//delete($('#tree1').data());
-								var t = Math.floor((Math.random() * 10) + 1);
-								
-								tree_data = {									
-									t:{
-										name:t,
-										type:'folder',										
-										'additionalParameters': {"children":{"10":{"id":"10","qaction":"5","name":"外汇资讯","type":"item"},"7":{"id":"7","qaction":"5","name":"外汇交易策略","type":"item"},"6":{"id":"6","qaction":"5","name":"原油交易策略","type":"item"},"5":{"id":"5","qaction":"5","name":"黄金评论","type":"item"},"9":{"id":"9","qaction":"5","name":"白银投资","type":"item"},"8":{"id":"8","qaction":"5","name":"贵金属交易策略","type":"item"},"13":{"id":"13","qaction":"5","name":"MT4出金","type":"item"},"14":{"id":"14","qaction":"5","name":"入金","type":"item"},"11":{"id":"11","qaction":"5","name":"黄金资讯","type":"item"},"12":{"id":"12","qaction":"5","name":"市场头条","type":"item"}}}
-									}
-									
-								}
-						
-							
-							 $('#tree1').ace_tree('reload');
-							
-						  }
-						});
-				}
+				// 在线更新菜单
+				//function updateTree(){
+					
+				//}
 				
 				function addTmp(p){
 					var flag = 0;
@@ -526,7 +467,7 @@
 						"</tr>"+
 					"</thead>"+
 					"<tbody>";
-					console.log(p);
+					//console.log(p);
 					var o = eval(p);
 					for(var k in o) {
 						//console.log(o[k]['qaction']);
