@@ -92,7 +92,7 @@ public class admin_permission_setting extends Permission implements
 			setRoot("action_url", ucl.edit(SliceName(stdClass)));
 			getGroupUser(porg.getKey("gid"));
 		}
-		String Json = aclfetchMyRole();
+		//String Json = aclfetchMyRole();
 
 		setRoot("Pack_Class_List", PackClassList);
 	}

@@ -8,13 +8,13 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 
-public class ThreadPoolRun implements Runnable {
+public class ThreadCronRun implements Runnable {
 	private String tpKey;
 	private int sTime = 0;
 	private boolean isRun=false;
 	private BaseCronThread cron;
 	
-	public ThreadPoolRun(String key, int now) {
+	public ThreadCronRun(String key, int now) {
 		// TODO Auto-generated constructor stub
 		tpKey = key;
 		sTime = now;

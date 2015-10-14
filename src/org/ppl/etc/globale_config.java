@@ -7,7 +7,6 @@ import java.util.Map;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import com.google.inject.Injector;
-import com.lib.plug.echarts.echarts;
 
 public class globale_config {
 	public static globale_config config = null;

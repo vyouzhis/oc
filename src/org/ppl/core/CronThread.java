@@ -50,7 +50,7 @@ public class CronThread extends LibThread {
 			
 			for (String key : cronMap.keySet()) {
 				// System.out.print("KEY:"+key);	
-				ThreadPoolRun tpr = new ThreadPoolRun(key, cronMap.get(key));
+				ThreadCronRun tpr = new ThreadCronRun(key, cronMap.get(key));
 				cronMap.put(key, tpr.etime());
 				cachedThreadPool.execute(tpr);										
 			}
