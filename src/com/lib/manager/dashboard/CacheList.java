@@ -61,7 +61,7 @@ public class CacheList extends Permission implements BasePerminterface {
 		String format = "select * from " + DB_HOR_PRE
 				+ "cache  where "+UserPermi()+"  order by ctime desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
-		echo(sql);
+		
 		List<Map<String, Object>> res;
 
 		try {
