@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Logger;
 
-import com.lib.plug.echarts.echarts;
+import org.ppl.common.function;
 
-public class ProjectPath {
+
+public class ProjectPath extends function {
 	static ProjectPath pp = null;
 
 	public static ProjectPath getInstance() {
@@ -99,10 +99,4 @@ public class ProjectPath {
 		return false;
 	}
 	
-	public void echo(Object o) {
-		//if (stdClass != null) {
-		
-			Logger log = Logger.getLogger(this.getClass().getName());
-			log.info(o.toString());
-	}
 }

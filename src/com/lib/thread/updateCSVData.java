@@ -162,4 +162,12 @@ public class updateCSVData extends BaseRapidThread {
 		}
 
 	}
+
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		String className = this.getClass().getCanonicalName();
+		
+		return _CLang(SliceName(className));
+	}
 }

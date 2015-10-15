@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
 import org.ppl.db.MGDB;
-import org.ppl.etc.globale_config;
 
 import com.lib.plug.echarts.DataDig;
 
@@ -20,8 +19,7 @@ public class mdlt extends BaseCronThread {
 	public mdlt() {
 		// TODO Auto-generated constructor stub
 		className = this.getClass().getCanonicalName();
-		super.GetSubClassName(className);
-		globale_config.CronListQueue.put(SliceName(className), 1);
+		super.GetSubClassName(className);		
 	}
 
 	@Override
@@ -61,8 +59,7 @@ public class mdlt extends BaseCronThread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		globale_config.CronListQueue.put(SliceName(className), 0);
+				
 	}
 	private void Operation(Map<String, Object> o) {
 		if (o == null) {
@@ -113,7 +110,8 @@ public class mdlt extends BaseCronThread {
 	@Override
 	public String title() {
 		// TODO Auto-generated method stub
-		return "mdlt";
+		echo("title:"+SliceName(className));
+		return _CLang(SliceName(className));
 	}
 
 }

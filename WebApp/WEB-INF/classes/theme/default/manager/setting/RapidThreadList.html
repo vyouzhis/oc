@@ -32,32 +32,36 @@
 									id="sample-table-1">
 									<thead>
 										<tr>
-											<th class="center">id</th>
-											<th>标题</th>
-											<th>备注</th>
-											<th>用户名</th>
-											<th>验证码</th>
-											<th class="hidden-480">创建时间</th>
+											<th class="center">类名</th>
+											<#list proJson?values as val> 
+											<th>${val}</th>
+											</#list>
 											<th>操作</th>
 										</tr>
 									</thead>
 									<tbody>
-									    <#if api_list ??>
-										<#list api_list as item>
+									    <#if rapidList ??>
+										<#list rapidList?keys as key>
+										<#assign ThreadChile = rapidList[key] >
+										
 										<tr>
 											<td class="center">
-												${item.id}
-											</td>			
+												${key}
+											</td>	
+											<#list proJson?keys as item>
+											<#assign values = ThreadChile[item]!"" >	
 											<td>
-												${item.title}
-											</td>											
-											<td>${item.idesc}</td>											
-											<td>${item.username}</td>
-											<td>${item.secret}</td>
-											<td>${fun.DateFormat(item.ctime, "yyyy-MM-dd HH:mm")}</td>
-										
-											<td> <a href="${edit_url}?id=${item.id}">编辑</a>,<a href="${edit_url}?id=${item.id}">清空数据</a></td>
+												<#if item=='rtime'>
+												${fun.DateFormat(values?c?number, "yyyy-MM-dd HH:mm")}
+												<#else>
+												${values?string}
+												</#if>
+											</td>	
+											</#list>									
+																				
+											<td> <a href="">编辑</a></td>
 										</tr>
+										
 										</#list>
 										</#if>
 									</tbody>

@@ -76,7 +76,10 @@ public class getGovData extends BaseRapidThread {
 			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
 
 			for (Map<String, Object> tj : TreeJson) {
-				if(tj.get("name").toString().indexOf("2003")>0 || tj.get("name").toString().indexOf("2004")>0|| tj.get("name").toString().indexOf("2001")>0)continue;
+				if (tj.get("name").toString().indexOf("2003") > 0
+						|| tj.get("name").toString().indexOf("2004") > 0
+						|| tj.get("name").toString().indexOf("2001") > 0)
+					continue;
 				echo(tj.get("name").toString());
 				if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
 					curl.clearParams();
@@ -87,10 +90,13 @@ public class getGovData extends BaseRapidThread {
 					String subRes = curl.httpPost(SearchUrl);
 
 					SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
-										
+
 					for (Map<String, Object> sj : SubTreeJson) {
-						if(sj.get("name").toString().indexOf("2003")>0 || sj.get("name").toString().indexOf("2004")>0|| sj.get("name").toString().indexOf("2001")>0)continue;
-						DataSave(sj.get("id").toString()); // 保存数据						
+						if (sj.get("name").toString().indexOf("2003") > 0
+								|| sj.get("name").toString().indexOf("2004") > 0
+								|| sj.get("name").toString().indexOf("2001") > 0)
+							continue;
+						DataSave(sj.get("id").toString()); // 保存数据
 					}
 				} else {
 					DataSave(tj.get("id").toString()); // 保存数据
@@ -193,28 +199,28 @@ public class getGovData extends BaseRapidThread {
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
 			dnameo = dname;
-			if(!dnameo.equals(dnamet)){
+			if (!dnameo.equals(dnamet)) {
 				dnamet = dnameo;
 				try {
 
 					long cidt = insert(classList.get(dname), true);
-					if(cidt != -1){
+					if (cidt != -1) {
 						cid = cidt;
-						//echo(cid);
+						// echo(cid);
 						CommitDB();
 
 						String vsql = String.format(viewformat,
 								dname.toLowerCase(), view, (int) cid);
 						// echo(sqlI);
 						dbcreate(vsql);
-					}else {
+					} else {
 						continue;
-					}								
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+
 			}
 			sql = String.format(format, cid, val, dtime, UnitList.get(dname));
 
@@ -227,6 +233,14 @@ public class getGovData extends BaseRapidThread {
 			}
 		}
 
+	}
+
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		String className = this.getClass().getCanonicalName();
+
+		return _CLang(SliceName(className));
 	}
 
 }

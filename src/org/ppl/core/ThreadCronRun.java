@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
+import org.ppl.common.function;
 import org.ppl.etc.globale_config;
 import org.ppl.io.TimeClass;
 
@@ -11,12 +12,12 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 
-public class ThreadCronRun implements Runnable {
+public class ThreadCronRun extends function implements Runnable {
 	private String tpKey;
 	private int sTime = 0;
 	private boolean isRun=false;
 	private BaseCronThread cron;
-	
+	private String title;
 	public ThreadCronRun(String key, int now) {
 		// TODO Auto-generated constructor stub
 		tpKey = key;
@@ -26,7 +27,7 @@ public class ThreadCronRun implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		System.out.println("i am run!");
+		echo("i am run!");
 		ThreadRuns();
 	}
 	
@@ -34,7 +35,7 @@ public class ThreadCronRun implements Runnable {
 		isRun=false;
 		//System.out.println("i am etime!");
 		TimeClass tc = TimeClass.getInstance();
-		int now = (int) tc.time();
+		int now = time();
 		Map<String, Object> arg;
 		
 		int nowHour = Integer.valueOf(tc.TimeStamptoDate(tc.time(), "hh"));
@@ -43,7 +44,8 @@ public class ThreadCronRun implements Runnable {
 		cron = (BaseCronThread) injector.getInstance(Key.get(
 				BaseCronThread.class, Names.named(tpKey)));
 		
-		String title = cron.title();
+		title = SliceName(cron.getBindName());
+		
 		int minu = cron.minute();
 		int hour = cron.hour();
 		int day = cron.day();
@@ -54,26 +56,36 @@ public class ThreadCronRun implements Runnable {
 			 hour = (int)globale_config.CronListQueue.get(title).get("hour");
 			 day = (int)globale_config.CronListQueue.get(title).get("day");
 			 isStop = (boolean)globale_config.CronListQueue.get(title).get("isStop");
+			 synchronized (globale_config.CronListQueue) {															
+				if(globale_config.CronListQueue.get(title).get("name").toString().length()==0){
+					String name = cron.title();
+					if(name!=null && name.length() > 0)
+						globale_config.CronListQueue.get(title).put("name", name);
+				}
+			}
 		}else{
 			arg = new HashMap<String, Object>();
-			arg.put("title", title);
+			arg.put("name", "");
 			arg.put("minute", minu);
 			arg.put("hour", hour);
 			arg.put("day", day);
 			arg.put("isStop", isStop);
+			arg.put("rtime", time());
+			arg.put("munber", 0);
 			
 			synchronized (globale_config.CronListQueue) {				
 				globale_config.CronListQueue.put(title, arg);
 			}
 		}
-					
+		
 		if (isStop == true) {
 			cron.free();
 			return 0;
 		}
 
 		int sleepTime = sTime;
-		
+		echo("sleepTime:"+sleepTime);
+		echo("now:"+now);	
 		int newTime = 0;
 		if (day == 0 && hour == 0 && sleepTime < now) {
 			newTime = now + minu * 60;
@@ -83,7 +95,7 @@ public class ThreadCronRun implements Runnable {
 			newTime = now + hour * 60 * 60 + minu * 60 + 86400;
 		} else {
 			cron.free();
-			System.out.println("continue key:" + tpKey + " sleepTime:"
+			echo("continue key:" + tpKey + " sleepTime:"
 					+ sleepTime + " day:" + day + " hour:" + hour + " now:"
 					+ now);
 			return 0;
@@ -95,10 +107,15 @@ public class ThreadCronRun implements Runnable {
 	
 	private void ThreadRuns() {
 		if(isRun){
+			synchronized (globale_config.CronListQueue) {		
+				globale_config.CronListQueue.get(title).put("rtime", time());
+				int munber = (int) globale_config.CronListQueue.get(title).get("munber");
+				globale_config.CronListQueue.get(title).put("munber", munber+1);												
+			}
 			cron.Run();
 			cron.free();
 		}else {
-			System.out.println("no run!");
+			echo("no run!");
 		}
 	}
 

@@ -49,10 +49,11 @@ public class globale_config {
 	
 	//listQueue
 	public static Map<String, LinkedList<Object>> RapidListQueue;
+	public static Map<String, Map<String, Object>> RapidList;
 	
 	//CrontList
 	public static Map<String, Map<String, Object>> CronListQueue;
-		
+				
 	public static globale_config getInstance() {
 		if (config == null) {
 			config = new globale_config();

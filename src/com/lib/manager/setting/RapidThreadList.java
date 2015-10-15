@@ -1,9 +1,13 @@
 package com.lib.manager.setting;
 
 import java.util.List;
+import java.util.Map;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.etc.globale_config;
+
+import com.alibaba.fastjson.JSON;
 
 public class RapidThreadList extends Permission implements BasePerminterface{
 
@@ -36,18 +40,7 @@ public class RapidThreadList extends Permission implements BasePerminterface{
 		case "read":
 			read(null);
 			break;
-		case "search":
-			search(null);
-			break;
-		case "create":
-			create(null);
-			return;
-		case "edit":
-			edit(null);
-			break;
-		case "remove":
-			remove(null);
-			return;
+
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -56,10 +49,16 @@ public class RapidThreadList extends Permission implements BasePerminterface{
 		super.View();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
+		Map<String, Map<String, Object>> rapidList = globale_config.RapidList;
+		setRoot("rapidList", rapidList);
 		
+		String property = mConfig.GetValue("rapid.property");		
+		Map<String, String> proJson = JSON.parseObject(property, Map.class);
+		setRoot("proJson", proJson);
 	}
 
 	@Override

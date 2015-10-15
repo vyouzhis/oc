@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.ppl.BaseClass.BaseCronThread;
-import org.ppl.etc.globale_config;
 
 import com.lib.plug.echarts.DataDig;
 
@@ -90,7 +89,7 @@ public class mclt extends BaseCronThread {
 	@Override
 	public String title() {
 		// TODO Auto-generated method stub
-		return SliceName(className);
+		return _CLang(SliceName(className));
 	}
 
 }

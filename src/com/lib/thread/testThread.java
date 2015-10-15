@@ -39,4 +39,10 @@ public class testThread extends BaseRapidThread {
 		}
 	}
 
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

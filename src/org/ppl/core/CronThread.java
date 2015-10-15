@@ -25,7 +25,7 @@ public class CronThread extends LibThread {
 	public void ListQueue() {
 		// TODO Auto-generated method stub
 		UrlClassList ucl = UrlClassList.getInstance();
-		Map<String, Object> arg;
+	
 		cronMap = new HashMap<String, Integer>();
 		Config mConfig = new Config(globale_config.Config);
 		int cronDelay = mConfig.GetInt("cronDelay");
@@ -33,11 +33,9 @@ public class CronThread extends LibThread {
 			try {
 				Class<?> clazz = Class.forName(ps);
 
-				if (clazz.getSuperclass().equals(BaseCronThread.class)) {
-					arg = new HashMap<>();
+				if (clazz.getSuperclass().equals(BaseCronThread.class)) {					
 					String name = SliceName(ps);
-					cronMap.put(name, 0);
-					globale_config.CronListQueue.put(name, arg);
+					cronMap.put(name, 0);					
 				}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -65,12 +63,6 @@ public class CronThread extends LibThread {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private String SliceName(String k) {
-		String[] name = k.split("\\.");
-		String cName = name[name.length - 1];
-		return cName;
 	}
 
 }

@@ -84,7 +84,7 @@ public class MGDB extends PObject {
 		// Mongo m;
 		try {
 			MongoClientOptions.Builder optionsBuilder = MongoClientOptions
-					.builder().acceptableLatencyDifference(10000)
+					.builder()
 					.connectionsPerHost(1000).connectTimeout(15000)
 					.maxWaitTime(30000).socketTimeout(60000)
 					.threadsAllowedToBlockForConnectionMultiplier(5000);

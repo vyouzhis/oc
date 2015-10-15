@@ -1,0 +1,62 @@
+
+<body> 
+  ${navbar!""}
+  <div class="main-container" id="main-container"> 
+   <script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script> 
+   <div class="main-container-inner"> 
+    
+    ${menu!""}
+     <div class="main-content"> 
+     <div class="breadcrumbs" id="breadcrumbs"> 
+      <script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script> 
+      <ul class="breadcrumb"> 
+       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
+       <li class="active">${name}</li> 
+      </ul> 
+      <!-- #nav-search --> 
+     </div> 
+     <div class="page-content"> 
+      <!-- /.page-header --> 
+     <div class="row"> 
+       <div class="col-xs-12 well"> 
+        <form class="form-horizontal id-message-form col-xs-12" method="post"
+									enctype="multipart/form-data" action='${action_url}?key=${ekey}'> 
+         <h3 class="col-sm-4 control-label no-padding-right">修改进程:${ekey}</h3> 
+         <#if CronMap ??>
+		 <#list CronMap?keys as key>
+		 <#if key=='name' || key=='minute' || key='hour' || key='day'|| key='isStop' > 
+         <div class="form-group"> 
+          <div class="col-sm-12"> 
+           <label class="col-sm-3 control-label">${proJson[key]}:</label> 
+           <div class="col-sm-4"> 
+           <input type="text" <#if key=='name'> disabled="disabled" </#if>  name="${key}" id="${key}"  value='${CronMap[key]?string}' />
+           </div> 
+          </div> 
+         </div> 
+		 </#if>
+		 </#list>
+		 </#if>
+
+          
+         <div class="form-group"> 
+          <span class="col-sm-4"></span> 
+          <button class="btn btn-sm btn-default" type="submit"> <i class="icon-ok bigger-110"></i> 保存 </button> 
+         </div> 
+        </form> 
+       </div> 
+
+       <!-- /span --> 
+      </div>
+     <!-- /.row --> 
+    <!-- /.main-content --> 
+   
+    <!-- /#ace-settings-container --> 
+   </div> 
+   <!-- /.main-container-inner --> 
+   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
+  </div> 
+  <!-- /.main-container --> 

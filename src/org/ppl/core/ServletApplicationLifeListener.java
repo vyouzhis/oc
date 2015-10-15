@@ -50,6 +50,7 @@ public class ServletApplicationLifeListener extends PObject implements
 		new Rlan();
 		
 		globale_config.RapidListQueue = new HashMap<String, LinkedList<Object>>();
+		globale_config.RapidList = new HashMap<>();
 		globale_config.CronListQueue = new HashMap<String, Map<String, Object>>();
 		
 		if (autorun == 1) {

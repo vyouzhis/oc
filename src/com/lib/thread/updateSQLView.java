@@ -14,13 +14,13 @@ public class updateSQLView extends BaseRapidThread {
 	private long rule = 0;
 	private String view_field = "";
 	private boolean isvfield = true;
-	
+
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
 		if (mail == null)
 			return;
-		String format = "insert INTO hor_classinfo (title,view_name,ctype)values('%s', '%s', 1)";
+		String format = "insert INTO "+DB_HOR_PRE+"classinfo (title,view_name,ctype)values('%s', '%s', 1)";
 		String sql = String.format(format, mail.get("name").toString(), mail
 				.get("view").toString());
 
@@ -31,19 +31,20 @@ public class updateSQLView extends BaseRapidThread {
 			e.printStackTrace();
 		}
 		CustomDB(mail.get("sql").toString(), toInt(mail.get("dtype")));
-		
+
 		format = "CREATE VIEW %s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d";
-		
+
 		view_field = clear(view_field);
-		
-		if(view_field.length()==0)return;
-		
-		sql = String.format(format, mail
-				.get("view").toString(), view_field, rule);
-		
+
+		if (view_field.length() == 0)
+			return;
+
+		sql = String.format(format, mail.get("view").toString(), view_field,
+				rule);
+
 		try {
-			//echo(sql);
+			// echo(sql);
 			insert(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -82,7 +83,7 @@ public class updateSQLView extends BaseRapidThread {
 		String dsql = String.format(format, id);
 
 		Map<String, Object> dres;
-		
+
 		dres = FetchOne(dsql);
 		if (dres == null)
 			return;
@@ -99,23 +100,24 @@ public class updateSQLView extends BaseRapidThread {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//echo("pwd:" + pwd);
+		// echo("pwd:" + pwd);
 		if (mySQl.toLowerCase().matches("(.*)limit(.*)") == false) {
-			mySQl = mySQl + " LIMIT " + Limit +" offset ";
+			mySQl = mySQl + " LIMIT " + Limit + " offset ";
 		}
 		ucdb.setDbPwd(pwd);
 
 		if (ucdb.Init() == false) {
 			echo("init error");
 		} else {
-			//echo(mySQl);
+			// echo(mySQl);
 			try {
-				while (true) {					
-					tmp = ucdb.FetchAll(mySQl+offset);
-					if(tmp.size()==0)break;
-					saveData(tmp);	
-					offset+=Limit;
-					echo("offset:"+offset);
+				while (true) {
+					tmp = ucdb.FetchAll(mySQl + offset);
+					if (tmp.size() == 0)
+						break;
+					saveData(tmp);
+					offset += Limit;
+					echo("offset:" + offset);
 				}
 
 			} catch (SQLException e) {
@@ -144,7 +146,7 @@ public class updateSQLView extends BaseRapidThread {
 					field += "act_v" + Integer.toHexString(m) + ", ";
 				}
 
-				if(isvfield){
+				if (isvfield) {
 					view_field += "act_v" + Integer.toHexString(m) + " AS "
 							+ key + ", ";
 				}
@@ -160,19 +162,19 @@ public class updateSQLView extends BaseRapidThread {
 		}
 
 		values = values.substring(0, values.length() - 1);
-		//echo(values);
+		// echo(values);
 
 		String format = "insert INTO " + DB_HOR_PRE + "class (%s)values %s";
 		String sql = String.format(format, field + " rule", values);
 		try {
 			insert(sql);
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String clear(String v) {
 		String s = v.trim();
 		if (s.length() > 1) {
@@ -181,5 +183,13 @@ public class updateSQLView extends BaseRapidThread {
 			return v;
 		}
 	}
-	
+
+	@Override
+	public String title() {
+		// TODO Auto-generated method stub
+		String className = this.getClass().getCanonicalName();
+
+		return _CLang(SliceName(className));
+	}
+
 }

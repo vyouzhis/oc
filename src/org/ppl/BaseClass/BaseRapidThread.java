@@ -9,7 +9,7 @@ public abstract class BaseRapidThread extends DBSQL {
 		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
 		hcp.GetCon();
 	}
-	
+	public abstract String title();
 	public abstract void Run();
 	public abstract boolean isRun();
 	public abstract boolean Stop();

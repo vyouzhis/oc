@@ -158,6 +158,7 @@ public class DBSQL extends BaseLang {
 		res = new ArrayList<>();
 		while (true) {
 			tmp = query(sql);
+			if(tmp==null)break;
 			res.addAll(tmp);
 			if (isFetchFinal())
 				break;
