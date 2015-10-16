@@ -13,6 +13,8 @@ import org.ppl.Module.ModuleBind;
 import org.ppl.db.HikariConnectionPool;
 import org.ppl.etc.globale_config;
 import org.ppl.plug.R.Rlan;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
 
 import com.alibaba.fastjson.JSON;
 import com.google.inject.Guice;
@@ -47,7 +49,12 @@ public class ServletApplicationLifeListener extends PObject implements
 			
 		int autorun = mConfig.GetInt("autorun");
 		
-		new Rlan();
+		try {
+			globale_config.rcoonnect = new RConnection();
+		} catch (RserveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		globale_config.RapidListQueue = new HashMap<String, LinkedList<Object>>();
 		globale_config.RapidList = new HashMap<>();

@@ -27,7 +27,7 @@ public class ThreadCronRun extends function implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		echo("i am run!");
+		//echo("i am run!");
 		ThreadRuns();
 	}
 	
@@ -84,8 +84,7 @@ public class ThreadCronRun extends function implements Runnable {
 		}
 
 		int sleepTime = sTime;
-		echo("sleepTime:"+sleepTime);
-		echo("now:"+now);	
+		
 		int newTime = 0;
 		if (day == 0 && hour == 0 && sleepTime < now) {
 			newTime = now + minu * 60;
@@ -95,9 +94,9 @@ public class ThreadCronRun extends function implements Runnable {
 			newTime = now + hour * 60 * 60 + minu * 60 + 86400;
 		} else {
 			cron.free();
-			echo("continue key:" + tpKey + " sleepTime:"
-					+ sleepTime + " day:" + day + " hour:" + hour + " now:"
-					+ now);
+//			echo("continue key:" + tpKey + " sleepTime:"
+//					+ sleepTime + " day:" + day + " hour:" + hour + " now:"
+//					+ now);
 			return 0;
 		}
 
@@ -114,9 +113,10 @@ public class ThreadCronRun extends function implements Runnable {
 			}
 			cron.Run();
 			cron.free();
-		}else {
-			echo("no run!");
 		}
+//		else {
+//			echo("no run!");
+//		}
 	}
 
 }

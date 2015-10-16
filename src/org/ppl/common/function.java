@@ -170,6 +170,20 @@ public class function {
 			return 0;
 		}
 	}
+	
+	public Double toDouble(Object o) {
+		if (o != null && o.toString().matches("[0-9.-]+")) {
+			try {
+				return Double.valueOf(o.toString());
+			} catch (NumberFormatException e) {
+				// TODO: handle exception
+				return 0.0;
+			}
+
+		} else {
+			return 0.0;
+		}
+	}
 
 	public String escapeHtml(String old) {
 		if (old == null)

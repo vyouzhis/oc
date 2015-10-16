@@ -6,17 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.naming.factory.EjbFactory;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
 import org.ppl.db.UserCoreDB;
 import org.ppl.io.DesEncrypter;
 import org.ppl.io.Encrypt;
+import org.ppl.plug.R.Rlan;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
+import com.github.abel533.echarts.Polar;
 import com.github.abel533.echarts.Title;
 import com.github.abel533.echarts.axis.Axis;
 import com.github.abel533.echarts.axis.CategoryAxis;
@@ -33,6 +36,7 @@ import com.github.abel533.echarts.json.GsonOption;
 import com.github.abel533.echarts.series.Bar;
 import com.github.abel533.echarts.series.Line;
 import com.github.abel533.echarts.series.Pie;
+import com.github.abel533.echarts.series.Radar;
 import com.github.abel533.echarts.series.Scatter;
 import com.github.abel533.echarts.style.AreaStyle;
 import com.github.abel533.echarts.style.ItemStyle;
@@ -47,10 +51,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private int itemStyle_lable = 0, itemStyle_areaStyle = 0,
 			markLine_average = 0;
 	private int math_mom = 0, math_var = 0, math_sma = 0, math_wma = 0,
-			math_diff=0;
-	private int order_desc=0;
-	
-	
+			math_diff = 0;
+	private int math_lm = 0;
+	private int order_desc = 0;
+
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
@@ -106,11 +110,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		title.x(X.center);
 		title.y(Y.top);
 		option.title(title);
-		
-		option.legend().y(Y.bottom);
-		// .x("function(){alert('ok');}");
-		// .formatter("{a} <br/>{b} : ({c}%)");
 
+		option.legend().y(Y.bottom);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -132,6 +133,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		pieList = getEcharts();
 
+		math_lm = toInt(porg.getKey("math_lm"));
+
+		if (math_lm == 1 && JsonIds.size() == 1) {
+			math_lm();
+		}
 		if (JsonIds != null) {
 
 			if (GL.get(0).get("graph").toString().equals(gt)) {
@@ -144,11 +150,14 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				EJson = JsonMap();
 			} else if (GL.get(3).get("graph").toString().equals(gt)) {
 				EJson = JsonScatter();
+			} else if (GL.get(4).get("graph").toString().equals(gt)) {
+				EJson = JsonRadar();
 			}
 			// else{
 			//
 			// }
 		}
+
 		super.setHtml(EJson);
 	}
 
@@ -184,7 +193,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		math_sma = toInt(porg.getKey("math_sma"));
 		math_wma = toInt(porg.getKey("math_wma"));
 		math_diff = toInt(porg.getKey("math_diff"));
-		
+
 		order_desc = toInt(porg.getKey("order_desc"));
 
 		for (Map<String, String> id : JsonIds) {
@@ -199,7 +208,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				continue;
 			}
 
-			if (JsonIds.size() == 1 || (JsonIds.size()==2 && (math_var == 1 || math_diff == 1))) {
+			if (JsonIds.size() == 1
+					|| (JsonIds.size() == 2 && (math_var == 1 || math_diff == 1))) {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
 						.lineStyle();
@@ -218,8 +228,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					}
 					float val = toFloat(key.get("volume"));
 					if (val == 0) {
-						
-						//bar.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
+
+						// bar.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
 						bar.data(0);
 					} else {
 						bar.data(Float.valueOf(String.format("%.2f", val)));
@@ -259,7 +269,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				ValueAxis tAxis = new ValueAxis();
 
 				tAxis.scale(true);
-				if (JsonIds.size() == 2 ) {
+				if (JsonIds.size() == 2) {
 					tAxis.name(id.get("name").toString());
 
 					jCount++;
@@ -291,7 +301,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 					float val = toFloat(key.get("volume"));
 					if (val == 0) {
-						//line.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
+						// line.data(key.get("volume")); // 还不确定 是不是应该要直接给值为 0
 						line.data(0);
 					} else {
 						line.data(Float.valueOf(String.format("%.2f", val)));
@@ -333,7 +343,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			myaAxis.add(momAxis);
 			math_mom();
 		}
-		if (math_var == 1 && JsonIds.size()==2) {
+		if (math_var == 1 && JsonIds.size() == 2) {
 			math_var();
 		}
 		if (math_sma == 1) {
@@ -342,7 +352,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		if (math_wma == 1) {
 			math_wma();
 		}
-		if(math_diff==1 && JsonIds.size()==2){
+		if (math_diff == 1 && JsonIds.size() == 2) {
 			math_diff();
 		}
 
@@ -415,31 +425,30 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	}
 
 	private void math_var() {
-		
 
 		List<Map<String, Object>> oneList = pieList.get(0);
 		List<Map<String, Object>> twoList = pieList.get(1);
-		
+
 		Line pOption = new Line();
-		
-		float o,t, m;
+
+		float o, t, m;
 		int max = twoList.size();
-		if(twoList.size()>oneList.size()){
+		if (twoList.size() > oneList.size()) {
 			max = oneList.size();
 		}
-		
-		for (int l=0;l<max;l++) {
+
+		for (int l = 0; l < max; l++) {
 
 			o = toFloat(oneList.get(l).get("volume"));
 			t = toFloat(twoList.get(l).get("volume"));
-			
-			if(order_desc==0){
+
+			if (order_desc == 0) {
 				m = (o - t) / t * 100;
-			}else {
+			} else {
 				m = (t - o) / o * 100;
 			}
-				// echo("front:" + front + " x:" + x + " m:" + m);
-			
+			// echo("front:" + front + " x:" + x + " m:" + m);
+
 			pOption.data(Float.valueOf(String.format("%.2f", m)));
 
 		}
@@ -465,38 +474,39 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			pOption.itemStyle(itemStyle);
 		}
-		pOption.smooth(true).name(_MLang("var")).itemStyle().normal().lineStyle();
+		pOption.smooth(true).name(_MLang("var")).itemStyle().normal()
+				.lineStyle();
 		option.legend(_MLang("var"));
 		pOption.yAxisIndex(1);
 		option.series(pOption);
 	}
-	
+
 	private void math_diff() {
-		
-		float tol=0;
+
+		float tol = 0;
 		List<Map<String, Object>> oneList = pieList.get(0);
 		List<Map<String, Object>> twoList = pieList.get(1);
 
 		Line pOption = new Line();
-		
-		float o,t, m;
+
+		float o, t, m;
 		int max = twoList.size();
-		if(twoList.size()>oneList.size()){
+		if (twoList.size() > oneList.size()) {
 			max = oneList.size();
 		}
-		
-		for (int l=0;l<max;l++) {
+
+		for (int l = 0; l < max; l++) {
 
 			o = toFloat(oneList.get(l).get("volume"));
 			t = toFloat(twoList.get(l).get("volume"));
-			
-			if(order_desc==0){
+
+			if (order_desc == 0) {
 				m = o - t;
-			}else {
-				m = t-o;
+			} else {
+				m = t - o;
 			}
-				// echo("front:" + front + " x:" + x + " m:" + m);
-			tol+= m;
+			// echo("front:" + front + " x:" + x + " m:" + m);
+			tol += m;
 			pOption.data(Float.valueOf(String.format("%.2f", m)));
 
 		}
@@ -523,11 +533,66 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			pOption.itemStyle(itemStyle);
 		}
 		pOption.yAxisIndex(1);
-		
-		pOption.name(_MLang("diff")+tol+")").itemStyle().normal().lineStyle();
-		
-		option.legend(_MLang("diff")+tol+")");
-				
+
+		pOption.name(_MLang("diff") + tol + ")").itemStyle().normal()
+				.lineStyle();
+
+		option.legend(_MLang("diff") + tol + ")");
+
+		option.series(pOption);
+	}
+
+	private void math_lm() {
+		List<Map<String, Object>> dList = pieList.get(0);
+
+		Line pOption = new Line();
+		Rlan rlan = new Rlan();
+
+		double m;
+		double[] dataX, dataY;
+
+		for (int l = 0; l < dList.size(); l++) {
+			dataX = new double[l + 1];
+			dataY = new double[l + 1];
+			for (int i = 0; i < l + 1; i++) {
+				dataX[i] = toDouble(dList.get(i).get("volume"));
+				dataY[i] = toDouble(dList.get(i).get("dial"));
+				if (dataY[i] == 0) {
+					// 数据有问题
+					return;
+				}
+			}
+
+			m = rlan.lm(dataX, dataY);
+
+			pOption.data(Float.valueOf(String.format("%.2f", m)));
+
+		}
+		if (itemStyle_lable == 1 || itemStyle_areaStyle == 1) {
+			ItemStyle itemStyle = new ItemStyle();
+			Normal normal = new Normal();
+
+			if (itemStyle_lable == 1) {
+				Label label = new Label();
+				label.setShow(true);
+
+				normal.setLabel(label);
+			}
+			if (itemStyle_areaStyle == 1) {
+				AreaStyle aStyle = new AreaStyle();
+				normal.setAreaStyle(aStyle.typeDefault());
+			}
+
+			itemStyle.setNormal(normal);
+
+			pOption.itemStyle(itemStyle);
+		}
+		// pOption.yAxisIndex(1);
+
+		pOption.name(_MLang("lm")).itemStyle().normal().lineStyle();
+
+		option.legend(_MLang("lm"));
+
 		option.series(pOption);
 	}
 
@@ -613,69 +678,128 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	private String JsonScatter() {
 
-		option.tooltip().trigger(Trigger.item)
-				.formatter("{c}");
+		option.tooltip().trigger(Trigger.item).formatter("{c}");
 
 		if (pieList == null || pieList.size() == 0)
 			return "";
-		// List<String> legendTitle = null;
-		int l = 0;	
+
+		int l = 0;
 
 		for (Map<String, String> id : JsonIds) {
-			if (toInt(id.get("id"))==0){
+			if (toInt(id.get("id")) == 0) {
 				continue;
 			}
 
 			List<Map<String, Object>> list = pieList.get(l);
 			l++;
-			
+
 			Scatter scatter = new Scatter();
-			
-			// Title title = new Title();
-			// title.text(id.get("name").toString());
-			// legendTitle = new ArrayList<>();
+
 			option.legend(id.get("name").toString());
 			for (Map<String, Object> key : list) {
 				List<Object> m = new ArrayList<>();
-				
+
 				float val = toFloat(key.get("dial"));
 				if (val == 0) {
 					m.add(key.get("dial"));
 				} else {
 					m.add(Float.valueOf(String.format("%.2f", val)));
 				}
-										
+
 				val = toFloat(key.get("volume"));
 				if (val == 0) {
 					m.add(key.get("volume"));
 				} else {
 					m.add(Float.valueOf(String.format("%.2f", val)));
 				}
-				
-				// legendTitle.add(key.get("dial").toString());
-				
+
 				scatter.data(m);
 			}
 			scatter.setName(id.get("name").toString());
-			
-			// option.legend().data(legendTitle);
+
 			option.series(scatter);
 			option.title(id.get("name").toString());
 		}
-		// option.legend().data(data);
-		// option.xAxis(valueAxis);
 
 		ValueAxis xAxis = new ValueAxis();
 		xAxis.scale(true);
 		xAxis.type(AxisType.value);
-		
+
 		ValueAxis yAxis = new ValueAxis();
 		yAxis.scale(true);
 		yAxis.type(AxisType.value);
-		
+
 		option.xAxis(xAxis);
 		option.yAxis(yAxis);
-		
+
+		return option.toString();
+	}
+
+	private String JsonRadar() {
+		Polar polar = new Polar();
+		List<Map<String, Object>> indicator = new ArrayList<>();
+
+		option.tooltip().trigger(Trigger.item).formatter("{c}");
+
+		if (pieList == null || pieList.size() == 0)
+			return "";
+
+		int l = 0;
+		List<String> legend = new ArrayList<>();
+		Map<String, Object> data, iMap;
+
+		for (Map<String, String> id : JsonIds) {
+			if (toInt(id.get("id")) == 0) {
+				continue;
+			}
+
+			List<Map<String, Object>> list = pieList.get(l);
+			
+			Radar radar = new Radar();
+
+			legend.add(id.get("name").toString());
+			int i=0;
+			data = new HashMap<>();
+			List<Object> m = new ArrayList<>();;
+			
+			for (Map<String, Object> key : list) {
+				
+				float val = toFloat(key.get("volume"));
+				if (val == 0) {
+					m.add(key.get("volume"));
+				} else {
+					m.add(Float.valueOf(String.format("%.2f", val)));
+				}
+				String dial = key.get("dial").toString();
+				
+				if(l==0){
+					iMap = new HashMap<>();					
+					iMap.put("text", dial);
+					iMap.put("max", Math.ceil(val));
+					indicator.add(iMap);
+				}else {
+					if(indicator.get(i).get("text").equals(dial) && Double.valueOf(indicator.get(i).get("max").toString())< val){
+						indicator.get(i).put("max", Math.ceil(val));
+					}
+				}
+				i++;
+				
+				m.add(val);
+			}
+			data.put("value", m);
+			data.put("name", id.get("name").toString());
+			radar.data(data);
+			l++;
+			
+			radar.setName(id.get("name").toString());
+
+			option.series(radar);
+			option.title(id.get("name").toString());
+		}
+		polar.indicator(indicator);
+		option.polar(polar);
+		option.legend(legend);
+
 		return option.toString();
 	}
 
@@ -811,9 +935,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private List<List<Map<String, Object>>> getEcharts() {
 		List<List<Map<String, Object>>> ret = new ArrayList<>();
 		int qaction = 0;
-		String format = "select rule,volume,dial from "
-				+ DB_HOR_PRE
-				+ "webvisitcount  where rule = %d and dial > 2015011100 and "+UserPermi()+" order by rule, dial ;";
+		String format = "select rule,volume,dial from " + DB_HOR_PRE
+				+ "webvisitcount  where rule = %d and dial > 2015011100 and "
+				+ UserPermi() + " order by rule, dial ;";
 		// why ?
 		List<Map<String, Object>> res = null;
 		String tmp_list = porg.getKey("tmp_list");
@@ -834,7 +958,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			if (qaction == 4) {
 
 				String usql = "select sql,dtype from " + DB_HOR_PRE
-						+ "usersql where id=" + tid + " and "+UserPermi()+" LIMIT 1";
+						+ "usersql where id=" + tid + " and " + UserPermi()
+						+ " LIMIT 1";
 				Map<String, Object> ures;
 
 				ures = FetchOne(usql);
@@ -849,7 +974,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from "
 						+ DB_HOR_PRE + "sqltmp t, " + DB_HOR_PRE
-						+ "usersql u where t.sid=u.id and (u.uid = "+aclGetUid() +" or u.isshare=1) and t.id=" + tid
+						+ "usersql u where t.sid=u.id and (u.uid = "
+						+ aclGetUid() + " or u.isshare=1) and t.id=" + tid
 						+ " limit 1";
 
 				Map<String, Object> tres;
@@ -881,7 +1007,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				if (tmp_map == null)
 					continue;
 				sql = "SELECT sql,dtype from " + DB_HOR_PRE
-						+ "usersql where id=" + tid + " and "+UserPermi()+" limit 1";
+						+ "usersql where id=" + tid + " and " + UserPermi()
+						+ " limit 1";
 				Map<String, Object> tmpRes;
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
@@ -913,11 +1040,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					res = CustomDB(sql, dtype);
 				}
 				int end = time();
-				
+
 				if (res != null) {
 					ret.add(res);
-					
-					if(end - start > mConfig.GetInt("cache.time")){
+
+					if (end - start > mConfig.GetInt("cache.time")) {
 						setCache(sql, id.get("name").toString(), res);
 					}
 				}
@@ -937,7 +1064,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		String md5Key = ec.MD5(key);
 		String json = "";
 		String format = "select json from " + DB_HOR_PRE
-				+ "cache where md5='%s' and "+UserPermi();
+				+ "cache where md5='%s' and " + UserPermi();
 		String csql = String.format(format, md5Key);
 
 		List<Map<String, Object>> res = null;
@@ -981,8 +1108,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Map<String, Object>> res = null;
 		UserCoreDB ucdb = new UserCoreDB();
 
-		String format = "select * from " + DB_HOR_PRE
-				+ "dbsource where id=%d "+UserPermi()+" limit 1";
+		String format = "select * from " + DB_HOR_PRE + "dbsource where id=%d "
+				+ UserPermi() + " limit 1";
 		String dsql = String.format(format, id);
 
 		Map<String, Object> dres;
