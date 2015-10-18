@@ -245,6 +245,7 @@ public class getGovData extends BaseRapidThread {
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
 			dnameo = dname;
+			echo("");
 			if (!dnameo.equals(dnamet)) {
 				dnamet = dnameo;
 				try {
