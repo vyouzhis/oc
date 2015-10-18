@@ -60,11 +60,11 @@ public class getGovData extends BaseRapidThread {
 		curl.addParams("wdcode", "zb");
 
 		res = curl.httpPost(SearchUrl);
-		// echo(res);
-
+		
 		govJson = JSON.parseObject(res, List.class); // 获取所有的主树
 		// echo(govJson);
-
+		long pid=0;
+		
 		for (Map<String, Object> key : govJson) {
 			curl.clearParams();
 			curl.addParams("dbcode", "hgyd");
@@ -75,6 +75,8 @@ public class getGovData extends BaseRapidThread {
 
 			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
 
+			pid = CreateClassify(25, key.get("name").toString());
+			
 			for (Map<String, Object> tj : TreeJson) {
 				if (tj.get("name").toString().indexOf("2003") > 0
 						|| tj.get("name").toString().indexOf("2004") > 0
@@ -95,20 +97,60 @@ public class getGovData extends BaseRapidThread {
 						if (sj.get("name").toString().indexOf("2003") > 0
 								|| sj.get("name").toString().indexOf("2004") > 0
 								|| sj.get("name").toString().indexOf("2001") > 0)
-							continue;
-						DataSave(sj.get("id").toString()); // 保存数据
+							continue;												
+						DataSave(sj.get("id").toString(), pid, sj.get("name").toString()); // 保存数据
 					}
-				} else {
-					DataSave(tj.get("id").toString()); // 保存数据
+				} else {					
+					DataSave(tj.get("id").toString(), pid, tj.get("name").toString()); // 保存数据
 
 				}
 			}
 		}
 
 	}
+	
+	private long CreateClassify(long pid, String name) {
+		long tpid=0;
+		String format = "insert INTO " + DB_HOR_PRE + "classify "
+				+ "(pid ,name,ctime, uid, isshare)"
+				+ "values(%d,'%s', %d, %d, %d);";
+		String sql = "";
+		sql = String.format(format, pid, name, time(),1, 1);
+
+		try {
+			tpid = insert(sql, true);
+			CommitDB();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+		
+		}
+		
+		return tpid;
+	}
+	
+	private long CreateTmp(long cid, String name) {
+		String usql = "SELECT month AS dial,  data AS volume  FROM @arg0@  ORDER BY  month";
+		String jsonTmp ="[[\"arg0\",\"a\",\"TEXT\",\"说明\"]]";
+		String format = " insert INTO "
+				+ DB_HOR_PRE
+				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
+		String sql = String.format(format, name, usql, 0, 1,
+				jsonTmp, 0, "", cid, 1);
+		long tpid=0;
+		try {
+			//echo(sql);
+			tpid = insert(sql, true);
+			CommitDB();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+		
+		}
+		
+		return tpid;
+	}
 
 	@SuppressWarnings("unchecked")
-	private void DataSave(String id) {
+	private void DataSave(String id, long pid, String cname) {
 		Map<String, Object> resJson;
 		String dfwds = "[{\"wdcode\":\"zb\",\"valuecode\":\"" + id + "\"}]";
 
@@ -143,7 +185,9 @@ public class getGovData extends BaseRapidThread {
 		String view = "act_v0 as data, act_v1 as month, act_v2 as unit ";
 		String viewformat = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM "
 				+ DB_HOR_PRE + "class WHERE rule=%d";
-
+		
+		String sqltmp = "insert INTO "+DB_HOR_PRE+"sqltmp  (sid,name,sqltmp) values(%d, '%s', '{\"arg0\":\"%s\"}')";
+		String sqltmpSQL="";
 		resJson = JSON.parseObject(res, Map.class);
 
 		if (resJson.get("returndata").toString().length() < 21)
@@ -154,6 +198,8 @@ public class getGovData extends BaseRapidThread {
 		List<Object> datanodes = (List<Object>) returndata.get("datanodes");
 		List<Object> wdnodes = (List<Object>) returndata.get("wdnodes");
 
+		
+		
 		int now = time();
 
 		Map<String, Object> mapNodes = (Map<String, Object>) wdnodes.get(0);
@@ -163,7 +209,7 @@ public class getGovData extends BaseRapidThread {
 		Map<String, Object> UnitList = new HashMap<String, Object>();
 
 		Map<String, String> classList = new HashMap<>();
-		// Map<String, String> viewList = new HashMap<>();
+		Map<String, String> nameList = new HashMap<>();
 
 		if (datanodes.size() == 0)
 			return;
@@ -174,9 +220,9 @@ public class getGovData extends BaseRapidThread {
 			String sqlI = String.format(formatI, map.get("name"),
 					map.get("code"), map.get("memo"), now);
 			// echo(map.get("name"));
-
+			
 			classList.put(map.get("code").toString(), sqlI);
-
+			nameList.put(map.get("code").toString(), map.get("name").toString());
 			UnitList.put(map.get("code").toString(), map.get("unit").toString());
 
 		}
@@ -202,7 +248,21 @@ public class getGovData extends BaseRapidThread {
 			if (!dnameo.equals(dnamet)) {
 				dnamet = dnameo;
 				try {
-
+					long subpid=0;
+					long ucid=0;
+					subpid = CreateClassify(pid, cname);
+					ucid = CreateTmp(subpid, cname);
+					echo("subpid:"+subpid+"-- ucid:"+ucid+" cname:"+cname+" dnamet:"+dnamet+" dnameo:"+dnameo);
+					
+					sqltmpSQL = String.format(sqltmp, ucid, nameList.get(dname), dnameo);
+					try {
+						//echo(sqltmpSQL);
+						insert(sqltmpSQL);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 					long cidt = insert(classList.get(dname), true);
 					if (cidt != -1) {
 						cid = cidt;
@@ -213,6 +273,7 @@ public class getGovData extends BaseRapidThread {
 								dname.toLowerCase(), view, (int) cid);
 						// echo(sqlI);
 						dbcreate(vsql);
+						
 					} else {
 						continue;
 					}

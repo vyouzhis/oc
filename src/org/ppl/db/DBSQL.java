@@ -203,6 +203,7 @@ public class DBSQL extends BaseLang {
 			if (rs.next()) {
 				numRowsUpdated = rs.getLong(1);
 			}
+			
 		}
 		return numRowsUpdated;
 	}

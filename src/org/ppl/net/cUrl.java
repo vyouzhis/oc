@@ -1,6 +1,7 @@
 package org.ppl.net;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -30,8 +31,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.ppl.common.function;
 
-public class cUrl {
+public class cUrl extends function{
 	private List<NameValuePair> params = new ArrayList<NameValuePair>();
 	private List<Header> cHeader = new ArrayList<>();
 	private CloseableHttpClient httpclient = null;
@@ -137,8 +139,9 @@ public class cUrl {
 		//ByteArrayOutputStream bao = null;
 		StringBuilder sb1 = new StringBuilder(); 
 		InputStream bis = null;
-		byte[] buf = new byte[65535];
-
+		int len = 1024;
+		byte[] buf = new byte[len];
+		//byte[] sBuf;
 		String content = null;
 		try {
 
@@ -146,14 +149,22 @@ public class cUrl {
 
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				bis = response.getEntity().getContent();
+				//long lenEntity = response.getEntity().getContentLength();
 				Header encoding = response.getEntity().getContentEncoding();				
 				int count;
-				
-				while ((count = bis.read(buf)) != -1) {				
-					String str = new String(buf, 0, count, "UTF-8");    
-					sb1.append(str); 
+
+				ByteArrayOutputStream baos=new ByteArrayOutputStream();
+				while((count = bis.read(buf)) != -1){
+
+				      baos.write(buf,0, count);
+				      
 				}
-				
+		
+				String str = new String(baos.toByteArray(), 0, baos.toByteArray().length, "UTF-8");
+				baos.close();
+				//echo("lenEntity:"+lenEntity+" baos:"+baos.toByteArray().length+" str:"+str.length());
+				//echo(str);
+				sb1.append(str); 
 				
 				bis.close();
 
