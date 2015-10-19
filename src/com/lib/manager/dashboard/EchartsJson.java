@@ -784,7 +784,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 				i++;
 				
-				m.add(val);
+				//m.add(val);
 			}
 			data.put("value", m);
 			data.put("name", id.get("name").toString());
@@ -796,7 +796,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			option.series(radar);
 			option.title(id.get("name").toString());
 		}
-		polar.indicator(indicator);
+		for (int i = 0; i < indicator.size(); i++) {
+			polar.indicator(indicator.get(i));
+		}
+		
 		option.polar(polar);
 		option.legend(legend);
 

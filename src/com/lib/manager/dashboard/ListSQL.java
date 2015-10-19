@@ -139,7 +139,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		for (String tsql : formats) {
 			
 			try {
-				echo(tsql);
+				//echo(tsql);
 				tRes = FetchAll(tsql);
 				if (RootRes != null) {
 					if (tRes != null) {
