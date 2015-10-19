@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.text.AbstractDocument.BranchElement;
+
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.net.cUrl;
 
@@ -67,78 +69,111 @@ public class getGovData extends BaseRapidThread {
 		long subpid = 0;
 		long ucid = 0;
 		for (Map<String, Object> key : govJson) {
-			curl.clearParams();
-			curl.addParams("dbcode", "hgyd");
-			curl.addParams("id", key.get("id").toString());
-			curl.addParams("m", "getTree");
-			curl.addParams("wdcode", "zb");
-			res = curl.httpPost(SearchUrl);
-
-			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
-
-			pid = CreateClassify(25, key.get("name").toString());
-
-			if (((boolean) key.get("isParent")) == false) {
-				ucid = 0;
-				ucid = CreateUserSQL(pid, key.get("name").toString());
-				DataSave(key.get("id").toString(), ucid, key.get("name")
-						.toString()); // 保存数据
-			} else {
-
-				for (Map<String, Object> tj : TreeJson) {
-					if (tj.get("name").toString().indexOf("2003") > 0
-							|| tj.get("name").toString().indexOf("2004") > 0
-							|| tj.get("name").toString().indexOf("2001") > 0){
-						echo(tj.get("name").toString());
-						continue;
-					}
-					subpid = 0;
-					// echo(tj.get("name").toString());
-					if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
-						curl.clearParams();
-						curl.addParams("dbcode", "hgyd");
-						curl.addParams("id", key.get("id").toString());
-						curl.addParams("m", "getTree");
-						curl.addParams("wdcode", "zb");
-						String subRes = curl.httpPost(SearchUrl);
-
-						SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
-						
-						subpid = CreateClassify(pid, tj.get("name")
-								.toString());
-						
-						for (Map<String, Object> sj : SubTreeJson) {
-							if (sj.get("name").toString().indexOf("2003") > 0
-									|| sj.get("name").toString()
-											.indexOf("2004") > 0
-									|| sj.get("name").toString()
-											.indexOf("2001") > 0)
-								continue;
-							
-							
-							long subpids = CreateClassify(subpid, sj.get("name")
-									.toString());
-							ucid = 0;
-							
-							ucid = CreateUserSQL(subpids, tj.get("name").toString());
-							DataSave(sj.get("id").toString(), ucid,
-									sj.get("name").toString()); // 保存数据
-						}
-					} else {
-						
-						subpid = CreateClassify(pid, tj.get("name").toString());
-						ucid = 0;
-						ucid = CreateUserSQL(subpid, tj.get("name").toString());
-						// echo("subpid:"+pid+"-- ucid:"+ucid+" cname:"+cname+" dnamet:"+dnamet+" dnameo:"+dnameo);
-												
-						DataSave(tj.get("id").toString(), ucid, tj
-								.get("name").toString()); // 保存数据
-
-					}
-				}
-			}
+//			curl.clearParams();
+//			curl.addParams("dbcode", "hgyd");
+//			curl.addParams("id", key.get("id").toString());
+//			curl.addParams("m", "getTree");
+//			curl.addParams("wdcode", "zb");
+//			res = curl.httpPost(SearchUrl);
+//
+//			TreeJson = JSON.parseObject(res, List.class); // 获取某一个子节点
+//
+//			pid = CreateClassify(25, key.get("name").toString());
+			subLoop(25, key.get("id").toString(), key.get("name").toString(),true);
+			
+//						.toString(), isParent)
+//			if (((boolean) key.get("isParent")) == false) {
+//
+//				subLoop(pid, key.get("id").toString(), key.get("name")
+//						.toString(), false);
+//
+//			} else {
+//
+//				for (Map<String, Object> tj : TreeJson) {
+//					if (tj.get("name").toString().indexOf("2003") > 0
+//							|| tj.get("name").toString().indexOf("2004") > 0
+//							|| tj.get("name").toString().indexOf("2001") > 0) {
+//						echo(tj.get("name").toString());
+//						continue;
+//					}
+//					subpid = 0;
+//					// echo(tj.get("name").toString());
+//					if (((boolean) tj.get("isParent")) == true) { // 可能还有更深的子节点
+//						curl.clearParams();
+//						curl.addParams("dbcode", "hgyd");
+//						curl.addParams("id", key.get("id").toString());
+//						curl.addParams("m", "getTree");
+//						curl.addParams("wdcode", "zb");
+//						String subRes = curl.httpPost(SearchUrl);
+//
+//						SubTreeJson = JSON.parseObject(subRes, List.class); // 获得二次的子节点
+//
+//						subpid = CreateClassify(pid, tj.get("name").toString());
+//
+//						for (Map<String, Object> sj : SubTreeJson) {
+//							if (sj.get("name").toString().indexOf("2003") > 0
+//									|| sj.get("name").toString()
+//											.indexOf("2004") > 0
+//									|| sj.get("name").toString()
+//											.indexOf("2001") > 0)
+//								continue;
+//
+//							long subpids = CreateClassify(subpid, sj
+//									.get("name").toString());
+//							ucid = 0;
+//
+//							ucid = CreateUserSQL(subpids, tj.get("name")
+//									.toString());
+//							DataSave(sj.get("id").toString(), ucid,
+//									sj.get("name").toString()); // 保存数据
+//						}
+//					} else {
+//
+//						ucid = 0;
+//						ucid = CreateUserSQL(subpid, tj.get("name").toString());
+//						// echo("subpid:"+pid+"-- ucid:"+ucid+" cname:"+cname+" dnamet:"+dnamet+" dnameo:"+dnameo);
+//
+//						DataSave(tj.get("id").toString(), ucid, tj.get("name")
+//								.toString()); // 保存数据
+//
+//					}
+//				}
+//			}
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private void subLoop(long pid, String dataId, String name, boolean isParent) {
+		long ucid = 0, subpid = 0;
+
+		if (name.indexOf("2003") > 0 || name.indexOf("2004") > 0
+				|| name.indexOf("2001") > 0)
+			return;
+		
+		subpid = CreateClassify(pid, name);
+		
+		if (isParent == false) {
+
+			ucid = CreateUserSQL(subpid, name);
+			DataSave(dataId, ucid, name); // 保存数据
+
+		} else {
+
+			curl.clearParams();
+			curl.addParams("dbcode", "hgyd");
+			curl.addParams("id", dataId);
+			curl.addParams("m", "getTree");
+			curl.addParams("wdcode", "zb");
+			String subRes = curl.httpPost(SearchUrl);
+
+			List<Map<String, Object>> SubTreeJson = JSON.parseObject(subRes,
+					List.class); // 获得二次的子节点
+
+			for (Map<String, Object> sj : SubTreeJson) {
+				subLoop(subpid, sj.get("id").toString(), sj.get("name").toString(), (boolean) sj.get("isParent"));
+			}			
+		}
 	}
 
 	private long CreateClassify(long pid, String name) {
@@ -261,7 +296,7 @@ public class getGovData extends BaseRapidThread {
 		long cid = 0;
 		String val = "";
 		String dnameo = "", dnamet = "";
-		
+
 		for (int j = 0; j < datanodes.size(); j++) {
 
 			Map<String, Object> listMap = (Map<String, Object>) datanodes
@@ -282,23 +317,23 @@ public class getGovData extends BaseRapidThread {
 			if (!dnameo.equals(dnamet)) {
 				dnamet = dnameo;
 				try {
-					sqltmpSQL = String.format(sqltmp, pid,
-							nameList.get(dname), dnamet);					
-						// echo(sqltmpSQL);
+					sqltmpSQL = String.format(sqltmp, pid, nameList.get(dname),
+							dnamet);
+					// echo(sqltmpSQL);
 					insert(sqltmpSQL);
-					
+
 					long cidt = insert(classList.get(dname), true);
-					
+
 					if (cidt != -1) {
 						cid = cidt;
 						// echo(cid);
-						
+
 						String vsql = String.format(viewformat,
 								dname.toLowerCase(), view, (int) cid);
 						// echo(sqlI);
 						dbcreate(vsql);
-						
-						CommitDB();	
+
+						CommitDB();
 					} else {
 						continue;
 					}
