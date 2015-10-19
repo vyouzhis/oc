@@ -50,10 +50,9 @@
 												${item.id}
 											</td>	
 											<td>
-												<#if item.pid?number == 1>
+												<#if item.pid?c?number == 1>
 													主节点
-												<#else>
-												
+												<#else>												
 												 	${item.pname}
 												</#if>
 											</td>		
@@ -65,7 +64,7 @@
 											</td>
 											<td>${fun.DateFormat(item.ctime, "yyyy-MM-dd HH:mm")}</td>
 										
-											<td><a href="${edit_url}?pid=${item.id}">编辑</a>,<a href="${edit_url}?pid=${item.id}">清空数据</a></td>
+											<td><a href="${edit_url}?pid=${item.id?c}">编辑</a>,<a href="${edit_url}?pid=${item.id?c}">清空数据</a></td>
 										</tr>
 										</#list>
 										</#if>
