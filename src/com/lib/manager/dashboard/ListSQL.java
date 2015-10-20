@@ -71,7 +71,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 
 	private String ListMainClassify() {
 
-		RootSQL = "select id,name from hor_classify where pid=%d and "
+		RootSQL = "select id,name from "+DB_HOR_PRE+"classify where pid=%d and "
 				+ UserPermi() + " order by id";
 		TreeObject = new HashMap<>();
 

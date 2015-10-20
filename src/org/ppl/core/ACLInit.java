@@ -9,7 +9,6 @@ import org.ppl.db.DBSQL;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 import org.ppl.io.Encrypt;
-import org.ppl.io.TimeClass;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -21,10 +20,7 @@ public class ACLInit extends DBSQL {
 	 * @return
 	 */
 	public int aclGetUid() {
-		String uid = getInfo("Uid");
-		if (uid == null)
-			return 0;
-		return Integer.valueOf(uid);
+		return toInt(getInfo("Uid"));
 	}
 
 	/**
@@ -56,7 +52,7 @@ public class ACLInit extends DBSQL {
 	 * @return
 	 */
 	public int aclGetGid() {
-		return Integer.valueOf(getInfo("gid"));
+		return toInt((getInfo("gid")));
 	}
 
 	/**
@@ -108,8 +104,7 @@ public class ACLInit extends DBSQL {
 	 */
 	private void ErrorPWD(String name) {
 
-		TimeClass tc = TimeClass.getInstance();
-		int now = (int) tc.time();
+		int now = time();
 
 		String format = "UPDATE `"
 				+ DB_PRE

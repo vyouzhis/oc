@@ -22,6 +22,17 @@ public class Permission extends BaseTheme {
 		ShowMessage ms = ShowMessage.getInstance();
 		String res = "";
 		boolean i = aclCheckAccess();
+				
+		if(aclGetUid()==0){
+			bad_url = ucl.BuildUrl("admin_login", "");
+
+			res = ms.SetMsg(bad_url, _CLang("error_login"), 3000);
+			isAutoHtml = false;
+			super.setHtml(res);
+			//echo("login_module error");
+			return -1;
+		}
+		
 		if (!stdClass.equals(mConfig.GetValue("login_module")) && i == false) {
 
 			bad_url = ucl.BuildUrl("admin_login", "");

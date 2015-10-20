@@ -126,7 +126,7 @@ public class getGovData extends BaseRapidThread {
 
 	private long CreateUserSQL(long cid, String name) {
 		String usql = "SELECT month AS dial,  data AS volume  FROM @arg0@  ORDER BY  month";
-		String jsonTmp = "[[\"arg0\",\"a\",\"TEXT\",\"说明\"]]";
+		String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		String format = " insert INTO "
 				+ DB_HOR_PRE
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";

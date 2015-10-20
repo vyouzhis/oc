@@ -80,7 +80,7 @@ public class ACLControl extends ACLRole {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		return info;
 	}
 
@@ -89,26 +89,30 @@ public class ACLControl extends ACLRole {
 	 * @return
 	 */
 	public boolean CheckOntime() {
-						
-		String time = SessAct.GetSession(mConfig.GetValue(globale_config.Ontime));
-		if(time==null)return false;
-		
+
+		if(isAlone()==true)return true;
+
+		String time = SessAct.GetSession(mConfig
+				.GetValue(globale_config.Ontime));
+		if (time == null)
+			return false;
+
 		int ontime = Integer.valueOf(time);
-		
+
 		int now = time();
 		int timeOut = mConfig.GetInt(globale_config.TimeOut);
-		if(now-ontime>timeOut){	
+		if (now - ontime > timeOut) {
 			List<String> rmc = porg.getRmc();
-			if (rmc.size() < 2){
+			if (rmc.size() < 2) {
 				aclLogout();
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
-		
-		SessAct.SetSession(mConfig.GetValue(globale_config.Ontime), now+"");
-		
+
+		SessAct.SetSession(mConfig.GetValue(globale_config.Ontime), now + "");
+
 		return true;
 	}
 
