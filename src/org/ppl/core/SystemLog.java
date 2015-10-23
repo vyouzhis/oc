@@ -42,8 +42,9 @@ public class SystemLog extends PObject {
 		}
 		
 		String data = JSON.toJSONString(porg.getAllpg());
-		Encrypt en = Encrypt.getInstance();
-		data = en.Base64_Encode(data);
+//		String dataRes= "";
+//		Encrypt en = Encrypt.getInstance();
+//		dataRes = en.Base64_Encode(data);
 		String sql = String.format(format, lib, uid, a,ip, now, data);
 		
 		return sql;

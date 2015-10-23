@@ -47,7 +47,7 @@
 										<#list classify_list as item>
 										<tr>
 											<td class="center">
-												${item.id}
+												${item.id?c}
 											</td>	
 											<td>
 												<#if item.pid?c?number == 1>
