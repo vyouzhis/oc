@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.abel533.echarts.DataRange;
 import com.github.abel533.echarts.Label;
+import com.github.abel533.echarts.Legend;
 import com.github.abel533.echarts.Polar;
 import com.github.abel533.echarts.Title;
 import com.github.abel533.echarts.axis.Axis;
@@ -26,6 +27,7 @@ import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
 import com.github.abel533.echarts.code.AxisType;
 import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.Orient;
 import com.github.abel533.echarts.code.RoseType;
 import com.github.abel533.echarts.code.Tool;
 import com.github.abel533.echarts.code.Trigger;
@@ -737,15 +739,18 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	private String JsonRadar() {
 		Polar polar = new Polar();
+		Legend legend = new Legend();
+		legend.x(X.right).y(Y.bottom).orient(Orient.vertical);
+		
 		List<Map<String, Object>> indicator = new ArrayList<>();
 
-		option.tooltip().trigger(Trigger.item).formatter("{c}");
+		option.tooltip().trigger(Trigger.axis);
 
 		if (pieList == null || pieList.size() == 0)
 			return "";
 
 		int l = 0;
-		List<String> legend = new ArrayList<>();
+		
 		Map<String, Object> data, iMap;
 
 		for (Map<String, String> id : JsonIds) {
@@ -756,8 +761,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			List<Map<String, Object>> list = pieList.get(l);
 			
 			Radar radar = new Radar();
-
-			legend.add(id.get("name").toString());
+			legend.data(id.get("name").toString());
+			
 			int i=0;
 			data = new HashMap<>();
 			List<Object> m = new ArrayList<>();;
@@ -794,7 +799,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			radar.setName(id.get("name").toString());
 
 			option.series(radar);
-			option.title(id.get("name").toString());
+			//option.title(id.get("name").toString());
 		}
 		for (int i = 0; i < indicator.size(); i++) {
 			polar.indicator(indicator.get(i));
@@ -802,7 +807,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		
 		option.polar(polar);
 		option.legend(legend);
-
 		return option.toString();
 	}
 
