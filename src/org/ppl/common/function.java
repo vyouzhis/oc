@@ -64,7 +64,7 @@ public class function {
 		}
 		// get all the files from a directory
 		File[] fList = directory.listFiles();
-
+		if(fList==null || fList.length==0) return fl;
 		for (File file : fList) {
 			if (file.isFile()) {
 				// echo("name:"+directory.getName()+"__"+file.getName());

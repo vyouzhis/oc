@@ -56,7 +56,7 @@ public class plugApi extends Permission implements BasePerminterface {
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
 		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("runUrl", ucl.create(SliceName(stdClass)));
+		setRoot("runUrl", ucl.create(SliceName(stdClass)));		
 	}
 
 	@Override
@@ -64,7 +64,8 @@ public class plugApi extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 
 		UrlClassList ucl = UrlClassList.getInstance();
-		TellPostMan("getGovData", null);
+		String pack = porg.getKey("pack");
+		TellPostMan(pack, null);
 		
 		TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_save"));
 	}
