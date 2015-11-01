@@ -45,7 +45,7 @@ public class CronThread extends LibThread {
 		
 		
 		while (true) {
-			System.out.println("start...");
+		//	System.out.println("start...");
 			ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());
 			
 			for (String key : cronMap.keySet()) {

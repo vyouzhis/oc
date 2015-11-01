@@ -1,6 +1,5 @@
 package com.lib.thread;
 
-import java.lang.annotation.Retention;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,8 @@ public class getJPGovData extends BaseRapidThread {
 	private String url;
 	private static String Ver = "2.0";
 	private static String appId = "abb68400ed0dd8e8828b6d8b3e32154c111561b4";
-	private static String lang = "E";
-	private static int limit = 20;
+	//private static String lang = "E";
+	private static int limit = 1000;
 	private long pid;
 
 	@Override
@@ -62,7 +61,7 @@ public class getJPGovData extends BaseRapidThread {
 		url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsList?appId=" + appId + "&limit=" + limit
 				+ "&startPosition=" + startPosition;
-		 if(startPosition > 10) return;
+		//if(startPosition > 10) return;
 		String res = curl.httpGet(url);
 		if (res == null || res.length() < 10)
 			return;
@@ -152,12 +151,13 @@ public class getJPGovData extends BaseRapidThread {
 		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+  "&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
 		//echo(url);
 		
-		if(startPosition > 10) return;
+		//if(startPosition > 10) return;
 		String res = curl.httpGet(url);
 		if(res==null || res.length() < 10) return ;
 		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) json.get("GET_STATS_DATA");
+		echo(GET_STATS_DATA);
 		Map<String, Object> RESULT = (Map<String, Object>) GET_STATS_DATA.get("RESULT");
 		
 		if (toInt(RESULT.get("STATUS")) != 0) {
@@ -177,13 +177,20 @@ public class getJPGovData extends BaseRapidThread {
 		List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
 		String fields = "", act="", views="", values="";
 		int L=0;
+		String asKey = "";
 		for (Map<String, Object> map:VALUE) {
 			fields = ""; act="";views=""; values="";
 			L=0;
 			for (String key:map.keySet()) {
-				
+				if(key.indexOf("$")!=-1){ 
+					asKey="val";
+				}else {
+					asKey = key.replace("@", "");
+				}
+								
 				act = "act_v" + Integer.toHexString(L);				
-
+				
+				views += act +" as "+asKey+",";
 				fields += act + ",";
 				
 				values += "'"+map.get(key)+"',";
@@ -191,7 +198,7 @@ public class getJPGovData extends BaseRapidThread {
 			}
 			
 			fields = fields.substring(0, fields.length()-1);
-			views = fields;
+			views = views.substring(0, views.length()-1);
 			values = values.substring(0, values.length()-1);
 			
 			long rule=classInfo(title, statsDataId, views);
@@ -256,7 +263,7 @@ public class getJPGovData extends BaseRapidThread {
 		format = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM "
 				+ DB_HOR_PRE + "class WHERE rule=%d";
 		sql = String.format(format,view, views, tpid);
-		
+		//echo(sql);
 		try {
 			dbcreate(sql);
 			//CommitDB();
@@ -273,7 +280,7 @@ public class getJPGovData extends BaseRapidThread {
 				+ DB_HOR_PRE
 				+ "class (rule,%s)values(%d, %s)";
 		String sql = String.format(format, fields, rule, values);
-		echo(sql);
+		//echo(sql);
 		try {
 			insert(sql);
 			CommitDB();

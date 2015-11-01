@@ -21,7 +21,7 @@ public class mclt extends BaseCronThread {
 		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 		long id = myThreadId();
-		echo("my id:"+id);	
+		//echo("my id:"+id);	
 	}
 
 	@Override

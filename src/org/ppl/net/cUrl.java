@@ -33,16 +33,20 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.ppl.common.function;
 
-public class cUrl extends function{
+public class cUrl extends function {
 	private List<NameValuePair> params = new ArrayList<NameValuePair>();
 	private List<Header> cHeader = new ArrayList<>();
 	private CloseableHttpClient httpclient = null;
+	private HttpGet httpget = null;
+	ResponseHandler<String> responseHandler = null;
 
 	public String httpGet(String url) {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-
-		HttpGet httpget = new HttpGet(url);
-
+		if (httpclient == null) {
+			httpclient = HttpClients.createDefault();
+		}
+		if(httpget == null){
+			httpget = new HttpGet(url);
+		}
 		if (cHeader.size() > 0) {
 			for (Header mHeader : cHeader) {
 				httpget.addHeader(mHeader);
@@ -50,26 +54,12 @@ public class cUrl extends function{
 		}
 
 		// Create a custom response handler
-		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+		Response();
 
-			public String handleResponse(final HttpResponse response)
-					throws ClientProtocolException, IOException {
-				int status = response.getStatusLine().getStatusCode();
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = response.getEntity();
-					return entity != null ? EntityUtils.toString(entity) : null;
-				} else {
-					throw new ClientProtocolException(
-							"Unexpected response status: " + status);
-				}
-			}
-
-		};
 		String responseBody = null;
 		try {
 			responseBody = httpclient.execute(httpget, responseHandler);
 
-			httpclient.close();
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,6 +68,27 @@ public class cUrl extends function{
 			e.printStackTrace();
 		}
 		return responseBody;
+	}
+
+	private void Response() {
+		if (responseHandler == null) {
+			responseHandler = new ResponseHandler<String>() {
+
+				public String handleResponse(final HttpResponse response)
+						throws ClientProtocolException, IOException {
+					int status = response.getStatusLine().getStatusCode();
+					if (status >= 200 && status < 300) {
+						HttpEntity entity = response.getEntity();
+						return entity != null ? EntityUtils.toString(entity)
+								: null;
+					} else {
+						throw new ClientProtocolException(
+								"Unexpected response status: " + status);
+					}
+				}
+
+			};
+		}
 	}
 
 	public String httpPost(String url) {
@@ -100,7 +111,7 @@ public class cUrl extends function{
 								throws HttpException, IOException {
 							HttpEntity entity = response.getEntity();
 							if (entity != null) {
-								
+
 								Header ceheader = entity.getContentEncoding();
 								if (ceheader != null) {
 									HeaderElement[] codecs = ceheader
@@ -118,7 +129,7 @@ public class cUrl extends function{
 						}
 
 					}).build();
-			
+
 		}
 		HttpPost httppost = new HttpPost(url);
 		if (cHeader.size() > 0) {
@@ -129,19 +140,19 @@ public class cUrl extends function{
 		if (params.size() > 0) {
 			try {
 				httppost.setEntity(new UrlEncodedFormEntity(params, "utf-8"));
-				
+
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		CloseableHttpResponse response;
-		//ByteArrayOutputStream bao = null;
-		StringBuilder sb1 = new StringBuilder(); 
+		// ByteArrayOutputStream bao = null;
+		StringBuilder sb1 = new StringBuilder();
 		InputStream bis = null;
 		int len = 1024;
 		byte[] buf = new byte[len];
-		//byte[] sBuf;
+		// byte[] sBuf;
 		String content = null;
 		try {
 
@@ -149,27 +160,28 @@ public class cUrl extends function{
 
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				bis = response.getEntity().getContent();
-				//long lenEntity = response.getEntity().getContentLength();
-				Header encoding = response.getEntity().getContentEncoding();				
+				// long lenEntity = response.getEntity().getContentLength();
+				Header encoding = response.getEntity().getContentEncoding();
 				int count;
 
-				ByteArrayOutputStream baos=new ByteArrayOutputStream();
-				while((count = bis.read(buf)) != -1){
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				while ((count = bis.read(buf)) != -1) {
 
-				      baos.write(buf,0, count);
-				      
+					baos.write(buf, 0, count);
+
 				}
-		
-				String str = new String(baos.toByteArray(), 0, baos.toByteArray().length, "UTF-8");
+
+				String str = new String(baos.toByteArray(), 0,
+						baos.toByteArray().length, "UTF-8");
 				baos.close();
-				//echo("lenEntity:"+lenEntity+" baos:"+baos.toByteArray().length+" str:"+str.length());
-				//echo(str);
-				sb1.append(str); 
-				
+				// echo("lenEntity:"+lenEntity+" baos:"+baos.toByteArray().length+" str:"+str.length());
+				// echo(str);
+				sb1.append(str);
+
 				bis.close();
 
-				ByteArrayInputStream bai = new ByteArrayInputStream(
-						sb1.toString().getBytes());
+				ByteArrayInputStream bai = new ByteArrayInputStream(sb1
+						.toString().getBytes());
 				if (encoding != null) {
 					if (encoding.getValue().equals("gzip")
 							|| encoding.getValue().equals("zip")
@@ -183,13 +195,13 @@ public class cUrl extends function{
 							sb.append(new String(buf, 0, size, "utf-8"));
 						}
 						gzin.close();
-						//bao.close();
+						// bao.close();
 
 						content = sb.toString();
-						
+
 					}
 				} else {
-					
+
 					content = new String(sb1);
 				}
 
