@@ -64,7 +64,7 @@ public class getJPGovData extends BaseRapidThread {
 		url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsList?appId=" + appId + "&limit=" + limit
 				+ "&startPosition=" + startPosition;
-		if(startPosition > 100) return;
+		//if(startPosition > 100) return;  // ===========================
 		String res = curl.httpGet(url);
 		if (res == null || res.length() < 10)
 			return;
@@ -154,9 +154,8 @@ public class getJPGovData extends BaseRapidThread {
 		
 		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+ 
 				"&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
-		//echo(url);
-		
-		if(startPosition > 10) return;
+		//echo(url);		
+		//if(startPosition > 10) return; // ===========================
 		String res = curl.httpGet(url);
 		if(res==null || res.length() < 10) return ;
 		
@@ -377,9 +376,8 @@ public class getJPGovData extends BaseRapidThread {
 				cid, 1);
 		
 		try {
-			// echo(sql);
 			insert(sql);
-			CommitDB();
+			//CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 
