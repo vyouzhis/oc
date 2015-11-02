@@ -36,17 +36,16 @@ import org.ppl.common.function;
 public class cUrl extends function {
 	private List<NameValuePair> params = new ArrayList<NameValuePair>();
 	private List<Header> cHeader = new ArrayList<>();
-	private CloseableHttpClient httpclient = null;
-	private HttpGet httpget = null;
+	private CloseableHttpClient httpclient = null;	
 	ResponseHandler<String> responseHandler = null;
 
 	public String httpGet(String url) {
 		if (httpclient == null) {
 			httpclient = HttpClients.createDefault();
 		}
-		if(httpget == null){
-			httpget = new HttpGet(url);
-		}
+		
+		HttpGet httpget = new HttpGet(url);
+	
 		if (cHeader.size() > 0) {
 			for (Header mHeader : cHeader) {
 				httpget.addHeader(mHeader);

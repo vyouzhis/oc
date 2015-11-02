@@ -1,13 +1,16 @@
 package com.lib.thread;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter.Magenta;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.net.cUrl;
 
 import com.alibaba.fastjson.JSON;
+import com.mysql.jdbc.jdbc2.optional.MysqlXid;
 
 public class getJPGovData extends BaseRapidThread {
 	private cUrl curl;
@@ -33,7 +36,7 @@ public class getJPGovData extends BaseRapidThread {
 		pid = mConfig.GetInt("jp.pid");
 
 		getStatsList(0);
-
+		echo("getJPGovData end... ");
 	}
 
 	@Override
@@ -61,7 +64,7 @@ public class getJPGovData extends BaseRapidThread {
 		url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsList?appId=" + appId + "&limit=" + limit
 				+ "&startPosition=" + startPosition;
-		//if(startPosition > 10) return;
+		if(startPosition > 100) return;
 		String res = curl.httpGet(url);
 		if (res == null || res.length() < 10)
 			return;
@@ -74,7 +77,7 @@ public class getJPGovData extends BaseRapidThread {
 		if (toInt(RESULT.get("STATUS")) != 0) {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
-			echo("startPosition:" + startPosition);
+			echo("getStatsList startPosition:" + startPosition);
 			return;
 		}
 
@@ -138,6 +141,7 @@ public class getJPGovData extends BaseRapidThread {
 			}
 			String id = map.get("@id").toString();
 			//UpdateCategory(subpid, TITLE.get("$").toString(), id.toString());
+			getMetaInfo(id, subpid);
 			getStatsData(0, id, TITLE.get("$").toString() );
 		}
 		echo("startPosition:" + startPosition);
@@ -148,22 +152,23 @@ public class getJPGovData extends BaseRapidThread {
 	private void getStatsData(int m, String statsDataId, String title) {
 		int startPosition=m;
 		
-		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+  "&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
+		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+ 
+				"&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
 		//echo(url);
 		
-		//if(startPosition > 10) return;
+		if(startPosition > 10) return;
 		String res = curl.httpGet(url);
 		if(res==null || res.length() < 10) return ;
 		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) json.get("GET_STATS_DATA");
-		echo(GET_STATS_DATA);
+		
 		Map<String, Object> RESULT = (Map<String, Object>) GET_STATS_DATA.get("RESULT");
 		
 		if (toInt(RESULT.get("STATUS")) != 0) {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
-			echo("startPosition:" + startPosition);
+			echo("getStatsData startPosition:" + startPosition);
 			return;
 		}
 		
@@ -183,7 +188,7 @@ public class getJPGovData extends BaseRapidThread {
 			L=0;
 			for (String key:map.keySet()) {
 				if(key.indexOf("$")!=-1){ 
-					asKey="val";
+					asKey="volume";
 				}else {
 					asKey = key.replace("@", "");
 				}
@@ -289,6 +294,96 @@ public class getJPGovData extends BaseRapidThread {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void getMetaInfo(String statsDataId, long cid) {
+		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getMetaInfo?appId="+appId+  "&statsDataId="+statsDataId;
+		//echo(url);
+	
+		String res = curl.httpGet(url);
+
+		Map<String, Object> json = JSON.parseObject(res, Map.class);
+		
+		//echo(json);
+		Map<String, Object> GET_META_INFO = (Map<String, Object>) json.get("GET_META_INFO");
+		//echo(GET_STATS_DATA);
+		Map<String, Object> RESULT = (Map<String, Object>) GET_META_INFO.get("RESULT");
+		
+		if (toInt(RESULT.get("STATUS")) != 0) {
+			echo("STATUS:" + RESULT.get("STATUS"));
+			echo("error:" + RESULT.get("ERROR_MSG"));
+			
+			return;
+		}
+			
+		Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO.get("METADATA_INF");
+				
+		Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF.get("TABLE_INF");
+		
+		Map<String, Object> TITLE = (Map<String, Object>) TABLE_INF.get("TITLE");
+		String name = TITLE.get("$").toString();
+		
+		String usqlFormat = "SELECT volume, @arg0@ AS dial FROM j%s WHERE %s ORDER BY  dial";
+		//String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
+		List<Object> jsonTmp = new ArrayList<>();
+		String where = "";
+		
+		String code="", cname="";
+		int m=0;
+		Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF.get("CLASS_INF");
+		List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF.get("CLASS_OBJ");
+		for (Map<String, Object> map : CLASS_OBJ) {
+			
+			if(map.get("CLASS") instanceof List){
+				List<Map<String, Object>> CLAZZL = (List<Map<String, Object>>) map.get("CLASS");
+				code = CLAZZL.get(0).get("@code").toString();
+				cname = CLAZZL.get(0).get("@name").toString();
+			}else {
+				Map<String, Object> CLAZZM = (Map<String, Object>) map.get("CLASS");
+				code = CLAZZM.get("@code").toString();
+				cname = CLAZZM.get("@name").toString();
+			}
+			if(m==0){
+				List<Object> tmp = new ArrayList<>();
+				tmp.add("arg"+m);
+				tmp.add(map.get("@id"));
+				tmp.add("VARCHAR");
+				tmp.add(cname);
+				jsonTmp.add(tmp);
+				m++;
+			}
+						
+			List<Object> tmp = new ArrayList<>();
+			tmp.add("arg"+m);
+			tmp.add(code);
+			tmp.add("VARCHAR");
+			tmp.add(cname);
+			jsonTmp.add(tmp);
+			
+			where += map.get("@id")+" = &apos;@arg"+m+"@&apos;";
+			m++;			
+			if(m <= CLASS_OBJ.size()){
+				where += " and ";
+			}
+		}
+		
+		String TmpJson = JSON.toJSONString(jsonTmp);
+		String usql = String.format(usqlFormat, statsDataId, where);
+		String format = " insert INTO "
+				+ DB_HOR_PRE
+				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
+		String sql = String.format(format, name, usql, 0, 1, TmpJson, 0, "",
+				cid, 1);
+		
+		try {
+			// echo(sql);
+			insert(sql);
+			CommitDB();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+
+		}
 	}
 
 }

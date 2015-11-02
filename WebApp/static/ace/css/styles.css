@@ -6339,60 +6339,62 @@ input.colored-warning[type="checkbox"]:checked + .text:before, input.colored-war
 	margin-left: 35px;
 }
 
-/* line折线图 */
+/* line鎶樼嚎鍥?*/
 .chart_line{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll 0px 0px ;
 }
-/* bar 柱状图 */
+/* bar 鏌辩姸鍥?*/
 .chart_bar{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -25px ;
 }
-/* scatter 散点图 */
+/* scatter 鏁ｇ偣鍥?*/
 .chart_scatter{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -51px ;
 }
-/* k线图 */
+/* k绾垮浘 */
 .chart_k{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -76px ;
 }
-/* pie 饼图 */
+/* pie 楗煎浘 */
 .chart_pie{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -101px ;
 }
-/* radar 雷达图*/
+/* radar 闆疯揪鍥?/
 .chart_radar{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -126px ;
 }
-/*chord 和弦图 */
+/*chord 鍜屽鸡鍥?*/
 .chart_chord{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -151px ;
 }
-/* force 力导布局图 */
+/* force 鍔涘甯冨眬鍥?*/
 .chart_force{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -176px ;
 }
 
-/* map 地图 */
+/* map 鍦板浘 */
 .chart_map{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -201px ;
 }
-/* gauge 仪表盘 */
+/* gauge 浠〃鐩?*/
 .chart_gauge{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -226px ;
 }
-/* funnel 漏斗图 */
+/* funnel 婕忔枟鍥?*/
 .chart_funnel{
 	margin-left: 0px;
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -251px ;
 }
 
+.tree .tree-folder .tree-folder-header{height:auto;}
+.tree .tree-item{height:auto;}

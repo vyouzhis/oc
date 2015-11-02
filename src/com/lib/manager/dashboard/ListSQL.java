@@ -51,10 +51,6 @@ public class ListSQL extends Permission implements BasePerminterface {
 		case "read":
 			read(null);
 			break;
-		case "search":
-			search(null);
-			break;
-
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -76,8 +72,8 @@ public class ListSQL extends Permission implements BasePerminterface {
 		TreeObject = new HashMap<>();
 
 		if (lid == 0) {
-			String json = tmpSQL();
-			return json;
+			tmpSQL();
+			
 		} else if (lid > 0) {
 			subTreeRoot();
 		} else {
@@ -191,31 +187,52 @@ public class ListSQL extends Permission implements BasePerminterface {
 		TreeObject.put(_MLang("tmp"), SubTree);
 	}
 
-	private String tmpSQL() {
-		String RootSql;
-		List<Map<String, Object>> tRes;
+	private void tmpSQL() {
+//		String RootSql;
+//		List<Map<String, Object>> tRes;
+//		Map<String, Object> SubTree;
+//		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
+//				+ "usersql where sql_type=1 and " + UserPermi()
+//				+ " order by id desc;";
+//		try {
+//			tRes = FetchAll(RootSql);
+//			if (tRes != null) {
+//
+//				SubTree = new HashMap<>();
+//				SubTree.put("name", _MLang("tmp"));
+//				SubTree.put("type", "folder");
+//				SubTree.put("additionalParameters",
+//						SetTree(tRes, 0, _MLang("tmp")));
+//
+//				return JSON.toJSONString(SubTree);
+//
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
 		Map<String, Object> SubTree;
-		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
-				+ "usersql where sql_type=1 and " + UserPermi()
-				+ " order by id desc;";
+
+		String sql = String.format(RootSQL, 1);
+		List<Map<String, Object>> RRes;
 		try {
-			tRes = FetchAll(RootSql);
-			if (tRes != null) {
-
+			RRes = FetchAll(sql);
+			for (Map<String, Object> map : RRes) {
 				SubTree = new HashMap<>();
-				SubTree.put("name", _MLang("tmp"));
+				SubTree.put("name", map.get("name"));
 				SubTree.put("type", "folder");
-				SubTree.put("additionalParameters",
-						SetTree(tRes, 0, _MLang("tmp")));
+				SubTree.put("id", map.get("id"));
+				
+				List<Map<String, Object>> tRest = new ArrayList<>();
+				SubTree.put("additionalParameters",SetTree(tRest, toInt(map.get("id")), map.get("name").toString()));
 
-				return JSON.toJSONString(SubTree);
-
+				TreeObject.put(map.get("name").toString(), SubTree);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	private Map<String, Object> SetTree(List<Map<String, Object>> res, int id,

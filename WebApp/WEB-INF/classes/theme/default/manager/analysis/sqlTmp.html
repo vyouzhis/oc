@@ -48,7 +48,7 @@
 																<option value="0"></option>
 																<#if ListTmp??>
 																<#list ListTmp as item>
-																<option value="${item.id}" <#if (lid)?number==item.id > selected="selected" </#if>>${item.name}</option>
+																<option value="${item.id?c}" <#if (lid?c)==item.id?c > selected="selected" </#if>>${item.name}</option>
 																</#list>
 																</#if>
 														</select></li>
@@ -180,7 +180,7 @@
 				if(listId==0){					
 					alert("请选择!");
 				}else{
-					var tmp = "<form enctype='multipart/form-data' action='${create_url!''}?lid=${lid}' method='POST' class='form-inline'><div class='well'>"+
+					var tmp = "<form enctype='multipart/form-data' action='${create_url!''}?lid=${lid?c}' method='POST' class='form-inline'><div class='well'>"+
 					"<div class='row form-horizontal'>"+
 					"<label for='form-field-4' class='col-sm-2 control-label no-padding-right'>名称</label>"+
 					"<div class='col-sm-3'>"+
