@@ -6396,5 +6396,3 @@ input.colored-warning[type="checkbox"]:checked + .text:before, input.colored-war
 	background: url("/static/images/chart/icon-bar.png") no-repeat scroll -0px -251px ;
 }
 
-.tree .tree-folder .tree-folder-header{height:auto;}
-.tree .tree-item{height:auto;}

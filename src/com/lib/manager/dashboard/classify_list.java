@@ -67,7 +67,7 @@ public class classify_list extends Permission implements BasePerminterface {
 		
 		String format = "select id,pid,name,ctime,displays,(select name from "+DB_HOR_PRE+"classify h where h.id=c.pid ) as pname from "+DB_HOR_PRE+"classify c where "+UserPermi()+" order by id desc  limit %d offset %d";
 		String sql = String.format(format, Limit, offset);
-		echo(sql);
+		
 		List<Map<String, Object>> res;
 
 		try {

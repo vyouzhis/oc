@@ -388,14 +388,14 @@
 	                var self = this;
 	                var $data = null;
 				    var pname = "";
-	                var param = -1;
+	                var pid = -1;
 	
 	                if (!("name" in options) && !("type" in options)) {
-	                	//console.log("1");
+	                	console.log("1");
 						$.ajax({
 	                        url: this.url+"?jsoncallback=?",
 	                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-	                        data: 'id=' + param,
+	                        data: 'id=' + pid,
 	                        type: 'POST',
 	                        dataType: 'json',
 	                        success: function (response) {
@@ -418,15 +418,15 @@
 	                	if ("additionalParameters" in options
 								&& "children" in options.additionalParameters) {
 							$data = options.additionalParameters.children;
-							param = options.additionalParameters.id;
+							pid = options.additionalParameters.id;
 							pname = options.additionalParameters.name;
 							//console.log("param:"+JSON.stringify(param));
 							//console.log("pname:"+JSON.stringify(pname));
-							//console.log("2");
+							console.log("2");
 							$.ajax({
 		                        url: this.url+"?jsoncallback=?",
 		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-		                        data: 'id=' + param+"&pname="+pname,
+		                        data: 'id=' + pid+"&pname="+pname,
 		                        type: 'POST',
 		                        dataType: 'json',
 		                        success: function (response) {
@@ -444,18 +444,18 @@
 		                        }
 		                    })
 						} else{
-							//console.log("3");
+							console.log("3");
 							//console.log(options);
 							
-							param = options.id;
+							pid = options.id;
 							pname = options.name;
-							console.log("param:"+JSON.stringify(param));
+							console.log("pid:"+JSON.stringify(pid));
 							console.log("pname:"+JSON.stringify(pname));
 							//console.log("2");
 							$.ajax({
 		                        url: this.url+"?jsoncallback=?",
 		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-		                        data: 'id=' + param+"&pname="+pname,
+		                        data: 'id=' + pid+"&pname="+pname,
 		                        type: 'POST',
 		                        dataType: 'json',
 		                        success: function (response) {

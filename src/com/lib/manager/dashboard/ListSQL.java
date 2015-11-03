@@ -37,8 +37,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		if (super.Init() == -1)
 			return;
-
-		lid = toInt(porg.getKey("id"));
+		
 		pname = porg.getKey("pname");
 
 		rmc = porg.getRmc();
@@ -70,10 +69,11 @@ public class ListSQL extends Permission implements BasePerminterface {
 		RootSQL = "select id,name from "+DB_HOR_PRE+"classify where pid=%d and "
 				+ UserPermi() + " order by id";
 		TreeObject = new HashMap<>();
-
-		if (lid == 0) {
-			tmpSQL();
-			
+		
+		lid = toInt(porg.getKey("id"));
+		if (lid == 0 || porg.getKey("id").toString().substring(0,1).equals("t")) {
+			lid = toInt(porg.getKey("id").toString().substring(1));
+			tmpSQL();			
 		} else if (lid > 0) {
 			subTreeRoot();
 		} else {
@@ -112,8 +112,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 			e.printStackTrace();
 		}
 
-		TreeObject.put("additionalParameters", FloderTree);
-		
+		TreeObject.put("additionalParameters", FloderTree);		
 	}
 	
 	private List<Map<String, Object>> ItemTree() {
@@ -187,52 +186,53 @@ public class ListSQL extends Permission implements BasePerminterface {
 		TreeObject.put(_MLang("tmp"), SubTree);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void tmpSQL() {
-//		String RootSql;
-//		List<Map<String, Object>> tRes;
-//		Map<String, Object> SubTree;
-//		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
-//				+ "usersql where sql_type=1 and " + UserPermi()
-//				+ " order by id desc;";
-//		try {
-//			tRes = FetchAll(RootSql);
-//			if (tRes != null) {
-//
-//				SubTree = new HashMap<>();
-//				SubTree.put("name", _MLang("tmp"));
-//				SubTree.put("type", "folder");
-//				SubTree.put("additionalParameters",
-//						SetTree(tRes, 0, _MLang("tmp")));
-//
-//				return JSON.toJSONString(SubTree);
-//
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return null;
-		Map<String, Object> SubTree;
-
-		String sql = String.format(RootSQL, 1);
+		int cid=lid;
+		if(lid==0) cid=1;
+		Map<String, Object> SubTree, FloderTree;
+		Map<String, Object> RootTree;
+		String sql = String.format(RootSQL, cid);
 		List<Map<String, Object>> RRes;
+		FloderTree = new HashMap<String, Object>();
+		
+		List<Map<String, Object>> RootRes;
+		RootRes = TmpItemTree();
+		FloderTree = SetTree(RootRes, lid, pname);
+		RootTree = (Map<String, Object>) FloderTree.get("children");
 		try {
 			RRes = FetchAll(sql);
 			for (Map<String, Object> map : RRes) {
 				SubTree = new HashMap<>();
 				SubTree.put("name", map.get("name"));
 				SubTree.put("type", "folder");
-				SubTree.put("id", map.get("id"));
-				
-				List<Map<String, Object>> tRest = new ArrayList<>();
-				SubTree.put("additionalParameters",SetTree(tRest, toInt(map.get("id")), map.get("name").toString()));
+				SubTree.put("id", "t"+map.get("id"));
 
-				TreeObject.put(map.get("name").toString(), SubTree);
+				RootTree.put(map.get("name").toString(), SubTree);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		TreeObject.put("additionalParameters", FloderTree);
+	}
+	
+	private List<Map<String, Object>> TmpItemTree() {
+		String RootSql;
+		List<Map<String, Object>> tRes;
+		//Map<String, Object> SubTree;
+		RootSql = "select id,name,sqltmp,'6' as qaction from " + DB_HOR_PRE
+				+ "usersql where sql_type=1 and cid="+lid+" and " + UserPermi()
+				+ " order by id desc;";
+		try {
+			tRes = FetchAll(RootSql);
+			return tRes;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private Map<String, Object> SetTree(List<Map<String, Object>> res, int id,

@@ -97,18 +97,11 @@ public class getJPGovData extends BaseRapidThread {
 		String mainCode = "", subCode = "";
 		long mainpid = 0, subpid = 0;
 		for (Map<String, Object> map : TABLE_INF) {
-			// echo("STAT_NAME:"+map.get("STAT_NAME"));
-			// echo("TITLE:"+map.get("TITLE"));
-			
-			// echo("id:"+id);
 
 			Map<String, Object> TITLE = (Map<String, Object>) map.get("TITLE");
-			// echo("TITLE:"+TITLE.get("$"));
 
 			Map<String, Object> MAIN_CATEGORY = (Map<String, Object>) map
 					.get("MAIN_CATEGORY");
-			// echo("MAIN_CATEGORY:"+MAIN_CATEGORY.get("$"));
-			// echo("MAIN_CATEGORY desc:"+MAIN_CATEGORY.get("@code"));
 
 			if (!mainCode.equals(MAIN_CATEGORY.get("@code").toString())
 					|| mainpid == 0) {
@@ -121,12 +114,9 @@ public class getJPGovData extends BaseRapidThread {
 					mainpid = Long.valueOf(cid);
 				}
 			}
-
 			
 			Map<String, Object> SUB_CATEGORY = (Map<String, Object>) map
 					.get("SUB_CATEGORY");
-			// echo("SUB_CATEGORY:"+SUB_CATEGORY.get("$"));
-			// echo("SUB_CATEGORY code:"+SUB_CATEGORY.get("@code"));
 			if (!subCode.equals(SUB_CATEGORY.get("@code").toString())
 					|| subpid == 0) {
 				subCode = SUB_CATEGORY.get("@code").toString();
@@ -140,11 +130,11 @@ public class getJPGovData extends BaseRapidThread {
 				}
 			}
 			String id = map.get("@id").toString();
-			//UpdateCategory(subpid, TITLE.get("$").toString(), id.toString());
 			getMetaInfo(id, subpid);
+			
 			getStatsData(0, id, TITLE.get("$").toString() );
 		}
-		echo("startPosition:" + startPosition);
+		echo("getStatsList new startPosition:" + startPosition);
 		getStatsList(startPosition);
 	}
 	
@@ -167,7 +157,7 @@ public class getJPGovData extends BaseRapidThread {
 		if (toInt(RESULT.get("STATUS")) != 0) {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
-			echo("getStatsData startPosition:" + startPosition);
+			echo("getStatsData startPosition:" + startPosition +" statsDataId:"+statsDataId);
 			return;
 		}
 		
@@ -175,6 +165,7 @@ public class getJPGovData extends BaseRapidThread {
 				
 		Map<String, Object> RESULT_INF =  (Map<String, Object>) STATISTICAL_DATA.get("RESULT_INF");
 		if(!RESULT_INF.containsKey("NEXT_KEY")) return ;
+		
 		startPosition += limit;
 		
 		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA.get("DATA_INF");
