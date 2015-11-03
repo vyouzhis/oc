@@ -19,6 +19,7 @@ public class getJPGovData extends BaseRapidThread {
 	//private static String lang = "E";
 	private static int limit = 1000;
 	private long pid;
+	private String statsField="";
 
 	@Override
 	public String title() {
@@ -59,10 +60,10 @@ public class getJPGovData extends BaseRapidThread {
 	@SuppressWarnings("unchecked")
 	private void getStatsList(int m) {
 		int startPosition = m;
-
+		statsField = "03";
 		url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsList?appId=" + appId + "&limit=" + limit
-				+ "&startPosition=" + startPosition;
+				+ "&startPosition=" + startPosition+"&statsField="+statsField;
 		//if(startPosition > 100) return;  // ===========================
 		String res = curl.httpGet(url);
 		if (res == null || res.length() < 10)
