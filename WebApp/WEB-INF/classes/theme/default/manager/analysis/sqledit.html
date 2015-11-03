@@ -86,7 +86,7 @@
 									</h3>
 									<select id="form-field-select-2"> <#if ListRule??>
 										<#list ListRule as litem>
-										<option value="">${litem.id}_${litem.name}</option> </#list>
+										<option value="">${litem.id?c}_${litem.name}</option> </#list>
 										</#if>
 									</select>
 								</div>
@@ -122,8 +122,8 @@
 									    <#if dblist??> 
 									    <#list dblist as dbitem>
 
-										<option<#if (dbid)?number==dbitem.id >
-											selected="selected" </#if> value="${dbitem.id}">${dbitem.title}</option>
+										<option<#if (dbid)?c==dbitem.id?c >
+											selected="selected" </#if> value="${dbitem.id?c}">${dbitem.title}</option>
 										</#list> </#if>
 									</select>
 
@@ -139,7 +139,7 @@
 											
 											<#if pid_list??>
 								           		<#list pid_list as pitem>		
-												<option value="${pitem.id}" <#if pitem.id == pid>  selected </#if> >${pitem.name!""}</option>
+												<option value="${pitem.id?c}" <#if pitem.id?c == pid?c>  selected </#if> >${pitem.name!""}</option>
 												</#list>
 											</#if>	
 										</select>
@@ -159,10 +159,10 @@
 												<input class="hide" type="text" id="sql" name="sql"
 													value='${create_sql!""}' /> <span class="input-group-btn">
 													<input class="hide" type="text" id="eid" name="eid"
-													value='${eid!0}' /> 
+													value='${eid?c}' /> 
 													
 													<input class="hide" type="text" id="save_id" name="save_id"
-													value='${dbid!0}' /> 
+													value='${dbid?c}' /> 
 													<span class="input-group-btn">
 
 														<input class="hide" type="text" id="temples"

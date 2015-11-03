@@ -43,10 +43,10 @@ public class CronThread extends LibThread {
 			}
 		}
 		
-		
+		ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());
 		while (true) {
 		//	System.out.println("start...");
-			ExecutorService cachedThreadPool = Executors.newFixedThreadPool(cronMap.size());
+			
 			
 			for (String key : cronMap.keySet()) {
 				// System.out.print("KEY:"+key);	

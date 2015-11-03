@@ -21,6 +21,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,14 +39,20 @@ public class cUrl extends function {
 	private List<Header> cHeader = new ArrayList<>();
 	private CloseableHttpClient httpclient = null;	
 	ResponseHandler<String> responseHandler = null;
+	RequestConfig requestConfig = null;
 
 	public String httpGet(String url) {
 		if (httpclient == null) {
 			httpclient = HttpClients.createDefault();
+			requestConfig = RequestConfig.custom()  
+			        .setSocketTimeout(30000)  
+			        .setConnectTimeout(30000)  
+			        .build();
 		}
 		
 		HttpGet httpget = new HttpGet(url);
-	
+		httpget.setConfig(requestConfig);
+		
 		if (cHeader.size() > 0) {
 			for (Header mHeader : cHeader) {
 				httpget.addHeader(mHeader);
@@ -56,7 +63,7 @@ public class cUrl extends function {
 		Response();
 
 		String responseBody = null;
-		try {
+		try {			 			
 			responseBody = httpclient.execute(httpget, responseHandler);
 
 		} catch (ClientProtocolException e) {
@@ -66,6 +73,7 @@ public class cUrl extends function {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		httpget = null;
 		return responseBody;
 	}
 

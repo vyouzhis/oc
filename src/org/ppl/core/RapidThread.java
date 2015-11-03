@@ -17,6 +17,8 @@ public class RapidThread extends LibThread {
 	}
 
 	public void ListQueue() {
+		
+		
 		while (true) {
 			synchronized (globale_config.RapidListQueue) {
 				try {
@@ -31,6 +33,8 @@ public class RapidThread extends LibThread {
 					ThreadRapidRun trr = new ThreadRapidRun(key);
 					cachedThreadPool.execute(trr);					
 				}
+				//cachedThreadPool.shutdown();
+				
 			}
 		}
 	}

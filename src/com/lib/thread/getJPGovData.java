@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter.Magenta;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.net.cUrl;
 
 import com.alibaba.fastjson.JSON;
-import com.mysql.jdbc.jdbc2.optional.MysqlXid;
+
 
 public class getJPGovData extends BaseRapidThread {
 	private cUrl curl;
@@ -96,8 +95,10 @@ public class getJPGovData extends BaseRapidThread {
 				.get("TABLE_INF");
 		String mainCode = "", subCode = "";
 		long mainpid = 0, subpid = 0;
+		int n=0, L=TABLE_INF.size();
 		for (Map<String, Object> map : TABLE_INF) {
-
+			echo("n:"+n+" size:"+L);
+			n++;
 			Map<String, Object> TITLE = (Map<String, Object>) map.get("TITLE");
 
 			Map<String, Object> MAIN_CATEGORY = (Map<String, Object>) map
@@ -141,12 +142,13 @@ public class getJPGovData extends BaseRapidThread {
 	@SuppressWarnings("unchecked")
 	private void getStatsData(int m, String statsDataId, String title) {
 		int startPosition=m;
-		
+		echo("getStatsData m:"+m);
 		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+ 
 				"&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
 		//echo(url);		
 		//if(startPosition > 10) return; // ===========================
 		String res = curl.httpGet(url);
+		echo("getStatsData statsDataId:"+statsDataId);
 		if(res==null || res.length() < 10) return ;
 		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
@@ -173,6 +175,7 @@ public class getJPGovData extends BaseRapidThread {
 		String fields = "", act="", views="", values="";
 		int L=0;
 		String asKey = "";
+		echo("VALUE:"+VALUE.size());
 		for (Map<String, Object> map:VALUE) {
 			fields = ""; act="";views=""; values="";
 			L=0;
@@ -278,7 +281,7 @@ public class getJPGovData extends BaseRapidThread {
 		//echo(sql);
 		try {
 			insert(sql);
-			CommitDB();
+			//CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

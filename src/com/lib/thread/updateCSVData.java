@@ -96,7 +96,7 @@ public class updateCSVData extends BaseRapidThread {
 
 			try {
 				line = reader.readLine();				
-				line = line.replace(" ", "_");
+				line = line.trim();
 
 				dropview = "drop view if exists " + view_name;
 				try {
