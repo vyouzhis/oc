@@ -1,6 +1,8 @@
 package org.ppl.core;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.ppl.common.CookieAction;
 import org.ppl.common.PorG;
@@ -74,18 +76,19 @@ public class PObject extends function{
 	}
 
 	public void TellPostMan(String ThreadName, Object message) {
-
+		Map<String, Object> tpm = new HashMap<>();
+		tpm.put("name", ThreadName);
+		tpm.put("obj", message);
+		
 		synchronized (globale_config.RapidListQueue) {
-			if (globale_config.RapidListQueue.containsKey(ThreadName)) {
-				globale_config.RapidListQueue.get(ThreadName).add(message);
-			} else {
-				LinkedList<Object> m = new LinkedList<Object>();
-				m.add(message);
-				globale_config.RapidListQueue.put(ThreadName, m);
-			}
-			// message.setText("Notifier took a nap for 3 seconds");
-			// System.out.println("Notifier is notifying waiting thread to wake up at "
-			// + new Date());
+//			if (globale_config.RapidListQueue.containsKey(ThreadName)) {
+//				globale_config.RapidListQueue.get(ThreadName).add(message);
+//			} else {
+//				LinkedList<Object> m = new LinkedList<Object>();
+//				m.add(message);
+//				globale_config.RapidListQueue.put(ThreadName, m);
+//			}
+			globale_config.RapidListQueue.add(tpm);
 			globale_config.RapidListQueue.notify();
 		}
 	}

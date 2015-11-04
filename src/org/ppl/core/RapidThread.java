@@ -1,5 +1,6 @@
 package org.ppl.core;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,11 +27,12 @@ public class RapidThread extends LibThread {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
-				ExecutorService cachedThreadPool = Executors.newFixedThreadPool(globale_config.RapidListQueue.size());
+				int i= globale_config.RapidListQueue.size();
+				System.out.println("RapidListQueue size:"+i);
+				ExecutorService cachedThreadPool = Executors.newFixedThreadPool(i);
 				
-				for (String key : globale_config.RapidListQueue.keySet()) {
-					ThreadRapidRun trr = new ThreadRapidRun(key);
+				for (Map<String, Object> key : globale_config.RapidListQueue) {
+					ThreadRapidRun trr = new ThreadRapidRun(key.get("name").toString(), key.get("obj"));
 					cachedThreadPool.execute(trr);					
 				}
 				//cachedThreadPool.shutdown();

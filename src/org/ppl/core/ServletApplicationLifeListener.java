@@ -1,5 +1,6 @@
 package org.ppl.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,9 +57,9 @@ public class ServletApplicationLifeListener extends PObject implements
 			e.printStackTrace();
 		}
 		
-		globale_config.RapidListQueue = new HashMap<String, LinkedList<Object>>();
+		globale_config.RapidListQueue = new ArrayList<>();
 		globale_config.RapidList = new HashMap<>();
-		globale_config.CronListQueue = new HashMap<String, Map<String, Object>>();
+		globale_config.CronListQueue = new HashMap<>();
 		
 		if (autorun == 1) {
 			Thread dt = new Thread(new RapidThread(), "dt_");		

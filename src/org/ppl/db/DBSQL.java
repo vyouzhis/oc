@@ -119,7 +119,7 @@ public class DBSQL extends BaseLang {
 			}
 
 			if (ConDB == null || ConDB.isClosed()) {
-				echo("con sql:" + clearSQL);
+				echo("query con sql:" + clearSQL);
 				return null;
 			}
 
@@ -199,11 +199,10 @@ public class DBSQL extends BaseLang {
 		exec(sql, ret);
 		if (ret) {
 			ResultSet rs = stmt.getGeneratedKeys();
-
+			if(rs==null)return -1;
 			if (rs.next()) {
 				numRowsUpdated = rs.getLong(1);
-			}
-			
+			}			
 		}
 		return numRowsUpdated;
 	}

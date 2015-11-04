@@ -34,8 +34,13 @@ public class getJPGovData extends BaseRapidThread {
 		// TODO Auto-generated method stub
 		curl = new cUrl();
 		pid = mConfig.GetInt("jp.pid");
-
-		getStatsList(0);
+		int startPosition = 0;
+		boolean StatsList = true;
+		while (StatsList) {
+			StatsList =getStatsList(startPosition);
+			startPosition+=limit;
+		}
+		
 		echo("getJPGovData end... ");
 	}
 
@@ -54,20 +59,19 @@ public class getJPGovData extends BaseRapidThread {
 	@Override
 	public void mailbox(Object o) {
 		// TODO Auto-generated method stub
-
+		statsField = (String)o;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void getStatsList(int m) {
-		int startPosition = m;
-		statsField = "03";
+	private boolean getStatsList(int startPosition) {
+				
 		url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsList?appId=" + appId + "&limit=" + limit
 				+ "&startPosition=" + startPosition+"&statsField="+statsField;
 		//if(startPosition > 100) return;  // ===========================
 		String res = curl.httpGet(url);
 		if (res == null || res.length() < 10)
-			return;
+			return false;
 
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_LIST = (Map<String, Object>) json
@@ -78,7 +82,7 @@ public class getJPGovData extends BaseRapidThread {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
 			echo("getStatsList startPosition:" + startPosition);
-			return;
+			return false;
 		}
 
 		Map<String, Object> DATALIST_INF = (Map<String, Object>) GET_STATS_LIST
@@ -89,17 +93,18 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> RESULT_INF = (Map<String, Object>) DATALIST_INF
 				.get("RESULT_INF");
 		if (!RESULT_INF.containsKey("NEXT_KEY"))
-			return;
-		startPosition += limit;
+			return false;
+		//startPosition += limit;
 
 		List<Map<String, Object>> TABLE_INF = (List<Map<String, Object>>) DATALIST_INF
 				.get("TABLE_INF");
 		String mainCode = "", subCode = "";
 		long mainpid = 0, subpid = 0;
-		int n=0, L=TABLE_INF.size();
+		//int n=0, L=TABLE_INF.size();
 		for (Map<String, Object> map : TABLE_INF) {
-			echo("n:"+n+" size:"+L);
-			n++;
+			//echo("n:"+n+" size:"+L);
+			//n++;
+			if(!map.containsKey("TITLE")) continue;
 			Map<String, Object> TITLE = (Map<String, Object>) map.get("TITLE");
 
 			Map<String, Object> MAIN_CATEGORY = (Map<String, Object>) map
@@ -133,24 +138,31 @@ public class getJPGovData extends BaseRapidThread {
 			}
 			String id = map.get("@id").toString();
 			getMetaInfo(id, subpid);
+			boolean StatsData= true;
+			int StatsData_startPosition=0;
+			while (StatsData) {
+				StatsData = getStatsData(StatsData_startPosition, id, TITLE.get("$").toString() );
+				StatsData_startPosition+=limit;
+			}
 			
-			getStatsData(0, id, TITLE.get("$").toString() );
 		}
 		echo("getStatsList new startPosition:" + startPosition);
-		getStatsList(startPosition);
+		//getStatsList(startPosition);
+		//if(TABLE_INF.size() < limit)return false;
+		return true;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void getStatsData(int m, String statsDataId, String title) {
-		int startPosition=m;
-		echo("getStatsData m:"+m);
+	private boolean getStatsData(int startPosition, String statsDataId, String title) {
+		
+		//echo("getStatsData m:"+m);
 		String url="http://api.e-stat.go.jp/rest/"+Ver+"/app/json/getStatsData?appId="+appId+ 
 				"&statsDataId="+statsDataId+"&metaGetFlg=N&limit="+limit+"&startPosition="+startPosition;
 		//echo(url);		
 		//if(startPosition > 10) return; // ===========================
 		String res = curl.httpGet(url);
-		echo("getStatsData statsDataId:"+statsDataId);
-		if(res==null || res.length() < 10) return ;
+		//echo("getStatsData statsDataId:"+statsDataId);
+		if(res==null || res.length() < 10) return false;
 		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) json.get("GET_STATS_DATA");
@@ -161,24 +173,25 @@ public class getJPGovData extends BaseRapidThread {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
 			echo("getStatsData startPosition:" + startPosition +" statsDataId:"+statsDataId);
-			return;
+			return false;
 		}
 		
 		Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA.get("STATISTICAL_DATA");
 				
 		Map<String, Object> RESULT_INF =  (Map<String, Object>) STATISTICAL_DATA.get("RESULT_INF");
-		if(!RESULT_INF.containsKey("NEXT_KEY")) return ;
+		if(!RESULT_INF.containsKey("NEXT_KEY")) return false;
 		
-		startPosition += limit;
+		//startPosition += limit;
 		
 		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA.get("DATA_INF");
 		List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
 		String fields = "", act="", views="", values="";
 		int L=0;
-		String asKey = "";
-		echo("VALUE:"+VALUE.size());
+		long sameRule=0;
+		String asKey = "", sameValue="" , format="(%d, %s)";
+		//echo("VALUE:"+VALUE.size());
 		for (Map<String, Object> map:VALUE) {
-			fields = ""; act="";views=""; values="";
+			
 			L=0;
 			for (String key:map.keySet()) {
 				if(key.indexOf("$")!=-1){ 
@@ -190,23 +203,37 @@ public class getJPGovData extends BaseRapidThread {
 				act = "act_v" + Integer.toHexString(L);				
 				
 				views += act +" as "+asKey+",";
-				fields += act + ",";
+				
+				//fields += act + ",";
 				
 				values += "'"+map.get(key)+"',";
 				L++;
 			}
-			
-			fields = fields.substring(0, fields.length()-1);
+						
 			views = views.substring(0, views.length()-1);
 			values = values.substring(0, values.length()-1);
 			
 			long rule=classInfo(title, statsDataId, views);
-			
-			clazz(rule, views, statsDataId, fields, values);
-		
+			if(sameRule==0) sameRule=rule;
+			if(sameRule == rule){				
+				sameValue += String.format(format, rule, values)+",";
+			}else {
+				for (int i = 0; i < L; i++) {
+					act = "act_v" + Integer.toHexString(i);																	
+					fields += act + ",";
+				}
+				fields = fields.substring(0, fields.length()-1);
+				sameValue = sameValue.substring(0, sameValue.length()-1);
+				clazz(fields, sameValue);
+				sameValue = "";
+				sameRule=rule;
+				fields = ""; act="";views=""; values="";
+			}
+				
 		}
-			
-		getStatsData(startPosition, statsDataId, title);
+		if(VALUE.size() < limit) return false;
+		
+		return true;	
 	}
 	
 	private String CheckCategory(String desc, long id) {
@@ -265,7 +292,7 @@ public class getJPGovData extends BaseRapidThread {
 		//echo(sql);
 		try {
 			dbcreate(sql);
-			//CommitDB();
+			CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -274,15 +301,15 @@ public class getJPGovData extends BaseRapidThread {
 		return tpid;
 	}
 	
-	private void clazz(long rule, String view_name ,String views, String fields, String values) {
+	private void clazz( String fields, String values) {
 		String format = " insert INTO "
 				+ DB_HOR_PRE
-				+ "class (rule,%s)values(%d, %s)";
-		String sql = String.format(format, fields, rule, values);
-		//echo(sql);
+				+ "class (rule,%s)values %s;";
+		String sql = String.format(format, fields,  values);
+		echo(sql);
 		try {
 			insert(sql);
-			//CommitDB();
+			CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -296,7 +323,7 @@ public class getJPGovData extends BaseRapidThread {
 		//echo(url);
 	
 		String res = curl.httpGet(url);
-
+		if(res==null || res.length()==0) return;
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		
 		//echo(json);
@@ -372,7 +399,7 @@ public class getJPGovData extends BaseRapidThread {
 		
 		try {
 			insert(sql);
-			//CommitDB();
+			CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 

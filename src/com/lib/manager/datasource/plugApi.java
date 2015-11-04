@@ -1,5 +1,6 @@
 package com.lib.manager.datasource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,8 +66,12 @@ public class plugApi extends Permission implements BasePerminterface {
 
 		UrlClassList ucl = UrlClassList.getInstance();
 		String pack = porg.getKey("pack");
-		TellPostMan(pack, null);
 		
+		for (int i = 1; i < 8; i++) {			
+			TellPostMan(pack, String.format("%02d", i));
+		}
+		//TellPostMan(pack, "99");
+				
 		TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_save"));
 	}
 

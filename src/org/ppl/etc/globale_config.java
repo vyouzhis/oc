@@ -2,6 +2,7 @@ package org.ppl.etc;
 
 import java.sql.Connection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.rosuda.REngine.Rserve.RConnection;
@@ -48,7 +49,7 @@ public class globale_config {
 	public static Map<Long, Connection> GDB = null;
 	
 	//listQueue
-	public static Map<String, LinkedList<Object>> RapidListQueue;
+	public static List<Map<String, Object>> RapidListQueue;
 	public static Map<String, Map<String, Object>> RapidList;
 	
 	//CrontList
