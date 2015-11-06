@@ -81,13 +81,6 @@ public class PObject extends function{
 		tpm.put("obj", message);
 		
 		synchronized (globale_config.RapidListQueue) {
-//			if (globale_config.RapidListQueue.containsKey(ThreadName)) {
-//				globale_config.RapidListQueue.get(ThreadName).add(message);
-//			} else {
-//				LinkedList<Object> m = new LinkedList<Object>();
-//				m.add(message);
-//				globale_config.RapidListQueue.put(ThreadName, m);
-//			}
 			globale_config.RapidListQueue.add(tpm);
 			globale_config.RapidListQueue.notify();
 		}

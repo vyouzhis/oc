@@ -28,15 +28,15 @@ public class RapidThread extends LibThread {
 					e.printStackTrace();
 				}
 				int i= globale_config.RapidListQueue.size();
-				System.out.println("RapidListQueue size:"+i);
+				
 				ExecutorService cachedThreadPool = Executors.newFixedThreadPool(i);
 				
-				for (Map<String, Object> key : globale_config.RapidListQueue) {
+				while (globale_config.RapidListQueue.size()>0) {
+					Map<String, Object> key = globale_config.RapidListQueue.remove(0);
 					ThreadRapidRun trr = new ThreadRapidRun(key.get("name").toString(), key.get("obj"));
+					System.out.println("RapidListQueue obj:"+key.get("obj"));
 					cachedThreadPool.execute(trr);					
-				}
-				//cachedThreadPool.shutdown();
-				
+				}				
 			}
 		}
 	}

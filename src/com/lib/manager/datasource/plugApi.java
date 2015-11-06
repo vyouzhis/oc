@@ -67,7 +67,7 @@ public class plugApi extends Permission implements BasePerminterface {
 		UrlClassList ucl = UrlClassList.getInstance();
 		String pack = porg.getKey("pack");
 		
-		for (int i = 1; i < 8; i++) {			
+		for (int i = 1; i < 6; i++) {			
 			TellPostMan(pack, String.format("%02d", i));
 		}
 		//TellPostMan(pack, "99");

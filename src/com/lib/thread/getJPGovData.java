@@ -70,8 +70,10 @@ public class getJPGovData extends BaseRapidThread {
 				+ statsField;
 		// if(startPosition > 100) return; // ===========================
 		String res = curl.httpGet(url);
-		if (res == null || res.length() < 10)
+		if (res == null || res.length() < 10) {
+			echo("url:" + url);
 			return false;
+		}
 
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_LIST = (Map<String, Object>) json
@@ -92,8 +94,10 @@ public class getJPGovData extends BaseRapidThread {
 		// echo("number:"+number);
 		Map<String, Object> RESULT_INF = (Map<String, Object>) DATALIST_INF
 				.get("RESULT_INF");
-		if (!RESULT_INF.containsKey("NEXT_KEY"))
+		if (!RESULT_INF.containsKey("NEXT_KEY")) {
+			echo("nextkey url:" + url);
 			return false;
+		}
 		// startPosition += limit;
 
 		List<Map<String, Object>> TABLE_INF = (List<Map<String, Object>>) DATALIST_INF
@@ -101,12 +105,23 @@ public class getJPGovData extends BaseRapidThread {
 		String mainCode = "", subCode = "";
 		long mainpid = 0, subpid = 0;
 		// int n=0, L=TABLE_INF.size();
+		String title = "";
+		Map<String, Object> TITLE = null;
 		for (Map<String, Object> map : TABLE_INF) {
 			// echo("n:"+n+" size:"+L);
 			// n++;
 			if (!map.containsKey("TITLE"))
 				continue;
-			Map<String, Object> TITLE = (Map<String, Object>) map.get("TITLE");
+
+			try {
+				TITLE = (Map<String, Object>) map.get("TITLE");
+				title = TITLE.get("$").toString();
+			} catch (ClassCastException e) {
+				// TODO: handle exception
+				// echo("error statsField:"+statsField+" startPosition:"+startPosition);
+				// continue;
+				title = map.get("TITLE").toString();
+			}
 
 			Map<String, Object> MAIN_CATEGORY = (Map<String, Object>) map
 					.get("MAIN_CATEGORY");
@@ -140,25 +155,26 @@ public class getJPGovData extends BaseRapidThread {
 			String id = map.get("@id").toString();
 			getMetaInfo(id, subpid);
 			boolean StatsData = true;
-			int StatsData_startPosition = 0;
+			// long StatsData_startPosition = getNowStatsDataID(id);
+			long StatsData_startPosition = 0;
 			while (StatsData) {
-				StatsData = getStatsData(StatsData_startPosition, id, TITLE
-						.get("$").toString());
+				StatsData = getStatsData(StatsData_startPosition, id, title);
 				StatsData_startPosition += limit;
 			}
 
 		}
-		echo("getStatsList new startPosition:" + startPosition);
-		// getStatsList(startPosition);
-		// if(TABLE_INF.size() < limit)return false;
+		echo("getStatsList new startPosition:" + startPosition + " statsField:"
+				+ statsField);
+
 		return true;
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean getStatsData(int startPosition, String statsDataId,
+	private boolean getStatsData(long startPosition, String statsDataId,
 			String title) {
 
 		// echo("getStatsData m:"+m);
+		long id = startPosition;
 		String url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsData?appId=" + appId + "&statsDataId="
 				+ statsDataId + "&metaGetFlg=N&limit=" + limit
@@ -197,8 +213,14 @@ public class getJPGovData extends BaseRapidThread {
 
 		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA
 				.get("DATA_INF");
-		List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF
-				.get("VALUE");
+		List<Map<String, Object>> VALUE = null;
+		try {
+			VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
+		} catch (ClassCastException e) {
+			// TODO: handle exception
+			return false;
+		}
+
 		String fields = "", act = "", views = "", values = "";
 		int L = 0;
 		long sameRule = 0;
@@ -208,6 +230,9 @@ public class getJPGovData extends BaseRapidThread {
 			values = "";
 			L = 0;
 			for (String key : map.keySet()) {
+				if (key.equals("@unit"))
+					continue;
+
 				if (key.indexOf("$") != -1) {
 					asKey = "volume";
 				} else {
@@ -222,26 +247,27 @@ public class getJPGovData extends BaseRapidThread {
 
 				values += "'" + map.get(key) + "',";
 				L++;
+
 			}
 
-			views = views.substring(0, views.length() - 1);
-			values = values.substring(0, values.length() - 1);
-
+			views = views + " act_v" + Integer.toHexString(L + 1) + " as id";
+			values = values + id;
+			id++;
 			long rule = classInfo(title, statsDataId, views);
-			
+
 			if (sameRule == 0)
 				sameRule = rule;
 			if (sameRule == rule) {
 				sameValue += String.format(format, rule, values) + ",";
 			} else {
-				for (int i = 0; i < L; i++) {
+				for (int i = 0; i < L + 1; i++) {
 					act = "act_v" + Integer.toHexString(i);
 					fields += act + ",";
 				}
 				fields = fields.substring(0, fields.length() - 1);
 				sameValue = sameValue.substring(0, sameValue.length() - 1);
 				clazz(fields, sameValue);
-				sameValue = "";
+				sameValue = String.format(format, rule, values) + ",";
 				sameRule = rule;
 				fields = "";
 				act = "";
@@ -250,20 +276,37 @@ public class getJPGovData extends BaseRapidThread {
 			}
 
 		}
-		if (sameValue.length()>0) {
-			for (int i = 0; i < L; i++) {
+		if (sameValue.length() > 0) {
+			for (int i = 0; i < L + 1; i++) {
 				act = "act_v" + Integer.toHexString(i);
 				fields += act + ",";
 			}
 			fields = fields.substring(0, fields.length() - 1);
 			sameValue = sameValue.substring(0, sameValue.length() - 1);
-			clazz(fields, sameValue);			
+			clazz(fields, sameValue);
 		}
 
 		if (VALUE.size() < limit)
 			return false;
 
 		return true;
+	}
+
+	private long getNowStatsDataID(String statsDataId) {
+
+		String format = "select id from " + DB_HOR_PRE
+				+ "classinfo where view_name ='j%s' limit 1";
+		String sql = String.format(format, statsDataId);
+		Map<String, Object> res;
+
+		res = FetchOne(sql);
+		if (res != null && res.size() == 1) {
+			long id = Long.valueOf(res.get("id").toString());
+
+			format = "select ";
+		}
+
+		return 0;
 	}
 
 	private String CheckCategory(String desc, long id) {
@@ -337,7 +380,7 @@ public class getJPGovData extends BaseRapidThread {
 		String format = " insert INTO " + DB_HOR_PRE
 				+ "class (rule,%s)values %s;";
 		String sql = String.format(format, fields, values);
-		//echo(sql);
+		// echo(sql);
 		try {
 			insert(sql);
 			CommitDB();
@@ -380,9 +423,18 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF
 				.get("TABLE_INF");
 
-		Map<String, Object> TITLE = (Map<String, Object>) TABLE_INF
-				.get("TITLE");
-		String name = TITLE.get("$").toString();
+		Map<String, Object> TITLE = null;
+		String name = "";
+
+		try {
+			TITLE = (Map<String, Object>) TABLE_INF.get("TITLE");
+			name = TITLE.get("$").toString();
+		} catch (ClassCastException e) {
+			// TODO: handle exception
+			// echo("error statsField:"+statsField+" startPosition:"+startPosition);
+			// continue;
+			name = TABLE_INF.get("TITLE").toString();
+		}
 
 		String usqlFormat = "SELECT volume, @arg0@ AS dial FROM j%s WHERE %s ORDER BY  dial";
 		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";

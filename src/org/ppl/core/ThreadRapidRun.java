@@ -57,16 +57,14 @@ public class ThreadRapidRun extends function implements Runnable {
 		rapid.mailbox(myMsg);
 		try {
 			rapid.Run();
+			synchronized (globale_config.RapidList) {
+				globale_config.RapidList.get(myKey).put("munber", munber);
+				globale_config.RapidList.get(myKey).put("isrun", 0);
+			}
 		} finally {
 			rapid.free();
 		}
 
-		synchronized (globale_config.RapidList) {
-			globale_config.RapidList.get(myKey).put("munber", munber);
-			globale_config.RapidList.get(myKey).put("isrun", 0);
-		}
-		echo(myMsg);
 		echo("rapid end!!");
-		// rapid.free();
 	}
 }
