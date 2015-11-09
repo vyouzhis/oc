@@ -45,8 +45,8 @@ public class cUrl extends function {
 		if (httpclient == null) {
 			httpclient = HttpClients.createDefault();
 			requestConfig = RequestConfig.custom()  
-			        .setSocketTimeout(30000)  
-			        .setConnectTimeout(30000)  
+			        .setSocketTimeout(60000)  
+			        .setConnectTimeout(60000)  
 			        .build();
 		}
 		
@@ -68,10 +68,10 @@ public class cUrl extends function {
 
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		httpget = null;
 		return responseBody;

@@ -19,6 +19,7 @@ public class getJPGovData extends BaseRapidThread {
 	private static int limit = 1000;
 	private long pid;
 	private String statsField = "";
+	private int tolNumber=0;
 
 	@Override
 	public String title() {
@@ -69,12 +70,19 @@ public class getJPGovData extends BaseRapidThread {
 				+ "&startPosition=" + startPosition + "&statsField="
 				+ statsField;
 		// if(startPosition > 100) return; // ===========================
-		String res = curl.httpGet(url);
-		if (res == null || res.length() < 10) {
-			echo("url:" + url);
-			return false;
+		String res = "";
+		while (true) {
+			res = curl.httpGet(url);
+			if (res == null || res.length() < 10) {
+				echo("url:" + url);
+				if(startPosition>0 && tolNumber <= startPosition) return false;
+			}else {
+				echo("time out ...");
+				break;
+			}
+			
 		}
-
+		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_LIST = (Map<String, Object>) json
 				.get("GET_STATS_LIST");
@@ -90,8 +98,10 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> DATALIST_INF = (Map<String, Object>) GET_STATS_LIST
 				.get("DATALIST_INF");
 
-		// int number = toInt(DATALIST_INF.get("NUMBER"));
-		// echo("number:"+number);
+		if(tolNumber==0){
+			tolNumber = toInt(DATALIST_INF.get("NUMBER"));
+		}
+		 
 		Map<String, Object> RESULT_INF = (Map<String, Object>) DATALIST_INF
 				.get("RESULT_INF");
 		if (!RESULT_INF.containsKey("NEXT_KEY")) {
@@ -399,8 +409,10 @@ public class getJPGovData extends BaseRapidThread {
 		// echo(url);
 
 		String res = curl.httpGet(url);
-		if (res == null || res.length() == 0)
+		if (res == null || res.length() == 0){
+			
 			return;
+		}
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 
 		// echo(json);
