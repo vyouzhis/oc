@@ -264,7 +264,7 @@ public class getJPGovData extends BaseRapidThread {
 					act = "act_v" + Integer.toHexString(i);
 					fields += act + ",";
 				}
-				fields = fields.substring(0, fields.length() - 1);
+				fields = fields+"otype";
 				sameValue = sameValue.substring(0, sameValue.length() - 1);
 				clazz(fields, sameValue);
 				sameValue = String.format(format, rule, values) + ",";
@@ -281,8 +281,8 @@ public class getJPGovData extends BaseRapidThread {
 				act = "act_v" + Integer.toHexString(i);
 				fields += act + ",";
 			}
-			fields = fields.substring(0, fields.length() - 1);
-			sameValue = sameValue.substring(0, sameValue.length() - 1);
+			fields = fields+"otype";
+			sameValue = sameValue+"1";
 			clazz(fields, sameValue);
 		}
 
@@ -443,12 +443,15 @@ public class getJPGovData extends BaseRapidThread {
 
 		String code = "", cname = "";
 		int m = 0;
+		String objid = "";
+		String objname = "";
 		Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF
 				.get("CLASS_INF");
 		List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
 				.get("CLASS_OBJ");
 		for (Map<String, Object> map : CLASS_OBJ) {
-
+			objid = map.get("@id").toString();
+			objname = map.get("@name").toString();
 			if (map.get("CLASS") instanceof List) {
 				List<Map<String, Object>> CLAZZL = (List<Map<String, Object>>) map
 						.get("CLASS");
@@ -477,7 +480,7 @@ public class getJPGovData extends BaseRapidThread {
 			tmp.add(cname);
 			jsonTmp.add(tmp);
 
-			where += map.get("@id") + " = &apos;@arg" + m + "@&apos;";
+			where +=  objid + " = &apos;@arg" + m + "@&apos;";
 			m++;
 			if (m <= CLASS_OBJ.size()) {
 				where += " and ";
@@ -499,6 +502,10 @@ public class getJPGovData extends BaseRapidThread {
 			// TODO Auto-generated catch block
 
 		}
+	}
+	
+	private void getMetaInfoClazz() {
+		String format = ""
 	}
 
 }
