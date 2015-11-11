@@ -438,12 +438,12 @@ public class getJPGovData extends BaseRapidThread {
 		List<Object> jsonTmp = new ArrayList<>();
 		String where = "";
 
-		String code = "", cname = "", level="", parentCode="";
+		String code = "", cname = "", level="", parentCode="", unit="";
 		int m = 0, L=0;
 		String objid = "";
 		String objname = "";
 		String views = "", act="", ViewClazz = "";
-		String ClazzFormat="(%s, '%s','%s','%s','%s','%s','%s','%s')";
+		String ClazzFormat="(%s, '%s','%s','%s','%s','%s','%s','%s','%s')";
 		Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF
 				.get("CLASS_INF");
 		List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
@@ -469,8 +469,12 @@ public class getJPGovData extends BaseRapidThread {
 					if(CLAZZL.get(i).containsKey("@parentCodeString")){
 						parentCode = CLAZZL.get(i).get("@parentCodeString").toString();
 					}
+					if(CLAZZL.get(i).containsKey("@unit")){
+						unit = CLAZZL.get(i).get("@unit").toString();
+					}
+					
 					//ViewClazz = "rule,objid,objname,code,name,level,parentcode,otype";
-					ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode, "L0")+",";					
+					ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode,unit, "L0")+",";					
 				}
 				code = CLAZZL.get(0).get("@code").toString();
 				cname = CLAZZL.get(0).get("@name").toString();
@@ -487,8 +491,11 @@ public class getJPGovData extends BaseRapidThread {
 				if(CLAZZM.containsKey("@parentCodeString")){
 					parentCode = CLAZZM.get("@parentCodeString").toString();
 				}
+				if(CLAZZM.containsKey("@unit")){
+					unit = CLAZZM.get("@unit").toString();
+				}
 				//ViewClazz = "rule,objid,objname,code,name,level,parentcode,otype";
-				ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode, "L0")+",";
+				ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode,unit, "L0")+",";
 				
 			}
 			
@@ -540,7 +547,7 @@ public class getJPGovData extends BaseRapidThread {
 	}
 	
 	private void getMetaInfoClazz(long rule, String statsDataId, String ViewClazz) {
-		String format = "insert INTO hor_class (rule,act_v0,act_v1,act_v2,act_v3,act_v4,act_v5,act_v6) values %s";
+		String format = "insert INTO hor_class (rule,act_v0,act_v1,act_v2,act_v3,act_v4,act_v5,act_v6,act_v7) values %s";
 		String sql = String.format(format, ViewClazz);
 		
 		try {
@@ -550,9 +557,9 @@ public class getJPGovData extends BaseRapidThread {
 			e1.printStackTrace();
 		}
 		
-		String views = "act_v0 as objid, act_v1 as objname, act_v2 as code, act_v3 as name, act_v4 as level, act_v5 as parentcode,act_v6 as otype";
+		String views = "act_v0 as objid, act_v1 as objname, act_v2 as code, act_v3 as name, act_v4 as level, act_v5 as parentcode,act_v6 as unit,act_v7 as otype";
 		format = "CREATE OR REPLACE VIEW i%s AS SELECT %s FROM " + DB_HOR_PRE
-				+ "class WHERE rule=%d and act_v6='L0'";
+				+ "class WHERE rule=%d and act_v7='L0'";
 		sql = String.format(format, statsDataId, views, rule);
 		// echo(sql);
 		try {
