@@ -10,6 +10,8 @@ import org.ppl.net.cUrl;
 
 import com.alibaba.fastjson.JSON;
 
+
+///select  (select name from i0000030001 where objid='area' and j.area=code limit 1 ) as area, area, j.volume from j0000030001 j where j.cat01='00700' and j.cat02='000' and j.cat03='000' and j.area!='00000'  order by j.area  ; 
 public class getJPGovData extends BaseRapidThread {
 	private cUrl curl;
 	private String url;
@@ -20,6 +22,7 @@ public class getJPGovData extends BaseRapidThread {
 	private long pid;
 	private String statsField = "";
 	private int tolNumber=0;
+	private List<String> KeyList;
 
 	@Override
 	public String title() {
@@ -35,6 +38,7 @@ public class getJPGovData extends BaseRapidThread {
 		curl = new cUrl();
 		pid = mConfig.GetInt("jp.pid");
 		int startPosition = 0;
+		KeyList = new ArrayList<>();
 		boolean StatsList = true;
 		while (StatsList) {
 			StatsList = getStatsList(startPosition);
@@ -167,7 +171,9 @@ public class getJPGovData extends BaseRapidThread {
 				}
 			}
 			String id = map.get("@id").toString();
+			KeyList.clear();
 			long rule=getMetaInfo(id, subpid);
+			
 			boolean StatsData = true;
 			// long StatsData_startPosition = getNowStatsDataID(id);
 			long StatsData_startPosition = 0;
@@ -192,7 +198,7 @@ public class getJPGovData extends BaseRapidThread {
 		String url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsData?appId=" + appId + "&statsDataId="
 				+ statsDataId + "&metaGetFlg=N&limit=" + limit
-				+ "&startPosition=";
+				+ "&startPosition="+startPosition;
 		// echo(url);
 		// if(startPosition > 10) return; // ===========================
 		String res = "";
@@ -246,12 +252,11 @@ public class getJPGovData extends BaseRapidThread {
 		
 		String sameValue = "", format = "(%d, %s)";
 		// echo("VALUE:"+VALUE.size());
+		
 		for (Map<String, Object> map : VALUE) {
 			values = "";
 			L = 0;
-			for (String key : map.keySet()) {
-				if (key.equals("@unit"))
-					continue;
+			for (String key : KeyList) {				
 				values += "'" + map.get(key) + "',";				
 				L++;				
 			}
@@ -262,7 +267,7 @@ public class getJPGovData extends BaseRapidThread {
 		}
 		if (sameValue.length() > 0) {
 			for (int i = 0; i < L; i++) {
-				act = "act_v" + Integer.toHexString(i);
+				act = "act_v" + Integer.toHexString(i); 
 				fields += act + ",";
 			}
 			fields = fields+"act_v"+Integer.toHexString(L+1)+","+"act_v"+Integer.toHexString(L+2);
@@ -344,10 +349,10 @@ public class getJPGovData extends BaseRapidThread {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 		}
-		String mView = views.substring(0, views.length()-1);
+		//String mView = views.substring(0, views.length()-1);
 		format = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d and act_v%d='L1'";
-		sql = String.format(format, view, mView, tpid, mView.split(",").length+3);
+		sql = String.format(format, view, views, tpid, views.split(",").length+2);
 		// echo(sql);
 		try {
 			dbcreate(sql);
@@ -450,6 +455,7 @@ public class getJPGovData extends BaseRapidThread {
 				.get("CLASS_OBJ");
 		for (Map<String, Object> map : CLASS_OBJ) {
 			objid = map.get("@id").toString();
+			KeyList.add("@"+objid);
 			objname = map.get("@name").toString();
 			act = "act_v" + Integer.toHexString(L);
 			views += act + " as " + objid + ",";
@@ -522,7 +528,7 @@ public class getJPGovData extends BaseRapidThread {
 				where += " and ";
 			}
 		}
-
+		KeyList.add("$");
 		String TmpJson = JSON.toJSONString(jsonTmp);
 		String usql = String.format(usqlFormat, statsDataId, where);
 		String format = " insert INTO "
@@ -538,6 +544,8 @@ public class getJPGovData extends BaseRapidThread {
 			// TODO Auto-generated catch block
 
 		}
+		act = "act_v" + Integer.toHexString(L);
+		views += act + " as volume";
 		
 		long rule = classInfo(name, statsDataId, views);
 		ViewClazz = ViewClazz.replaceAll("RULE", rule+"");
@@ -557,7 +565,7 @@ public class getJPGovData extends BaseRapidThread {
 			e1.printStackTrace();
 		}
 		
-		String views = "act_v0 as objid, act_v1 as objname, act_v2 as code, act_v3 as name, act_v4 as level, act_v5 as parentcode,act_v6 as unit,act_v7 as otype";
+		String views = "act_v0 as objid, act_v1 as objname, act_v2 as code, act_v3 as name, act_v4 as level, act_v5 as parentcode,act_v6 as unit";
 		format = "CREATE OR REPLACE VIEW i%s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d and act_v7='L0'";
 		sql = String.format(format, statsDataId, views, rule);
