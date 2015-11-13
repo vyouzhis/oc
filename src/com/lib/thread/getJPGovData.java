@@ -175,8 +175,9 @@ public class getJPGovData extends BaseRapidThread {
 			long rule=getMetaInfo(id, subpid);
 			
 			boolean StatsData = true;
-			// long StatsData_startPosition = getNowStatsDataID(id);
-			long StatsData_startPosition = 0;
+			long StatsData_startPosition = getNowStatsDataID(id);
+			//long StatsData_startPosition = 0;
+			//echo("StatsData_startPosition:"+StatsData_startPosition+" id:"+id);
 			while (StatsData) {
 				StatsData = getStatsData(StatsData_startPosition, id, title, rule);
 				StatsData_startPosition += limit;
@@ -199,7 +200,7 @@ public class getJPGovData extends BaseRapidThread {
 				+ "/app/json/getStatsData?appId=" + appId + "&statsDataId="
 				+ statsDataId + "&metaGetFlg=N&limit=" + limit
 				+ "&startPosition="+startPosition;
-		// echo(url);
+		//echo(url);
 		// if(startPosition > 10) return; // ===========================
 		String res = "";
 		// echo("getStatsData statsDataId:"+statsDataId);		
@@ -211,7 +212,10 @@ public class getJPGovData extends BaseRapidThread {
 			}else {
 				break;
 			}
-			if(loopTime>5) return false;
+			if(loopTime>5){
+				echo("i am go out loopTime no."+statsDataId);
+				return false;
+			}
 			loopTime++;
 		}
 		
@@ -233,15 +237,13 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA
 				.get("STATISTICAL_DATA");
 
-		Map<String, Object> RESULT_INF = (Map<String, Object>) STATISTICAL_DATA
-				.get("RESULT_INF");
-		if (!RESULT_INF.containsKey("NEXT_KEY"))
-			return false;
+		
 
 		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA
 				.get("DATA_INF");
 		List<Map<String, Object>> VALUE = null;
 		if(!(DATA_INF.get("VALUE") instanceof List)){
+			echo("i am go out VALUE no."+statsDataId);
 			return false;
 		}
 		
@@ -270,12 +272,19 @@ public class getJPGovData extends BaseRapidThread {
 				act = "act_v" + Integer.toHexString(i); 
 				fields += act + ",";
 			}
-			fields = fields+"act_v"+Integer.toHexString(L+1)+","+"act_v"+Integer.toHexString(L+2);
+			fields = fields+"act_v"+Integer.toHexString(L)+","+"act_v"+Integer.toHexString(L+1);
 			sameValue = sameValue.substring(0, sameValue.length()-1);
 			clazz(fields, sameValue);
 		}
 
-		if (VALUE.size() < limit)
+//		if (VALUE.size() < limit){
+//			echo("i am go out limit no."+statsDataId);
+//			return false;
+//		}
+		
+		Map<String, Object> RESULT_INF = (Map<String, Object>) STATISTICAL_DATA
+				.get("RESULT_INF");
+		if (!RESULT_INF.containsKey("NEXT_KEY"))
 			return false;
 
 		return true;
@@ -283,16 +292,14 @@ public class getJPGovData extends BaseRapidThread {
 
 	private long getNowStatsDataID(String statsDataId) {
 
-		String format = "select id from " + DB_HOR_PRE
-				+ "classinfo where view_name ='j%s' limit 1";
+		String format = "select id from j%s order by id::int desc limit 1;";
 		String sql = String.format(format, statsDataId);
 		Map<String, Object> res;
 
 		res = FetchOne(sql);
 		if (res != null && res.size() == 1) {
 			long id = Long.valueOf(res.get("id").toString());
-
-			format = "select ";
+			return id;
 		}
 
 		return 0;
@@ -352,7 +359,7 @@ public class getJPGovData extends BaseRapidThread {
 		//String mView = views.substring(0, views.length()-1);
 		format = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d and act_v%d='L1'";
-		sql = String.format(format, view, views, tpid, views.split(",").length+2);
+		sql = String.format(format, view, views, tpid, views.split(",").length);
 		// echo(sql);
 		try {
 			dbcreate(sql);
@@ -438,7 +445,17 @@ public class getJPGovData extends BaseRapidThread {
 			name = TABLE_INF.get("TITLE").toString();
 		}
 
-		String usqlFormat = "SELECT volume, @arg0@ AS dial FROM j%s WHERE %s ORDER BY  dial";
+		String usqlFormat = "SELECT "+
+						    "(SELECT name "+
+						    "FROM i@arg0@ "+
+						    "WHERE objid='area' "+
+						    "        AND j.area=code limit 1 ) AS dial, j.volume "+
+							"FROM j@arg0@ j "+
+							"WHERE j.cat01='00700' "+
+							 "       AND j.cat02='000' "+
+							  "      AND j.cat03='000' "+
+							   "     AND j.area!='00000' "+
+							"ORDER BY  j.area ;";
 		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		List<Object> jsonTmp = new ArrayList<>();
 		String where = "";
@@ -545,7 +562,9 @@ public class getJPGovData extends BaseRapidThread {
 
 		}
 		act = "act_v" + Integer.toHexString(L);
-		views += act + " as volume";
+		views += act + " as volume ,";
+		act = "act_v" + Integer.toHexString(L+1);
+		views += act + " as id";
 		
 		long rule = classInfo(name, statsDataId, views);
 		ViewClazz = ViewClazz.replaceAll("RULE", rule+"");
