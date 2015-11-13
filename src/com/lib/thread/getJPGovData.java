@@ -217,6 +217,12 @@ public class getJPGovData extends BaseRapidThread {
 				return false;
 			}
 			loopTime++;
+			try {
+				Thread.sleep(60000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
@@ -448,20 +454,17 @@ public class getJPGovData extends BaseRapidThread {
 		String usqlFormat = "SELECT "+
 						    "(SELECT name "+
 						    "FROM i@arg0@ "+
-						    "WHERE objid='area' "+
+						    "WHERE objid=&apos;area&apos; "+
 						    "        AND j.area=code limit 1 ) AS dial, j.volume "+
 							"FROM j@arg0@ j "+
-							"WHERE j.cat01='00700' "+
-							 "       AND j.cat02='000' "+
-							  "      AND j.cat03='000' "+
-							   "     AND j.area!='00000' "+
+							"WHERE  %s "+
 							"ORDER BY  j.area ;";
 		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		List<Object> jsonTmp = new ArrayList<>();
 		String where = "";
 
 		String code = "", cname = "", level="", parentCode="", unit="";
-		int m = 0, L=0;
+		int L=0;
 		String objid = "";
 		String objname = "";
 		String views = "", act="", ViewClazz = "";
@@ -477,6 +480,7 @@ public class getJPGovData extends BaseRapidThread {
 			act = "act_v" + Integer.toHexString(L);
 			views += act + " as " + objid + ",";
 			L++;
+			
 			if (map.get("CLASS") instanceof List) {
 				List<Map<String, Object>> CLAZZL = (List<Map<String, Object>>) map
 						.get("CLASS");
@@ -521,33 +525,22 @@ public class getJPGovData extends BaseRapidThread {
 				ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode,unit, "L0")+",";
 				
 			}
-			
-			if (m == 0) {
-				List<Object> tmp = new ArrayList<>();
-				tmp.add("arg" + m);
-				tmp.add(map.get("@id"));
-				tmp.add("VARCHAR");
-				tmp.add(cname);
-				jsonTmp.add(tmp);
-				m++;
-			}
-
-			List<Object> tmp = new ArrayList<>();
-			tmp.add("arg" + m);
-			tmp.add(code);
-			tmp.add("VARCHAR");
-			tmp.add(cname);
-			jsonTmp.add(tmp);
-
-			where +=  objid + " = &apos;@arg" + m + "@&apos;";
-			m++;
-			if (m <= CLASS_OBJ.size()) {
-				where += " and ";
+			if(!objid.equals("area")){
+				where += "j."+objid+"=&apos;"+code+"&apos; and ";
 			}
 		}
+		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		KeyList.add("$");
+		List<Object> tmp = new ArrayList<>();
+		tmp.add("arg0" );
+		tmp.add(statsDataId);
+		tmp.add("VARCHAR");
+		tmp.add(name);
+		jsonTmp.add(tmp);
+		where += " j.area!=&apos;00000&apos;";
+		
 		String TmpJson = JSON.toJSONString(jsonTmp);
-		String usql = String.format(usqlFormat, statsDataId, where);
+		String usql = String.format(usqlFormat, where);
 		String format = " insert INTO "
 				+ DB_HOR_PRE
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";

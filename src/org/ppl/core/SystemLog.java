@@ -8,6 +8,7 @@ import org.ppl.io.Encrypt;
 import org.ppl.io.TimeClass;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.util.Base64;
 
 public class SystemLog extends PObject {
 
@@ -41,10 +42,8 @@ public class SystemLog extends PObject {
 			a = act.get(action);
 		}
 		
-		String data = JSON.toJSONString(porg.getAllpg());
-//		String dataRes= "";
-//		Encrypt en = Encrypt.getInstance();
-//		dataRes = en.Base64_Encode(data);
+		String data = Encrypt.getInstance().toHex(JSON.toJSONString(act));
+
 		String sql = String.format(format, lib, uid, a,ip, now, data);
 		
 		return sql;

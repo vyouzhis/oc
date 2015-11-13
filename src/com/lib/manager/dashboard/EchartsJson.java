@@ -1008,7 +1008,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 				sql = escapeHtml(sql);
-				// echo(sql);
+				echo(sql);
 
 			} else if (qaction == 6) {
 				if (tmp_map == null)
@@ -1050,7 +1050,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				if (res != null) {
 					ret.add(res);
-
+					echo("time:"+(end - start));
 					if (end - start > mConfig.GetInt("cache.time")) {
 						setCache(sql, id.get("name").toString(), res);
 					}
