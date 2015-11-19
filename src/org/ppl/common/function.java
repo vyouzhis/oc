@@ -10,9 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.ppl.core.InitCore;
-import org.ppl.etc.Config;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
 import org.ppl.io.TimeClass;
 
 public class function extends InitCore {
