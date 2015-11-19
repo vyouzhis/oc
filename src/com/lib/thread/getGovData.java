@@ -45,7 +45,7 @@ public class getGovData extends BaseRapidThread {
 	@SuppressWarnings("unchecked")
 	public void govFetch() {
 		curl = new cUrl();
-		long pid=mConfig.GetInt("ggd.pid");
+		long pid = mConfig.GetInt("ggd.pid");
 		List<Map<String, Object>> govJson;
 
 		String user = "929398015@qq.com";
@@ -67,7 +67,8 @@ public class getGovData extends BaseRapidThread {
 		// echo(govJson);
 
 		for (Map<String, Object> key : govJson) {
-			subLoop(pid, key.get("id").toString(), key.get("name").toString(),(boolean)key.get("isParent"));			
+			subLoop(pid, key.get("id").toString(), key.get("name").toString(),
+					(boolean) key.get("isParent"));
 		}
 
 	}
@@ -79,9 +80,9 @@ public class getGovData extends BaseRapidThread {
 		if (name.indexOf("2003") > 0 || name.indexOf("2004") > 0
 				|| name.indexOf("2001") > 0)
 			return;
-		
+
 		subpid = CreateClassify(pid, name);
-		
+
 		if (isParent == false) {
 
 			ucid = CreateUserSQL(subpid, name);
@@ -100,8 +101,9 @@ public class getGovData extends BaseRapidThread {
 					List.class); // 获得二次的子节点
 
 			for (Map<String, Object> sj : SubTreeJson) {
-				subLoop(subpid, sj.get("id").toString(), sj.get("name").toString(), (boolean) sj.get("isParent"));
-			}			
+				subLoop(subpid, sj.get("id").toString(), sj.get("name")
+						.toString(), (boolean) sj.get("isParent"));
+			}
 		}
 	}
 
@@ -165,7 +167,7 @@ public class getGovData extends BaseRapidThread {
 		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
 		curl.addParams("dfwds", dfwds);
-		curl.addParams("k1", "1443084595325");
+		curl.addParams("k1", time() + "");
 		curl.addParams("m", "QueryData");
 		curl.addParams("rowcode", "zb");
 		curl.addParams("wds", "[]");
@@ -209,15 +211,17 @@ public class getGovData extends BaseRapidThread {
 
 		if (datanodes.size() == 0)
 			return;
-
+		String tmpView = "";
 		for (Map<String, Object> map : nodes) {
 			// echo(map.get("name")+"--"+map.get("code")+"--"+map.get("memo"));
+			if (!tmpView.equals(map.get("code").toString())) {
+				String sqlI = String.format(formatI, map.get("name"),
+						map.get("code"), map.get("memo"), now);
+				// echo(map.get("name"));
+				classList.put(map.get("code").toString(), sqlI);
+				tmpView = map.get("code").toString();
+			}
 
-			String sqlI = String.format(formatI, map.get("name"),
-					map.get("code"), map.get("memo"), now);
-			// echo(map.get("name"));
-
-			classList.put(map.get("code").toString(), sqlI);
 			nameList.put(map.get("code").toString(), map.get("name").toString());
 			UnitList.put(map.get("code").toString(), map.get("unit").toString());
 

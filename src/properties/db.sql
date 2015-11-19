@@ -73,667 +73,315 @@ CREATE TABLE IF NOT EXISTS `web_article` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- PostgreSQL database dump
---
+ 
+-------
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
-SET search_path = public, pg_catalog;
-
---
--- Name: group_concat(anyelement); Type: AGGREGATE; Schema: public; Owner: bi
---
-
-CREATE AGGREGATE group_concat(anyelement) (
-    SFUNC = array_append,
-    STYPE = anyarray,
-    INITCOND = '{}'
+ 
+ CREATE TABLE hor_apisecret
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  username character varying NOT NULL,
+  passwd character varying NOT NULL,
+  ctime integer NOT NULL,
+  idesc character varying NOT NULL DEFAULT ''::character varying,
+  secret character varying(32) NOT NULL DEFAULT ''::character varying, -- secret
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare  integer NOT NULL DEFAULT 0, -- 0 no share , 1 share
+    PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
-
-
-ALTER AGGREGATE public.group_concat(anyelement) OWNER TO bi;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
---
--- Name: hor_apisecret; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_apisecret (
-    id integer NOT NULL,
-    title character varying NOT NULL,
-    username character varying NOT NULL,
-    passwd character varying NOT NULL,
-    ctime integer NOT NULL,
-    idesc character varying DEFAULT ''::character varying NOT NULL,
-    secret character varying(32) DEFAULT ''::character varying NOT NULL
-);
-
-
-ALTER TABLE hor_apisecret OWNER TO bi;
-
---
--- Name: COLUMN hor_apisecret.secret; Type: COMMENT; Schema: public; Owner: bi
---
 
 COMMENT ON COLUMN hor_apisecret.secret IS 'secret';
+COMMENT ON COLUMN hor_apisecret.uid IS 'user id';
 
-
---
--- Name: hor_apisecret_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_apisecret_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_apisecret_id_seq OWNER TO bi;
-
---
--- Name: hor_apisecret_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_apisecret_id_seq OWNED BY hor_apisecret.id;
-
-
---
--- Name: hor_cache; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_cache (
-    md5 character varying NOT NULL,
-    json text NOT NULL,
-    ctime timestamp without time zone DEFAULT now(),
-    title character varying NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_cache
+(
+  md5 character varying NOT NULL,
+  json text NOT NULL,
+  ctime timestamp without time zone DEFAULT now(),
+  title character varying NOT NULL, -- 名称
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0 -- 0 no share , 1 share
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_cache OWNER TO bi;
-
---
--- Name: COLUMN hor_cache.title; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_cache.title IS '名称';
-
-
---
--- Name: COLUMN hor_cache.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_cache.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_cache.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_cache.isshare IS '0 no share , 1 share';
 
 
---
--- Name: hor_city; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
+-- Index: md5_index
 
-CREATE TABLE hor_city (
-    id integer NOT NULL,
-    city character varying NOT NULL,
-    min character varying NOT NULL,
-    name character varying NOT NULL,
-    title character varying(5) DEFAULT ''::character varying NOT NULL
+-- DROP INDEX md5_index;
+
+CREATE INDEX md5_index
+  ON hor_cache
+  USING btree
+  (md5 COLLATE pg_catalog."default");
+COMMENT ON INDEX md5_index
+  IS 'md5_index';
+
+CREATE TABLE hor_city
+(
+  id serial NOT NULL,
+  city character varying NOT NULL,
+  min character varying NOT NULL,
+  name character varying NOT NULL,
+  title character varying(5) NOT NULL DEFAULT ''::character varying
+)
+WITH (
+  OIDS=FALSE
 );
 
 
-ALTER TABLE hor_city OWNER TO bi;
 
---
--- Name: hor_city_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_city_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_city_id_seq OWNER TO bi;
-
---
--- Name: hor_city_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_city_id_seq OWNED BY hor_city.id;
-
-
---
--- Name: hor_class; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_class (
-    rule integer DEFAULT 0 NOT NULL,
-    act_v0 text,
-    act_v1 text,
-    act_v2 text,
-    act_v3 text,
-    act_v4 text,
-    act_v5 text,
-    act_v6 text,
-    act_v7 text,
-    act_v8 text,
-    act_v9 text,
-    act_va text,
-    act_vb text,
-    act_vc text,
-    act_vd text,
-    act_ve text,
-    act_vf text,
-    modify_time timestamp without time zone DEFAULT now(),
-    act_v10 text,
-    act_v11 text,
-    act_v12 text,
-    act_v13 text,
-    act_v14 text,
-    act_v15 text,
-    act_v16 text,
-    act_v17 text,
-    act_v18 text,
-    act_v19 text,
-    act_v1a text,
-    act_v1b text,
-    act_v1c text,
-    act_v1d text,
-    act_v1e text,
-    act_v1f text,
-    act_v20 text,
-    act_v21 text,
-    act_v22 text,
-    act_v23 text,
-    act_v24 text,
-    act_v25 text,
-    act_v26 text,
-    act_v27 text,
-    act_v28 text,
-    act_v29 text,
-    act_v2a text,
-    act_v2b text,
-    act_v2c text,
-    act_v2d text,
-    act_v2e text,
-    act_v2f text,
-    act_v30 text,
-    act_v31 text,
-    act_v32 text,
-    act_v33 text,
-    act_v34 text,
-    act_v35 text,
-    act_v36 text,
-    act_v37 text,
-    act_v38 text,
-    act_v39 text,
-    act_v3a text,
-    act_v3b text,
-    act_v3c text,
-    act_v3d text,
-    act_v3e text,
-    act_v3f text,
-    act_v40 text,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_class
+(
+  rule integer NOT NULL DEFAULT 0,
+  act_v0 text,
+  act_v1 text,
+  act_v2 text,
+  act_v3 text,
+  act_v4 text,
+  act_v5 text,
+  act_v6 text,
+  act_v7 text,
+  act_v8 text,
+  act_v9 text,
+  act_va text,
+  act_vb text,
+  act_vc text,
+  act_vd text,
+  act_ve text,
+  act_vf text,
+  act_v10 text,
+  act_v11 text,
+  act_v12 text,
+  act_v13 text,
+  act_v14 text,
+  act_v15 text,
+  act_v16 text,
+  act_v17 text,
+  act_v18 text,
+  act_v19 text,
+  act_v1a text,
+  act_v1b text,
+  act_v1c text,
+  act_v1d text,
+  act_v1e text,
+  act_v1f text,
+  act_v20 text,
+  act_v21 text,
+  act_v22 text,
+  act_v23 text,
+  act_v24 text,
+  act_v25 text,
+  act_v26 text,
+  act_v27 text,
+  act_v28 text,
+  act_v29 text,
+  act_v2a text,
+  act_v2b text,
+  act_v2c text,
+  act_v2d text,
+  act_v2e text,
+  act_v2f text,
+  act_v30 text,
+  act_v31 text,
+  act_v32 text,
+  act_v33 text,
+  act_v34 text,
+  act_v35 text,
+  act_v36 text,
+  act_v37 text,
+  act_v38 text,
+  act_v39 text,
+  act_v3a text,
+  act_v3b text,
+  act_v3c text,
+  act_v3d text,
+  act_v3e text,
+  act_v3f text,
+  act_v40 text,
+  modify_time timestamp without time zone DEFAULT now(),
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0 -- 0 no share, 1 share
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_class OWNER TO bi;
-
---
--- Name: TABLE hor_class; Type: COMMENT; Schema: public; Owner: bi
---
-
-COMMENT ON TABLE hor_class IS '外部数据插入，比如CSV
+COMMENT ON TABLE hor_class
+  IS '外部数据插入，比如CSV
 rule 依赖于 classinfo 的 id 字段';
-
-
---
--- Name: COLUMN hor_class.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_class.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_class.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_class.isshare IS '0 no share, 1 share';
 
-
---
--- Name: hor_classify; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_classify (
-    id integer NOT NULL,
-    pid integer DEFAULT 0 NOT NULL,
-    name character varying NOT NULL,
-    ctime integer NOT NULL,
-    displays integer DEFAULT 0 NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL,
-    idesc character varying(255) DEFAULT ''::character varying NOT NULL
+CREATE TABLE hor_classify
+(
+  id serial NOT NULL,
+  pid integer NOT NULL DEFAULT 0,
+  name character varying NOT NULL,
+  ctime integer NOT NULL,
+  displays integer NOT NULL DEFAULT 0, -- 0 显示，1 隐藏
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
+  idesc character varying(255) NOT NULL DEFAULT ''::character varying,
+   PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_classify OWNER TO bi;
-
---
--- Name: COLUMN hor_classify.displays; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classify.displays IS '0 显示，1 隐藏';
-
-
---
--- Name: COLUMN hor_classify.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classify.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_classify.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classify.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_classify_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
 
-CREATE SEQUENCE hor_classify_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_classify_id_seq OWNER TO bi;
-
---
--- Name: hor_classify_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_classify_id_seq OWNED BY hor_classify.id;
-
-
---
--- Name: hor_classinfo; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_classinfo (
-    id integer NOT NULL,
-    title character varying NOT NULL,
-    idesc character varying DEFAULT ''::character varying NOT NULL,
-    ctime integer DEFAULT 1 NOT NULL,
-    view_name character varying(50),
-    ctype integer DEFAULT 0 NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_classinfo
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  idesc character varying NOT NULL DEFAULT ''::character varying,
+  ctime integer NOT NULL DEFAULT 1,
+  view_name character varying(50), -- 保存 view 的名称
+  ctype integer NOT NULL DEFAULT 0, -- 0 -- csv , 1 -- sql
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
+  PRIMARY KEY (id),
+   UNIQUE (view_name)
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_classinfo OWNER TO bi;
-
---
--- Name: TABLE hor_classinfo; Type: COMMENT; Schema: public; Owner: bi
---
-
-COMMENT ON TABLE hor_classinfo IS 'ctime 创建时间
+COMMENT ON TABLE hor_classinfo
+  IS 'ctime 创建时间
 etime 这次完成的时间  
 view_name  view 的名称
 ctype  -- 0 -- csv , 1 -- sql';
-
-
---
--- Name: COLUMN hor_classinfo.view_name; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classinfo.view_name IS '保存 view 的名称';
-
-
---
--- Name: COLUMN hor_classinfo.ctype; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classinfo.ctype IS '0 -- csv , 1 -- sql';
-
-
---
--- Name: COLUMN hor_classinfo.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classinfo.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_classinfo.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_classinfo.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_classinfo_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_classinfo_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_classinfo_id_seq OWNER TO bi;
-
---
--- Name: hor_classinfo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_classinfo_id_seq OWNED BY hor_classinfo.id;
-
-
---
--- Name: hor_dbsource; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_dbsource (
-    id integer NOT NULL,
-    title character varying NOT NULL,
-    dcname character varying NOT NULL,
-    url character varying NOT NULL,
-    username character varying NOT NULL,
-    password character varying NOT NULL,
-    ctime integer NOT NULL,
-    modify_time timestamp without time zone DEFAULT now(),
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_dbsource
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  dcname character varying NOT NULL,
+  url character varying NOT NULL,
+  username character varying NOT NULL,
+  password character varying NOT NULL,
+  ctime integer NOT NULL,
+  modify_time timestamp without time zone DEFAULT now(),
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0 -- 0 no share, 1 share
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_dbsource OWNER TO bi;
-
---
--- Name: COLUMN hor_dbsource.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_dbsource.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_dbsource.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_dbsource.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_dbsource_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_dbsource_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_dbsource_id_seq OWNER TO bi;
-
---
--- Name: hor_dbsource_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_dbsource_id_seq OWNED BY hor_dbsource.id;
-
-
---
--- Name: hor_doc; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_doc (
-    id integer NOT NULL,
-    title character varying NOT NULL,
-    ctime integer NOT NULL,
-    doc text,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_doc
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  ctime integer NOT NULL,
+  doc text,
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
+   PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_doc OWNER TO bi;
-
---
--- Name: COLUMN hor_doc.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_doc.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_doc.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_doc.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_doc_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_doc_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_doc_id_seq OWNER TO bi;
-
---
--- Name: hor_doc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_doc_id_seq OWNED BY hor_doc.id;
-
-
---
--- Name: hor_mongodbrule; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_mongodbrule (
-    id integer NOT NULL,
-    name character varying NOT NULL,
-    collention character varying NOT NULL,
-    qaction smallint DEFAULT (0)::smallint NOT NULL,
-    query text NOT NULL,
-    field text NOT NULL,
-    sort text NOT NULL,
-    ctime integer NOT NULL,
-    stime integer NOT NULL,
-    etime integer DEFAULT 0 NOT NULL,
-    istop smallint DEFAULT 0 NOT NULL,
-    snap integer DEFAULT 0 NOT NULL,
-    cid integer DEFAULT 0 NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_mongodbrule
+(
+  id serial NOT NULL,
+  name character varying NOT NULL,
+  collention character varying NOT NULL,
+  qaction smallint NOT NULL DEFAULT (0)::smallint,
+  query text NOT NULL,
+  field text NOT NULL,
+  sort text NOT NULL,
+  ctime integer NOT NULL,
+  stime integer NOT NULL,
+  etime integer NOT NULL DEFAULT 0,
+  istop smallint NOT NULL DEFAULT 0,
+  snap integer NOT NULL DEFAULT 0, -- 0 -- 可以在报表那儿显示菜单，1 需要二次运算开发
+  cid integer NOT NULL DEFAULT 0, -- classify id
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
+  PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
-
-
-ALTER TABLE hor_mongodbrule OWNER TO bi;
-
---
--- Name: COLUMN hor_mongodbrule.snap; Type: COMMENT; Schema: public; Owner: bi
---
 
 COMMENT ON COLUMN hor_mongodbrule.snap IS '0 -- 可以在报表那儿显示菜单，1 需要二次运算开发';
-
-
---
--- Name: COLUMN hor_mongodbrule.cid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_mongodbrule.cid IS 'classify id';
-
-
---
--- Name: COLUMN hor_mongodbrule.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_mongodbrule.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_mongodbrule.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_mongodbrule.isshare IS '0 no share, 1 share';
 
-
---
--- Name: hor_mongodbrule_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE hor_mongodbrule_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_mongodbrule_id_seq OWNER TO bi;
-
---
--- Name: hor_mongodbrule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_mongodbrule_id_seq OWNED BY hor_mongodbrule.id;
-
-
---
--- Name: hor_sqltmp; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_sqltmp (
-    id integer NOT NULL,
-    sid integer NOT NULL,
-    name character varying NOT NULL,
-    sqltmp text DEFAULT ''::character varying NOT NULL,
-    ctime timestamp without time zone DEFAULT now(),
-    etime integer DEFAULT 0 NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_sqltmp
+(
+  id serial NOT NULL,
+  sid integer NOT NULL,
+  name character varying NOT NULL,
+  sqltmp text NOT NULL DEFAULT ''::character varying,
+  ctime timestamp without time zone DEFAULT now(),
+  etime integer NOT NULL DEFAULT 0,
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
+ PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_sqltmp OWNER TO bi;
-
---
--- Name: COLUMN hor_sqltmp.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_sqltmp.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_sqltmp.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_sqltmp.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_sqltmp_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
 
-CREATE SEQUENCE hor_sqltmp_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_sqltmp_id_seq OWNER TO bi;
-
---
--- Name: hor_sqltmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_sqltmp_id_seq OWNED BY hor_sqltmp.id;
-
-
---
--- Name: hor_usersql; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_usersql (
-    id integer NOT NULL,
-    sql text NOT NULL,
-    name character varying NOT NULL,
-    modify_time timestamp without time zone DEFAULT now(),
-    dtype integer DEFAULT 0 NOT NULL,
-    sql_type integer DEFAULT 0 NOT NULL,
-    sqltmp text DEFAULT ''::character varying NOT NULL,
-    uview character varying(256) DEFAULT ''::character varying NOT NULL,
-    input_data integer DEFAULT 0 NOT NULL,
-    vtime integer DEFAULT 0 NOT NULL,
-    cid integer DEFAULT 0 NOT NULL,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_usersql
+(
+  id serial NOT NULL,
+  sql text NOT NULL,
+  name character varying NOT NULL,
+  modify_time timestamp without time zone DEFAULT now(),
+  dtype integer NOT NULL DEFAULT 0,
+  sql_type integer NOT NULL DEFAULT 0,
+  sqltmp text NOT NULL DEFAULT ''::character varying,
+  uview character varying(256) NOT NULL DEFAULT ''::character varying,
+  input_data integer NOT NULL DEFAULT 0, -- 0 不导入，1 导入数据
+  vtime integer NOT NULL DEFAULT 0, -- view 运行完成时间
+  cid integer NOT NULL DEFAULT 0, -- classify id
+  uid integer NOT NULL DEFAULT 1, -- 用户ID
+  isshare integer NOT NULL DEFAULT 0 -- 0 no share, 1 share
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_usersql OWNER TO bi;
-
---
--- Name: TABLE hor_usersql; Type: COMMENT; Schema: public; Owner: bi
---
-
-COMMENT ON TABLE hor_usersql IS 'sql 语句
+COMMENT ON TABLE hor_usersql
+  IS 'sql 语句
 name 名称
 modify_time 更新时间
 dtype 数据类型
@@ -741,440 +389,109 @@ sql_type 0 代表一般的SQL 1 是模板
 sqltmp 是记录模板对应的变量值
 uview 记录视图名称
 input_data 0 -- 0 不导入，1 导入数据';
-
-
---
--- Name: COLUMN hor_usersql.input_data; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_usersql.input_data IS '0 不导入，1 导入数据';
-
-
---
--- Name: COLUMN hor_usersql.vtime; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_usersql.vtime IS 'view 运行完成时间';
-
-
---
--- Name: COLUMN hor_usersql.cid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_usersql.cid IS 'classify id';
-
-
---
--- Name: COLUMN hor_usersql.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_usersql.uid IS '用户ID';
-
-
---
--- Name: COLUMN hor_usersql.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_usersql.isshare IS '0 no share, 1 share';
 
 
---
--- Name: hor_usersql_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
 
-CREATE SEQUENCE hor_usersql_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE hor_usersql_id_seq OWNER TO bi;
-
---
--- Name: hor_usersql_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE hor_usersql_id_seq OWNED BY hor_usersql.id;
-
-
---
--- Name: hor_webvisitcount; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE hor_webvisitcount (
-    rule integer DEFAULT (0)::smallint NOT NULL,
-    volume integer NOT NULL,
-    dial integer DEFAULT 0 NOT NULL,
-    modify_time timestamp without time zone DEFAULT now(),
-    val character varying,
-    uid integer DEFAULT 1 NOT NULL,
-    isshare integer DEFAULT 0 NOT NULL
+CREATE TABLE hor_webvisitcount
+(
+  rule integer NOT NULL DEFAULT (0)::smallint,
+  volume integer NOT NULL,
+  dial integer NOT NULL DEFAULT 0,
+  modify_time timestamp without time zone DEFAULT now(),
+  val character varying, -- 值
+  uid integer NOT NULL DEFAULT 1, -- user id
+  isshare integer NOT NULL DEFAULT 0 -- 0 no share, 1 share
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE hor_webvisitcount OWNER TO bi;
-
---
--- Name: TABLE hor_webvisitcount; Type: COMMENT; Schema: public; Owner: bi
---
-
-COMMENT ON TABLE hor_webvisitcount IS 'rule 规则ID
+COMMENT ON TABLE hor_webvisitcount
+  IS 'rule 规则ID
 volume 数量
 dial 刻度盘';
-
-
---
--- Name: COLUMN hor_webvisitcount.val; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_webvisitcount.val IS '值';
-
-
---
--- Name: COLUMN hor_webvisitcount.uid; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_webvisitcount.uid IS 'user id';
-
-
---
--- Name: COLUMN hor_webvisitcount.isshare; Type: COMMENT; Schema: public; Owner: bi
---
-
 COMMENT ON COLUMN hor_webvisitcount.isshare IS '0 no share, 1 share';
 
 
---
--- Name: role_group; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
+-- Index: rul_wvcdial
 
-CREATE TABLE role_group (
-    id integer NOT NULL,
-    gname character varying DEFAULT ''::character varying NOT NULL,
-    gdesc character varying DEFAULT ''::character varying NOT NULL,
-    "position" integer DEFAULT 1,
-    mainrole text,
-    subrole text,
-    status integer DEFAULT 1 NOT NULL,
-    isdelete integer DEFAULT 0,
-    uid integer DEFAULT 0 NOT NULL,
-    ctime integer NOT NULL,
-    etime integer NOT NULL
+-- DROP INDEX rul_wvcdial;
+
+CREATE INDEX rul_wvcdial
+  ON hor_webvisitcount
+  USING btree
+  (rule, dial);
+  
+  
+  CREATE TABLE role_group
+(
+  id serial NOT NULL,
+  gname character varying NOT NULL DEFAULT ''::character varying,
+  gdesc character varying NOT NULL DEFAULT ''::character varying,
+  "position" integer DEFAULT 1,
+  mainrole text,
+  subrole text,
+  status integer NOT NULL DEFAULT 1,
+  isdelete integer DEFAULT 0,
+  uid integer NOT NULL DEFAULT 0,
+  ctime integer NOT NULL,
+  etime integer NOT NULL,
+  PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
 
 
-ALTER TABLE role_group OWNER TO bi;
-
---
--- Name: role_group_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE role_group_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 
-ALTER TABLE role_group_id_seq OWNER TO bi;
-
---
--- Name: role_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE role_group_id_seq OWNED BY role_group.id;
-
-
---
--- Name: role_log; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE role_log (
-    id integer NOT NULL,
-    lid character varying DEFAULT ''::character varying NOT NULL,
-    uid integer NOT NULL,
-    action integer DEFAULT 0,
-    ip character varying DEFAULT ''::character varying NOT NULL,
-    ctime integer DEFAULT 0 NOT NULL,
-    data text DEFAULT ''::text NOT NULL
+CREATE TABLE role_log
+(
+  id serial NOT NULL,
+  lid character varying NOT NULL DEFAULT ''::character varying,
+  uid integer NOT NULL,
+  action integer DEFAULT 0,
+  ip character varying NOT NULL DEFAULT ''::character varying,
+  ctime integer NOT NULL DEFAULT 0,
+  data text NOT NULL DEFAULT ''::text,
+   PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
 );
 
 
-ALTER TABLE role_log OWNER TO bi;
-
---
--- Name: role_log_id_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE role_log_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
 
 
-ALTER TABLE role_log_id_seq OWNER TO bi;
-
---
--- Name: role_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE role_log_id_seq OWNED BY role_log.id;
-
-
---
--- Name: role_user_info; Type: TABLE; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE TABLE role_user_info (
-    uid integer NOT NULL,
-    name character varying NOT NULL,
-    passwd character varying NOT NULL,
-    cm character varying NOT NULL,
-    nickname character varying NOT NULL,
-    email character varying NOT NULL,
-    ctime integer DEFAULT 1 NOT NULL,
-    etime integer DEFAULT 0,
-    ltime integer DEFAULT 1 NOT NULL,
-    phone character varying DEFAULT ''::character varying NOT NULL,
-    status integer DEFAULT 1 NOT NULL,
-    isdelete integer DEFAULT 0,
-    gid integer DEFAULT 0 NOT NULL,
-    cid integer DEFAULT 0 NOT NULL,
-    error integer DEFAULT 0 NOT NULL
+CREATE TABLE role_user_info
+(
+  uid serial NOT NULL,
+  name character varying NOT NULL,
+  passwd character varying NOT NULL,
+  cm character varying NOT NULL,
+  nickname character varying NOT NULL,
+  email character varying NOT NULL,
+  ctime integer NOT NULL DEFAULT 1,
+  etime integer DEFAULT 0,
+  ltime integer NOT NULL DEFAULT 1,
+  phone character varying NOT NULL DEFAULT ''::character varying,
+  status integer NOT NULL DEFAULT 1,
+  isdelete integer DEFAULT 0,
+  gid integer NOT NULL DEFAULT 0,
+  cid integer NOT NULL DEFAULT 0,
+  error integer NOT NULL DEFAULT 0,
+   PRIMARY KEY (uid),
+  UNIQUE (name)
+)
+WITH (
+  OIDS=FALSE
 );
 
-
-ALTER TABLE role_user_info OWNER TO bi;
-
---
--- Name: role_user_info_uid_seq; Type: SEQUENCE; Schema: public; Owner: bi
---
-
-CREATE SEQUENCE role_user_info_uid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE role_user_info_uid_seq OWNER TO bi;
-
---
--- Name: role_user_info_uid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: bi
---
-
-ALTER SEQUENCE role_user_info_uid_seq OWNED BY role_user_info.uid;
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_apisecret ALTER COLUMN id SET DEFAULT nextval('hor_apisecret_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_city ALTER COLUMN id SET DEFAULT nextval('hor_city_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_classify ALTER COLUMN id SET DEFAULT nextval('hor_classify_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_classinfo ALTER COLUMN id SET DEFAULT nextval('hor_classinfo_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_dbsource ALTER COLUMN id SET DEFAULT nextval('hor_dbsource_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_doc ALTER COLUMN id SET DEFAULT nextval('hor_doc_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_mongodbrule ALTER COLUMN id SET DEFAULT nextval('hor_mongodbrule_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_sqltmp ALTER COLUMN id SET DEFAULT nextval('hor_sqltmp_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY hor_usersql ALTER COLUMN id SET DEFAULT nextval('hor_usersql_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY role_group ALTER COLUMN id SET DEFAULT nextval('role_group_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY role_log ALTER COLUMN id SET DEFAULT nextval('role_log_id_seq'::regclass);
-
-
---
--- Name: uid; Type: DEFAULT; Schema: public; Owner: bi
---
-
-ALTER TABLE ONLY role_user_info ALTER COLUMN uid SET DEFAULT nextval('role_user_info_uid_seq'::regclass);
-
-
---
--- Name: hor_apisecret_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_apisecret
-    ADD CONSTRAINT hor_apisecret_pkey PRIMARY KEY (id);
-
-
---
--- Name: hor_classify_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_classify
-    ADD CONSTRAINT hor_classify_pkey PRIMARY KEY (id);
-
-
---
--- Name: hor_classinfo_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_classinfo
-    ADD CONSTRAINT hor_classinfo_pkey PRIMARY KEY (id);
-
-
---
--- Name: hor_doc_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_doc
-    ADD CONSTRAINT hor_doc_pkey PRIMARY KEY (id);
-
-
---
--- Name: hor_mongodbrule_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_mongodbrule
-    ADD CONSTRAINT hor_mongodbrule_pkey PRIMARY KEY (id);
-
-
---
--- Name: hor_sqltmp_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_sqltmp
-    ADD CONSTRAINT hor_sqltmp_pkey PRIMARY KEY (id);
-
-
---
--- Name: role_group_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY role_group
-    ADD CONSTRAINT role_group_pkey PRIMARY KEY (id);
-
-
---
--- Name: role_log_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY role_log
-    ADD CONSTRAINT role_log_pkey PRIMARY KEY (id);
-
-
---
--- Name: role_user_info_name_key; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY role_user_info
-    ADD CONSTRAINT role_user_info_name_key UNIQUE (name);
-
-
---
--- Name: role_user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY role_user_info
-    ADD CONSTRAINT role_user_info_pkey PRIMARY KEY (uid);
-
-
---
--- Name: view_name_key; Type: CONSTRAINT; Schema: public; Owner: bi; Tablespace: 
---
-
-ALTER TABLE ONLY hor_classinfo
-    ADD CONSTRAINT view_name_key UNIQUE (view_name);
-
-
---
--- Name: md5_index; Type: INDEX; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE INDEX md5_index ON hor_cache USING btree (md5);
-
-
---
--- Name: INDEX md5_index; Type: COMMENT; Schema: public; Owner: bi
---
-
-COMMENT ON INDEX md5_index IS 'md5_index';
-
-
---
--- Name: rul_wvcdial; Type: INDEX; Schema: public; Owner: bi; Tablespace: 
---
-
-CREATE INDEX rul_wvcdial ON hor_webvisitcount USING btree (rule, dial);
-
-
---
--- Name: public; Type: ACL; Schema: -; Owner: postgres
---
-
-REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
---
--- PostgreSQL database dump complete
---
+INSERT INTO role_user_info (name, passwd, cm, nickname, email, ctime, ltime,  gid, cid)VALUES ( 'q@q.com', '202cb962ac59075b964b07152d234b70', '', 'admin', '', 0, 1436600255,  1,0);

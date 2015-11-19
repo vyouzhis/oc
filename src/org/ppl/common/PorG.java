@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,10 +16,7 @@ import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 
-import org.ppl.etc.Config;
-import org.ppl.etc.globale_config;
-
-public class PorG  {
+public class PorG  extends function {
 	static PorG source;
 	private HttpServletRequest request;
 	private HttpServletResponse response;
@@ -73,7 +69,7 @@ public class PorG  {
 
 	@SuppressWarnings({ "unused" })
 	private void ParserParame() {
-		Config mConfig = new Config(globale_config.Config);
+		
 		long maxFileSize = Integer.valueOf(mConfig.GetInt("maxFileSize"));
 		
 		int maxMemSize = mConfig.GetInt("maxMemSize");

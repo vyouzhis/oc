@@ -37,8 +37,7 @@ public class FMConfig extends function {
 			cfg.setObjectWrapper(new DefaultObjectWrapper());
 			cfg.setDefaultEncoding("UTF-8");
 			try {
-				File file = new File(pp.ViewDir());
-				echo(file.getPath());
+				File file = new File(pp.ViewDir());				
 				cfg.setDirectoryForTemplateLoading(file);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

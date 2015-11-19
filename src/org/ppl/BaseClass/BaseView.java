@@ -41,7 +41,7 @@ public class BaseView extends ACLControl {
 			path += "/" + libPaths[i];
 		}
 		//echo("html path:"+path);
-		temp = fmc.getTemp(path + ".html");
+		temp = fmc.getTemp(path);
 		if (temp != null) {
 			StringWriter out = new StringWriter();
 			

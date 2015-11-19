@@ -9,14 +9,14 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.ppl.core.InitCore;
 import org.ppl.etc.Config;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 import org.ppl.io.TimeClass;
 
-public class function {
-	protected String stdClass = null;
-
+public class function extends InitCore {
+	
 	public void echo(Object o) {
 		if (stdClass != null) {
 			Logger log = Logger.getLogger(stdClass);
@@ -64,7 +64,8 @@ public class function {
 		}
 		// get all the files from a directory
 		File[] fList = directory.listFiles();
-		if(fList==null || fList.length==0) return fl;
+		if (fList == null || fList.length == 0)
+			return fl;
 		for (File file : fList) {
 			if (file.isFile()) {
 				// echo("name:"+directory.getName()+"__"+file.getName());
@@ -92,7 +93,7 @@ public class function {
 	}
 
 	public List<String> PermUrlMap() {
-		Config mConfig = new Config(globale_config.Config);
+		
 		String path = this.getClass().getResource("/").getPath()
 				+ mConfig.GetValue("perm_class_path");
 
@@ -170,7 +171,7 @@ public class function {
 			return 0;
 		}
 	}
-	
+
 	public Double toDouble(Object o) {
 		if (o != null && o.toString().matches("[0-9.-]+")) {
 			try {

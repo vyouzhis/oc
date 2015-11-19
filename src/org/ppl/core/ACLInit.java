@@ -261,9 +261,9 @@ public class ACLInit extends DBSQL {
 			format = "INSERT INTO `"
 					+ DB_PRE
 					+ "group` "
-					+ "(`id`,`gname`, `gdesc`, `mainrole`, `subrole`,`uid`,`ctime`, `etime`)"
-					+ " VALUES (%d,'%s', '%s',  '%s', '%s', %d, %d, %d);";
-			sql = String.format(format, gid, "default name", "default desc",
+					+ "(`gname`, `gdesc`, `mainrole`, `subrole`,`uid`,`ctime`, `etime`)"
+					+ " VALUES ('%s', '%s',  '%s', '%s', %d, %d, %d);";
+			sql = String.format(format, "default name", "default desc",
 					MainRole, "", uid, now, now);
 
 		} else {

@@ -10,7 +10,6 @@ import org.ppl.net.cUrl;
 
 import com.alibaba.fastjson.JSON;
 
-
 ///select  (select name from i0000030001 where objid='area' and j.area=code limit 1 ) as area, area, j.volume from j0000030001 j where j.cat01='00700' and j.cat02='000' and j.cat03='000' and j.area!='00000'  order by j.area  ; 
 public class getJPGovData extends BaseRapidThread {
 	private cUrl curl;
@@ -21,7 +20,7 @@ public class getJPGovData extends BaseRapidThread {
 	private static int limit = 1000;
 	private long pid;
 	private String statsField = "";
-	private int tolNumber=0;
+	private int tolNumber = 0;
 	private List<String> KeyList;
 
 	@Override
@@ -75,19 +74,21 @@ public class getJPGovData extends BaseRapidThread {
 				+ statsField;
 		// if(startPosition > 100) return; // ===========================
 		String res = "";
-		int loopTime=0;
+		int loopTime = 0;
 		while (true) {
 			res = curl.httpGet(url);
 			if (res == null || res.length() < 10) {
 				echo("url:" + url);
-				if(startPosition>0 && tolNumber <= startPosition) return false;
-			}else {
+				if (startPosition > 0 && tolNumber <= startPosition)
+					return false;
+			} else {
 				break;
 			}
-			if(loopTime>5) return false;
+			if (loopTime > 5)
+				return false;
 			loopTime++;
 		}
-		
+
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_LIST = (Map<String, Object>) json
 				.get("GET_STATS_LIST");
@@ -103,23 +104,25 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> DATALIST_INF = (Map<String, Object>) GET_STATS_LIST
 				.get("DATALIST_INF");
 
-		if(tolNumber==0){
+		if (tolNumber == 0) {
 			tolNumber = toInt(DATALIST_INF.get("NUMBER"));
 		}
-		 
-//		Map<String, Object> RESULT_INF = (Map<String, Object>) DATALIST_INF
-//				.get("RESULT_INF");
-//		if (!RESULT_INF.containsKey("NEXT_KEY")) {
-//			echo("nextkey url:" + url);
-//			return false;
-//		}
+
+		// Map<String, Object> RESULT_INF = (Map<String, Object>) DATALIST_INF
+		// .get("RESULT_INF");
+		// if (!RESULT_INF.containsKey("NEXT_KEY")) {
+		// echo("nextkey url:" + url);
+		// return false;
+		// }
 		// startPosition += limit;
-		if(!DATALIST_INF.containsKey("TABLE_INF")) return false;
-		
+		if (!DATALIST_INF.containsKey("TABLE_INF"))
+			return false;
+
 		List<Map<String, Object>> TABLE_INF = (List<Map<String, Object>>) DATALIST_INF
 				.get("TABLE_INF");
-		if(TABLE_INF==null || TABLE_INF.size()==0) return false;
-		
+		if (TABLE_INF == null || TABLE_INF.size() == 0)
+			return false;
+
 		String mainCode = "", subCode = "";
 		long mainpid = 0, subpid = 0;
 		// int n=0, L=TABLE_INF.size();
@@ -172,15 +175,19 @@ public class getJPGovData extends BaseRapidThread {
 			}
 			String id = map.get("@id").toString();
 			KeyList.clear();
-			long rule=getMetaInfo(id, subpid);
-			
+			long rule = getMetaInfo(id, subpid);
+
 			boolean StatsData = true;
 			long StatsData_startPosition = getNowStatsDataID(id);
-			//long StatsData_startPosition = 0;
-			//echo("StatsData_startPosition:"+StatsData_startPosition+" id:"+id);
+			// long StatsData_startPosition = 0;
+			// echo("StatsData_startPosition:"+StatsData_startPosition+" id:"+id);
+			int im=0;
 			while (StatsData) {
-				StatsData = getStatsData(StatsData_startPosition, id, title, rule);
+				StatsData = getStatsData(StatsData_startPosition, id, title,
+						rule);
 				StatsData_startPosition += limit;
+				im++;
+				if(im>5)break;
 			}
 
 		}
@@ -199,21 +206,21 @@ public class getJPGovData extends BaseRapidThread {
 		String url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsData?appId=" + appId + "&statsDataId="
 				+ statsDataId + "&metaGetFlg=N&limit=" + limit
-				+ "&startPosition="+startPosition;
-		//echo(url);
-		// if(startPosition > 10) return; // ===========================
+				+ "&startPosition=" + startPosition;
+		// echo(url);
+		//if(startPosition > ) return; // ===========================
 		String res = "";
-		// echo("getStatsData statsDataId:"+statsDataId);		
-		int loopTime=0;
+		// echo("getStatsData statsDataId:"+statsDataId);
+		int loopTime = 0;
 		while (true) {
 			res = curl.httpGet(url);
 			if (res == null || res.length() < 10) {
-				echo("url:" + url);				
-			}else {
+				echo("url:" + url);
+			} else {
 				break;
 			}
-			if(loopTime>5){
-				echo("i am go out loopTime no."+statsDataId);
+			if (loopTime > 5) {
+				echo("i am go out loopTime no." + statsDataId);
 				return false;
 			}
 			loopTime++;
@@ -224,7 +231,7 @@ public class getJPGovData extends BaseRapidThread {
 				e.printStackTrace();
 			}
 		}
-		
+
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) json
 				.get("GET_STATS_DATA");
@@ -243,51 +250,45 @@ public class getJPGovData extends BaseRapidThread {
 		Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA
 				.get("STATISTICAL_DATA");
 
-		
-
 		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA
 				.get("DATA_INF");
 		List<Map<String, Object>> VALUE = null;
-		if(!(DATA_INF.get("VALUE") instanceof List)){
-			echo("i am go out VALUE no."+statsDataId);
+		if (!(DATA_INF.get("VALUE") instanceof List)) {
+			echo("i am go out VALUE no." + statsDataId);
 			return false;
 		}
-		
+
 		VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
-		
-		String fields = "",  values = "", act="";
+
+		String fields = "", values = "", act = "";
 		int L = 0;
-		
+
 		String sameValue = "", format = "(%d, %s)";
 		// echo("VALUE:"+VALUE.size());
-		
+
 		for (Map<String, Object> map : VALUE) {
 			values = "";
 			L = 0;
-			for (String key : KeyList) {				
-				values += "'" + map.get(key) + "',";				
-				L++;				
+			for (String key : KeyList) {
+				values += "'" + map.get(key) + "',";
+				L++;
 			}
 
-			values = values + "'"+id+"','L1'";
+			values = values + "'" + id + "','L1'";
 			id++;
 			sameValue += String.format(format, rule, values) + ",";
 		}
 		if (sameValue.length() > 0) {
 			for (int i = 0; i < L; i++) {
-				act = "act_v" + Integer.toHexString(i); 
+				act = "act_v" + Integer.toHexString(i);
 				fields += act + ",";
 			}
-			fields = fields+"act_v"+Integer.toHexString(L)+","+"act_v"+Integer.toHexString(L+1);
-			sameValue = sameValue.substring(0, sameValue.length()-1);
+			fields = fields + "act_v" + Integer.toHexString(L) + "," + "act_v"
+					+ Integer.toHexString(L + 1);
+			sameValue = sameValue.substring(0, sameValue.length() - 1);
 			clazz(fields, sameValue);
 		}
 
-//		if (VALUE.size() < limit){
-//			echo("i am go out limit no."+statsDataId);
-//			return false;
-//		}
-		
 		Map<String, Object> RESULT_INF = (Map<String, Object>) STATISTICAL_DATA
 				.get("RESULT_INF");
 		if (!RESULT_INF.containsKey("NEXT_KEY"))
@@ -362,14 +363,14 @@ public class getJPGovData extends BaseRapidThread {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 		}
-		//String mView = views.substring(0, views.length()-1);
+		// String mView = views.substring(0, views.length()-1);
 		format = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d and act_v%d='L1'";
 		sql = String.format(format, view, views, tpid, views.split(",").length);
 		// echo(sql);
 		try {
 			dbcreate(sql);
-			
+
 			CommitDB();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -403,19 +404,20 @@ public class getJPGovData extends BaseRapidThread {
 
 		String res = "";
 
-		int loopTime=0;
+		int loopTime = 0;
 		while (true) {
 			res = curl.httpGet(url);
 			if (res == null || res.length() < 10) {
-				echo("url:" + url);				
-			}else {
-				
+				echo("url:" + url);
+			} else {
+
 				break;
 			}
-			if(loopTime>5) return -1;
+			if (loopTime > 5)
+				return -1;
 			loopTime++;
 		}
-		
+
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 
 		// echo(json);
@@ -451,57 +453,52 @@ public class getJPGovData extends BaseRapidThread {
 			name = TABLE_INF.get("TITLE").toString();
 		}
 
-		String usqlFormat = "SELECT "+
-						    "(SELECT name "+
-						    "FROM i@arg0@ "+
-						    "WHERE objid=&apos;area&apos; "+
-						    "        AND j.area=code limit 1 ) AS dial, j.volume "+
-							"FROM j@arg0@ j "+
-							"WHERE  %s "+
-							"ORDER BY  j.area ;";
-		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
-		List<Object> jsonTmp = new ArrayList<>();
 		String where = "";
 
-		String code = "", cname = "", level="", parentCode="", unit="";
-		int L=0;
+		String code = "", cname = "", level = "", parentCode = "", unit = "";
+		int L = 0;
 		String objid = "";
 		String objname = "";
-		String views = "", act="", ViewClazz = "";
-		String ClazzFormat="(%s, '%s','%s','%s','%s','%s','%s','%s','%s')";
+		String views = "", act = "", ViewClazz = "";
+		String ClazzFormat = "(%s, '%s','%s','%s','%s','%s','%s','%s','%s')";
 		Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF
 				.get("CLASS_INF");
 		List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
 				.get("CLASS_OBJ");
 		for (Map<String, Object> map : CLASS_OBJ) {
 			objid = map.get("@id").toString();
-			KeyList.add("@"+objid);
+			KeyList.add("@" + objid);
 			objname = map.get("@name").toString();
 			act = "act_v" + Integer.toHexString(L);
 			views += act + " as " + objid + ",";
 			L++;
-			
+
 			if (map.get("CLASS") instanceof List) {
 				List<Map<String, Object>> CLAZZL = (List<Map<String, Object>>) map
 						.get("CLASS");
-				
+
 				for (int i = 0; i < CLAZZL.size(); i++) {
 					level = "";
 					parentCode = "";
 					code = CLAZZL.get(i).get("@code").toString();
 					cname = CLAZZL.get(i).get("@name").toString();
-					if(CLAZZL.get(i).containsKey("@level")){
+					if (CLAZZL.get(i).containsKey("@level")) {
 						level = CLAZZL.get(i).get("@level").toString();
 					}
-					if(CLAZZL.get(i).containsKey("@parentCodeString")){
-						parentCode = CLAZZL.get(i).get("@parentCodeString").toString();
+					if (CLAZZL.get(i).containsKey("@parentCodeString")) {
+						parentCode = CLAZZL.get(i).get("@parentCodeString")
+								.toString();
 					}
-					if(CLAZZL.get(i).containsKey("@unit")){
+					if (CLAZZL.get(i).containsKey("@unit")) {
 						unit = CLAZZL.get(i).get("@unit").toString();
 					}
-					
-					//ViewClazz = "rule,objid,objname,code,name,level,parentcode,otype";
-					ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode,unit, "L0")+",";					
+
+					// ViewClazz =
+					// "rule,objid,objname,code,name,level,parentcode,otype";
+					ViewClazz += String
+							.format(ClazzFormat, "RULE", objid, objname, code,
+									cname, level, parentCode, unit, "L0")
+							+ ",";
 				}
 				code = CLAZZL.get(0).get("@code").toString();
 				cname = CLAZZL.get(0).get("@name").toString();
@@ -512,33 +509,42 @@ public class getJPGovData extends BaseRapidThread {
 						.get("CLASS");
 				code = CLAZZM.get("@code").toString();
 				cname = CLAZZM.get("@name").toString();
-				if(CLAZZM.containsKey("@level")){
+				if (CLAZZM.containsKey("@level")) {
 					level = CLAZZM.get("@level").toString();
 				}
-				if(CLAZZM.containsKey("@parentCodeString")){
+				if (CLAZZM.containsKey("@parentCodeString")) {
 					parentCode = CLAZZM.get("@parentCodeString").toString();
 				}
-				if(CLAZZM.containsKey("@unit")){
+				if (CLAZZM.containsKey("@unit")) {
 					unit = CLAZZM.get("@unit").toString();
 				}
-				//ViewClazz = "rule,objid,objname,code,name,level,parentcode,otype";
-				ViewClazz += String.format(ClazzFormat, "RULE", objid,objname,code,cname,level,parentCode,unit, "L0")+",";
-				
+				// ViewClazz =
+				// "rule,objid,objname,code,name,level,parentcode,otype";
+				ViewClazz += String.format(ClazzFormat, "RULE", objid, objname,
+						code, cname, level, parentCode, unit, "L0") + ",";
+
 			}
-			if(!objid.equals("area")){
-				where += "j."+objid+"=&apos;"+code+"&apos; and ";
+			if (!objid.equals("area")) {
+				where += "j." + objid + "=&apos;" + code + "&apos; and ";
 			}
 		}
+
+		String usqlFormat = "SELECT " + "(SELECT name " + "FROM i@arg0@ "
+				+ "WHERE objid=&apos;area&apos; "
+				+ "        AND j.area=code limit 1 ) AS dial, j.volume "
+				+ "FROM j@arg0@ j " + "WHERE  %s " + "ORDER BY  j.area ;";
 		// String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
+		List<Object> jsonTmp = new ArrayList<>();
+
 		KeyList.add("$");
 		List<Object> tmp = new ArrayList<>();
-		tmp.add("arg0" );
+		tmp.add("arg0");
 		tmp.add(statsDataId);
 		tmp.add("VARCHAR");
 		tmp.add(name);
 		jsonTmp.add(tmp);
 		where += " j.area!=&apos;00000&apos;";
-		
+
 		String TmpJson = JSON.toJSONString(jsonTmp);
 		String usql = String.format(usqlFormat, where);
 		String format = " insert INTO "
@@ -556,27 +562,28 @@ public class getJPGovData extends BaseRapidThread {
 		}
 		act = "act_v" + Integer.toHexString(L);
 		views += act + " as volume ,";
-		act = "act_v" + Integer.toHexString(L+1);
+		act = "act_v" + Integer.toHexString(L + 1);
 		views += act + " as id";
-		
+
 		long rule = classInfo(name, statsDataId, views);
-		ViewClazz = ViewClazz.replaceAll("RULE", rule+"");
-		ViewClazz = ViewClazz.substring(0, ViewClazz.length()-1);
-		getMetaInfoClazz( rule,  statsDataId,  ViewClazz);
+		ViewClazz = ViewClazz.replaceAll("RULE", rule + "");
+		ViewClazz = ViewClazz.substring(0, ViewClazz.length() - 1);
+		getMetaInfoClazz(rule, statsDataId, ViewClazz);
 		return rule;
 	}
-	
-	private void getMetaInfoClazz(long rule, String statsDataId, String ViewClazz) {
+
+	private void getMetaInfoClazz(long rule, String statsDataId,
+			String ViewClazz) {
 		String format = "insert INTO hor_class (rule,act_v0,act_v1,act_v2,act_v3,act_v4,act_v5,act_v6,act_v7) values %s";
 		String sql = String.format(format, ViewClazz);
-		
+
 		try {
 			insert(sql);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		String views = "act_v0 as objid, act_v1 as objname, act_v2 as code, act_v3 as name, act_v4 as level, act_v5 as parentcode,act_v6 as unit";
 		format = "CREATE OR REPLACE VIEW i%s AS SELECT %s FROM " + DB_HOR_PRE
 				+ "class WHERE rule=%d and act_v7='L0'";
@@ -589,8 +596,7 @@ public class getJPGovData extends BaseRapidThread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 }
