@@ -34,15 +34,15 @@ public class getJPGovData extends BaseRapidThread {
 	@Override
 	public void Run() {
 		// TODO Auto-generated method stub
-		curl = new cUrl();
+	//	curl = new cUrl();
 		pid = mConfig.GetInt("jp.pid");
-		int startPosition = 0;
-		KeyList = new ArrayList<>();
-		boolean StatsList = true;
-		while (StatsList) {
-			StatsList = getStatsList(startPosition);
-			startPosition += limit;
-		}
+//		int startPosition = 0;
+//		KeyList = new ArrayList<>();
+//		boolean StatsList = true;
+//		while (StatsList) {
+//			StatsList = getStatsList(startPosition);
+//			startPosition += limit;
+//		}
 
 		echo("getJPGovData end... ");
 	}
