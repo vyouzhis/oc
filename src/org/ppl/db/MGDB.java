@@ -287,6 +287,7 @@ public class MGDB extends PObject {
 
 	public void Insert(String json) {
 		BasicDBObject data = (BasicDBObject) JSON.parse(json);
+		
 		DBLink.insert(data);
 	}
 

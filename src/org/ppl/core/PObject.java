@@ -80,7 +80,4 @@ public class PObject extends function{
 	public long myThreadId() {
 		return Thread.currentThread().getId();
 	}
-
-	
-
 }

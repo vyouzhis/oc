@@ -23,6 +23,11 @@ public class HikariConnectionPool extends PObject {
 
 	public HikariConnectionPool() {
 		// TODO Auto-generated constructor stub
+		InitConnect();
+
+	}
+	
+	private void InitConnect() {
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 						
@@ -41,7 +46,6 @@ public class HikariConnectionPool extends PObject {
 		
 		ds = new HikariDataSource(config);
 		ds.setMaximumPoolSize(myConfig.GetInt("database.MaximumPoolSize"));
-
 	}
 
 	private void LoadDBLib() {
@@ -61,7 +65,12 @@ public class HikariConnectionPool extends PObject {
 			//echo("tid:"+tid);
 			Connection con;
 			try {
-				con = ds.getConnection();
+				con = ds.getConnection();	
+				if(con.isClosed()==true){
+					InitConnect();
+					con = ds.getConnection();
+					echo("connect error!!");
+				}
 				con.setAutoCommit(false);
 				globale_config.GDB.put(tid, con);
 			} catch (SQLException e) {
