@@ -8,6 +8,7 @@ import java.util.Map;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import com.google.inject.Injector;
+import com.mongodb.MongoClient;
 
 public class globale_config {
 	public static globale_config config = null;
@@ -54,6 +55,8 @@ public class globale_config {
 	
 	//CrontList
 	public static Map<String, Map<String, Object>> CronListQueue;
+	
+	public static MongoClient mongoClient = null;
 				
 	public static globale_config getInstance() {
 		if (config == null) {

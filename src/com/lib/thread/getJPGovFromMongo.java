@@ -407,6 +407,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	@SuppressWarnings("unchecked")
 	private void clazz(String fields, String values) {
+		MGDB dmgdb = new MGDB();
 		KeyList = new ArrayList<>();
 		String Col = "getMetaInfo_" + statsField;
 		mgdb.SetCollection(Col);
@@ -429,7 +430,6 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
 				
-
 				while (true) {
 					Map<String, Object> rmap = mgdb.GetValueLoop();
 					if(rmap==null)break;
@@ -457,7 +457,28 @@ public class getJPGovFromMongo extends BaseRapidThread {
 					Map<String, Object> SUB_CATEGORY = (Map<String, Object>) TABLE_INF
 							.get("SUB_CATEGORY");
 					String subcate = SUB_CATEGORY.get("volume").toString();
-
+					
+					dmgdb.SetCollection("getStatsData_"+statsField);
+					Map<String, Object> dw = new HashMap<>();
+					Map<String, Object> wh = new HashMap<>();
+					wh.put("$regex", dataId);
+					dw.put("GET_STATS_DATA.STATISTICAL_DATA.TABLE_INF.id", wh);
+					dmgdb.JsonWhere(JSON.toJSONString(dw));
+					
+					Map<String, Object> cMap = new HashMap<>();
+					cMap.put("GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE", 1);
+					dmgdb.JsonColumn(JSON.toJSONString(cMap));
+					while (true) {
+						Map<String, Object> dres = dmgdb.GetValueLoop();
+						if(dres==null)break;
+						Map<String, Object> GET_STATS_DATA = (Map<String, Object>) dres.get("GET_STATS_DATA");
+						Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA.get("STATISTICAL_DATA");
+						Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA.get("DATA_INF");
+						List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
+						for (Map<String, Object> dMap:VALUE) {
+							
+						}
+					}
 				}
 			}
 		}

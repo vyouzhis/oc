@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.ppl.core.PObject;
+import org.ppl.etc.globale_config;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -21,7 +22,6 @@ import com.mongodb.util.JSON;
 
 public class MGDB extends PObject {
 	public static MGDB dataSource = null;
-	private MongoClient mongoClient = null;
 	private DB db = null;
 
 	public String eq = "$eq";
@@ -65,7 +65,7 @@ public class MGDB extends PObject {
 
 	private int DBOffset = 0;
 	private int DBLimit = 30;
-	
+
 	private int ColumnNumber = 0;
 
 	// private int DESC = 1;
@@ -83,17 +83,21 @@ public class MGDB extends PObject {
 
 		// Mongo m;
 		try {
-			MongoClientOptions.Builder optionsBuilder = MongoClientOptions
-					.builder()
-					.connectionsPerHost(1000).connectTimeout(15000)
-					.maxWaitTime(30000).socketTimeout(60000)
-					.threadsAllowedToBlockForConnectionMultiplier(5000);
 
-			MongoClientOptions options = optionsBuilder.build();
-			mongoClient = new MongoClient(mgConfig.GetValue("database.host"),
-					options);
+			if (globale_config.mongoClient == null) {
+				MongoClientOptions.Builder optionsBuilder = MongoClientOptions
+						.builder().connectionsPerHost(1000)
+						.connectTimeout(15000).maxWaitTime(30000)
+						.socketTimeout(60000)
+						.threadsAllowedToBlockForConnectionMultiplier(5000);
 
-			db = mongoClient.getDB(mgConfig.GetValue("database.dbname"));
+				MongoClientOptions options = optionsBuilder.build();
+				globale_config.mongoClient = new MongoClient(
+						mgConfig.GetValue("database.host"), options);
+			}
+
+			db = globale_config.mongoClient.getDB(mgConfig
+					.GetValue("database.dbname"));
 
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -103,12 +107,12 @@ public class MGDB extends PObject {
 	}
 
 	public void Close() {
-		mongoClient.close();
+		globale_config.mongoClient.close();
 	}
-	
+
 	public Boolean SetCollection(String col) {
 		DBLink = db.getCollection(col);
-		
+
 		if (DBLink == null) {
 			return false;
 		}
@@ -170,7 +174,7 @@ public class MGDB extends PObject {
 	}
 
 	public Boolean FetchList() {
-		
+
 		dbCursor = DBLink.find(DBWhere, DBColumn).sort(DBSort).limit(DBLimit)
 				.skip(DBOffset);
 		if (dbCursor == null) {
@@ -202,13 +206,14 @@ public class MGDB extends PObject {
 
 		return res;
 	}
-	
+
 	public void loopList(Object res, List<Object> mList) {
 		if (res instanceof DBObject) {
 
 			DBObject s = (DBObject) res;
 			for (String k : s.keySet()) {
-				if(k.equals("_id"))continue;
+				if (k.equals("_id"))
+					continue;
 				loopList(s.get(k), mList);
 			}
 		} else {
@@ -224,14 +229,14 @@ public class MGDB extends PObject {
 			while (dbCursor.hasNext()) {
 				DBObject obj = dbCursor.next();
 				Map<String, Object> ColMap = new HashMap<String, Object>();
-				
+
 				l = 0;
-				
+
 				for (String key : obj.keySet()) {
 					ColMap.put(key, obj.get(key));
 					l++;
 				}
-				if(l > ColumnNumber){
+				if (l > ColumnNumber) {
 					ColumnNumber = l;
 				}
 
@@ -244,7 +249,7 @@ public class MGDB extends PObject {
 
 		return list;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> GetValueLoop() {
 		if (dbCursor.hasNext()) {
@@ -252,7 +257,7 @@ public class MGDB extends PObject {
 			return (Map<String, Object>) obj;
 		}
 		return null;
-		
+
 	}
 
 	public List<String> GetJsonValue() {
@@ -297,7 +302,7 @@ public class MGDB extends PObject {
 
 	public void Insert(String json) {
 		BasicDBObject data = (BasicDBObject) JSON.parse(json);
-		
+
 		DBLink.insert(data);
 	}
 
