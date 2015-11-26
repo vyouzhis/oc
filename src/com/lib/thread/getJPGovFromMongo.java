@@ -16,6 +16,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	private MGDB mgdb = new MGDB();
 	private long pid;
 	private List<Map<String, Object>> cList;
+	private List<Map<String, Object>> KeyList;
 
 	@Override
 	public String title() {
@@ -398,7 +399,57 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	private void clazz(String fields, String values) {
+		KeyList = new ArrayList<>();
+		String Col = "getMetaInfo_" + statsField;
+		mgdb.SetCollection(Col);
+		int offset = 0;
+		boolean isLoop = true;
+		cList = getClassIfy();
+
+		Map<String, Object> jMap = new HashMap<String, Object>();
+		jMap.put("GET_META_INFO.METADATA_INF.CLASS_INF.CLASS_OBJ", 1);
+		jMap.put("GET_META_INFO.METADATA_INF.TABLE_INF.SUB_CATEGORY.volume", 1);
+		jMap.put("GET_META_INFO.METADATA_INF.TABLE_INF.id", 1);
+		String json = JSON.toJSONString(jMap);
+		mgdb.JsonColumn(json);
+
+		while (isLoop) {
+
+			mgdb.setDBOffset(offset);
+			mgdb.setLimit(500);
+			offset += 500;
+			isLoop = mgdb.FetchList();
+			if (isLoop) {
+				List<Map<String, Object>> mres = mgdb.GetValue();
+				
+				for (Map<String, Object> rmap : mres) {
+					Map<String, Object> GET_META_INFO = (Map<String, Object>) rmap.get("GET_META_INFO");
+					Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO.get("METADATA_INF");
+					Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF.get("CLASS_INF");
+										
+					List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF.get("CLASS_OBJ");
+					for (Map<String, Object> cmap: CLASS_OBJ) {
+						String id = cmap.get("id").toString();
+						List<Map<String, Object>> CLAZZ = (List<Map<String, Object>>) cmap.get("CLASS");
+						Map<String, Object> obj = new HashMap<>();
+						obj.put(id, CLAZZ.get(0).get("code"));
+						KeyList.add(obj);
+					}
+															
+					Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF.get("TABLE_INF");
+					String dataId = TABLE_INF.get("id").toString();
+					Map<String, Object> SUB_CATEGORY = (Map<String, Object>) TABLE_INF.get("SUB_CATEGORY");
+					String subcate = SUB_CATEGORY.get("volume").toString();	
+					
+				}
+			}
+		}
+		
+		
+		
+		
 		String format = " insert INTO " + DB_HOR_PRE
 				+ "class (rule,%s)values %s;";
 		String sql = String.format(format, fields, values);

@@ -88,9 +88,9 @@ public class mongo_db extends Permission implements BasePerminterface {
 		}
 		mgdb.Close();
 		setRoot("fetch_query", fetch_query);
-		
+
 		listPid();
-		
+
 		super.View();
 	}
 
@@ -112,14 +112,14 @@ public class mongo_db extends Permission implements BasePerminterface {
 		UrlClassList ucl = UrlClassList.getInstance();
 		String url = ucl.read(SliceName(stdClass));
 		int cid = toInt(porg.getKey("cid_list"));
-		
-		if(porg.getKey("snap_id").equals("1")){
+
+		if (porg.getKey("snap_id").equals("1")) {
 			snap = 1;
 		}
-		
+
 		int now = time();
 		int stime = getLastTime(db_collection);
-		if(stime==0){
+		if (stime == 0) {
 			TipMessage(url, _CLang("error_null"));
 			return;
 		}
@@ -131,15 +131,14 @@ public class mongo_db extends Permission implements BasePerminterface {
 				fetch_query, where_query, field_query, sort_query, now, stime,
 				stime, snap, cid, aclGetUid());
 
-		
-		//echo(sql);
+		// echo(sql);
 		try {
 			insert(sql);
 			// echo("id:"+id);
 			TipMessage(url, _CLang("ok_save"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			//e.printStackTrace();
+			// e.printStackTrace();
 			TipMessage(url, getErrorMsg());
 		}
 	}
@@ -155,7 +154,7 @@ public class mongo_db extends Permission implements BasePerminterface {
 		boolean s = mgdb.FetchList();
 		if (s) {
 			List<Map<String, Object>> res = mgdb.GetValue();
-			if(res!=null){
+			if (res != null) {
 				ltime = (int) res.get(0).get("ctime");
 			}
 
@@ -172,11 +171,12 @@ public class mongo_db extends Permission implements BasePerminterface {
 		if (id != null && id.matches("[0-9]+")) {
 			eid = Integer.valueOf(id);
 		}
-		//echo("where:" + where_query);
+		// echo("where:" + where_query);
 
 		if (db_collection == null || db_collection.length() == 0) {
 			String format = "select * from " + DB_HOR_PRE
-					+ "mongodbrule  where id=%d and "+UserPermi()+" limit 1";
+					+ "mongodbrule  where id=%d and " + UserPermi()
+					+ " limit 1";
 			String sql = String.format(format, eid);
 			Map<String, Object> res;
 
@@ -194,13 +194,12 @@ public class mongo_db extends Permission implements BasePerminterface {
 				field_query = res.get("field").toString();
 				sort_query = res.get("sort").toString();
 				project_name = res.get("name").toString();
-				
+
 				setRoot("snap_id", res.get("snap").toString());
 				setRoot("cid", res.get("cid").toString());
 			}
 		}
 
-		
 		setRoot("project_name", project_name);
 
 		if (where_query.length() < 3) {
@@ -269,15 +268,17 @@ public class mongo_db extends Permission implements BasePerminterface {
 	}
 
 	private void CollectionList() {
-		
+
 		Set<String> clist = null;
-		try{
+		try {
 			clist = mgdb.CollectionList();
-		}catch (MongoException e) {
+		} catch (MongoException e) {
 			// TODO: handle exception
 		}
-		if(clist==null)return;
-		if(clist.size()<1) return;  
+		if (clist == null)
+			return;
+		if (clist.size() < 1)
+			return;
 		String clists = "";
 		String def_col = "";
 		for (String s : clist) {
@@ -362,19 +363,20 @@ public class mongo_db extends Permission implements BasePerminterface {
 		boolean isOk = mgdb.FetchList();
 		List<String> field = null;
 		if (isOk == true) {
-			List<String> list = mgdb.GetJsonValue();
 			String data_json = "";
-			if (list != null) {
-				for (String json : list) {
-					data_json += json + ",";
-				}
-				data_json = data_json.substring(0, data_json.length() - 1);
-				setRoot("data_result", "[" + data_json + "]");
+			mgdb.getErrorMsg();
+			while (true) {
+				Map<String, Object> lMap = mgdb.GetValueLoop();
 
-				field = mgdb.Fields();
-			} else {
-				error = mgdb.getErrorMsg();
+				if (lMap == null)
+					break;
+				data_json += JSON.toJSONString(lMap) + ",";
+
 			}
+			data_json = data_json.substring(0, data_json.length() - 1);
+			setRoot("data_result", "[" + data_json + "]");
+
+			field = mgdb.Fields();
 
 		} else {
 			error = mgdb.getErrorMsg();
@@ -395,14 +397,14 @@ public class mongo_db extends Permission implements BasePerminterface {
 			setRoot("field_all", json_field);
 		}
 	}
-	
+
 	private void listPid() {
 
 		int cid = toInt(porg.getKey("cid"));
 		setRoot("cid", cid);
 
-		String sql = "select id,name from " + DB_HOR_PRE
-				+ "classify where "+UserPermi()+" order by id desc";
+		String sql = "select id,name from " + DB_HOR_PRE + "classify where "
+				+ UserPermi() + " order by id desc";
 		List<Map<String, Object>> res;
 
 		try {

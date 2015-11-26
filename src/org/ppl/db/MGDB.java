@@ -244,6 +244,16 @@ public class MGDB extends PObject {
 
 		return list;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> GetValueLoop() {
+		if (dbCursor.hasNext()) {
+			DBObject obj = dbCursor.next();
+			return (Map<String, Object>) obj;
+		}
+		return null;
+		
+	}
 
 	public List<String> GetJsonValue() {
 		List<String> list = new ArrayList<>();
