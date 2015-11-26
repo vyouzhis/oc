@@ -73,8 +73,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			offset += 500;
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
-				List<Map<String, Object>> res = mgdb.GetValue();
-				for (Map<String, Object> map : res) {
+
+				while (true) {
+					Map<String, Object> map = mgdb.GetValueLoop();
+					if (map == null)
+						break;
 					Map<String, Object> GET_META_INFO = (Map<String, Object>) map
 							.get("GET_META_INFO");
 					Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO
@@ -145,8 +148,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			offset += 500;
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
-				List<Map<String, Object>> res = mgdb.GetValue();
-				for (Map<String, Object> rmap : res) {
+
+				while (true) {
+					Map<String, Object> rmap = mgdb.GetValueLoop();
+					if (rmap == null)
+						break;
 					ViewMetaInfo(rmap);
 				}
 			}
@@ -248,13 +254,13 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			} else {
 				level = "";
 				parentCode = "";
-				
+
 				Map<String, Object> CLAZZM = (Map<String, Object>) map
 						.get("CLASS");
-				if(CLAZZM == null){
+				if (CLAZZM == null) {
 					CLAZZM = map;
 					code = "";
-				}else{
+				} else {
 					code = CLAZZM.get("code").toString();
 				}
 				cname = CLAZZM.get("name").toString();
@@ -422,34 +428,40 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			offset += 500;
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
-				List<Map<String, Object>> mres = mgdb.GetValue();
 				
-				for (Map<String, Object> rmap : mres) {
-					Map<String, Object> GET_META_INFO = (Map<String, Object>) rmap.get("GET_META_INFO");
-					Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO.get("METADATA_INF");
-					Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF.get("CLASS_INF");
-										
-					List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF.get("CLASS_OBJ");
-					for (Map<String, Object> cmap: CLASS_OBJ) {
+
+				while (true) {
+					Map<String, Object> rmap = mgdb.GetValueLoop();
+					if(rmap==null)break;
+					Map<String, Object> GET_META_INFO = (Map<String, Object>) rmap
+							.get("GET_META_INFO");
+					Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO
+							.get("METADATA_INF");
+					Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF
+							.get("CLASS_INF");
+
+					List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
+							.get("CLASS_OBJ");
+					for (Map<String, Object> cmap : CLASS_OBJ) {
 						String id = cmap.get("id").toString();
-						List<Map<String, Object>> CLAZZ = (List<Map<String, Object>>) cmap.get("CLASS");
+						List<Map<String, Object>> CLAZZ = (List<Map<String, Object>>) cmap
+								.get("CLASS");
 						Map<String, Object> obj = new HashMap<>();
 						obj.put(id, CLAZZ.get(0).get("code"));
 						KeyList.add(obj);
 					}
-															
-					Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF.get("TABLE_INF");
+
+					Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF
+							.get("TABLE_INF");
 					String dataId = TABLE_INF.get("id").toString();
-					Map<String, Object> SUB_CATEGORY = (Map<String, Object>) TABLE_INF.get("SUB_CATEGORY");
-					String subcate = SUB_CATEGORY.get("volume").toString();	
-					
+					Map<String, Object> SUB_CATEGORY = (Map<String, Object>) TABLE_INF
+							.get("SUB_CATEGORY");
+					String subcate = SUB_CATEGORY.get("volume").toString();
+
 				}
 			}
 		}
-		
-		
-		
-		
+
 		String format = " insert INTO " + DB_HOR_PRE
 				+ "class (rule,%s)values %s;";
 		String sql = String.format(format, fields, values);
