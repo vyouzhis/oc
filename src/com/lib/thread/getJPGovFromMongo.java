@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hamcrest.core.IsAnything;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.db.MGDB;
 
@@ -16,7 +17,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	private MGDB mgdb = new MGDB();
 	private long pid;
 	private List<Map<String, Object>> cList;
-	private List<Map<String, Object>> KeyList;
+	private Map<String, Object> KeyList;
 
 	@Override
 	public String title() {
@@ -408,7 +409,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	@SuppressWarnings("unchecked")
 	private void clazz(String fields, String values) {
 		MGDB dmgdb = new MGDB();
-		KeyList = new ArrayList<>();
+		KeyList = new HashMap<>();
 		String Col = "getMetaInfo_" + statsField;
 		mgdb.SetCollection(Col);
 		int offset = 0;
@@ -444,11 +445,10 @@ public class getJPGovFromMongo extends BaseRapidThread {
 							.get("CLASS_OBJ");
 					for (Map<String, Object> cmap : CLASS_OBJ) {
 						String id = cmap.get("id").toString();
+						if(id.equals("area") || id.equals("unit"))continue;
 						List<Map<String, Object>> CLAZZ = (List<Map<String, Object>>) cmap
-								.get("CLASS");
-						Map<String, Object> obj = new HashMap<>();
-						obj.put(id, CLAZZ.get(0).get("code"));
-						KeyList.add(obj);
+								.get("CLASS");						
+						KeyList.put(id, CLAZZ.get(0).get("code"));						
 					}
 
 					Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF
@@ -475,9 +475,19 @@ public class getJPGovFromMongo extends BaseRapidThread {
 						Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA.get("STATISTICAL_DATA");
 						Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA.get("DATA_INF");
 						List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
+						boolean isSame = false;
 						for (Map<String, Object> dMap:VALUE) {
+							if(dMap.get("area").equals("00000"))continue;
+							for (String key:KeyList.keySet()) {
+								if(dMap.get(key).toString().equals(KeyList.get(key).toString())){
+									isSame = true;
+								}else {
+									isSame = false;
+								}
+							}
 							
 						}
+						
 					}
 				}
 			}
