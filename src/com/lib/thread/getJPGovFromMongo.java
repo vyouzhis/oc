@@ -492,6 +492,9 @@ public class getJPGovFromMongo extends BaseRapidThread {
 				}
 			}
 		}
+		
+		
+		
 
 		String format = " insert INTO " + DB_HOR_PRE
 				+ "class (rule,%s)values %s;";
