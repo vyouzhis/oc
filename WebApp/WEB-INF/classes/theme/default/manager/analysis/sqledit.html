@@ -46,8 +46,10 @@
 									action='${action_url!""}' method="POST" class="form-inline">
 
 									<label for="sqledit">SQL:</label>
-									<textarea rows="10" id="sql_script" name="sql_script"
-										class="form-control limited">${sql_edit!""}</textarea>
+									<textarea rows="20" id="sql_script" name="sql_script"
+										style='width:98%;'
+										
+										>${sql_edit!""}</textarea>
 
 
 									<h3 class="header smaller lighter blue">
@@ -287,6 +289,7 @@
 				</div>
 			</div>
 			<!-- /.main-container -->
+			<script language="Javascript" type="text/javascript" src="${static_js_uri}/textline/jquery-linedtextarea.js"></script>
 			<script
 				src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script>
 			<script src="${static_js_uri}/jquery.snippet.min.js"
@@ -757,5 +760,8 @@
 
 					];
 					$('#sql_script').textcomplete(completes);
+					$("#sql_script").linedtextarea(
+							{selectedLine: 1}
+						);
 				});
 			</script>
