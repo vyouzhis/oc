@@ -18,6 +18,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 
 public class MGDB extends PObject {
@@ -65,7 +66,7 @@ public class MGDB extends PObject {
 
 	private int DBOffset = 0;
 	private int DBLimit = 30;
-	
+
 	private int ColumnNumber = 0;
 
 	// private int DESC = 1;
@@ -182,7 +183,7 @@ public class MGDB extends PObject {
 		}
 
 		try {
-			
+
 			if (dbCursor.size() == 0) {
 				return false;
 			}
@@ -191,7 +192,7 @@ public class MGDB extends PObject {
 			ErrorMsg = e.getMessage().toString();
 			return false;
 		}
-		 		
+
 		return true;
 	}
 
@@ -255,10 +256,15 @@ public class MGDB extends PObject {
 	public Map<String, Object> GetValueLoop() {
 		if (dbCursor == null)
 			return null;
-		
-		if (dbCursor.hasNext()) {			
-			DBObject obj = dbCursor.next();
-			return (Map<String, Object>) obj;
+		try {
+			if (dbCursor.hasNext()) {
+				DBObject obj = dbCursor.next();
+				return (Map<String, Object>) obj;
+			}
+		} catch (MongoException e) {
+			// TODO: handle exception	
+			echo("hasnext error");
+			dbCursor.close();
 		}
 		return null;
 	}

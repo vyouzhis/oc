@@ -9,6 +9,8 @@ import org.ppl.etc.globale_config;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;
 
+import com.alibaba.fastjson.JSON;
+
 public class Rlang extends Permission implements BasePerminterface {
 	private List<String> rmc;
 
@@ -40,7 +42,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			break;
 		case "search":
 			search(null);
-			break;
+			return;
 		case "create":
 			create(null);
 			return;
@@ -66,7 +68,9 @@ public class Rlang extends Permission implements BasePerminterface {
 		try {
 			sR = globale_config.rcoonnect.eval("ls('package:base')")
 					.asStrings();
-			setRoot("r_key_list", sR);
+			String json = JSON.toJSONString(sR);
+			echo(json);
+			setRoot("r_key_list", json);
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,13 +79,10 @@ public class Rlang extends Permission implements BasePerminterface {
 			e.printStackTrace();
 		}
 	}
-	
-
 
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-		
 
 	}
 
@@ -101,6 +102,29 @@ public class Rlang extends Permission implements BasePerminterface {
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
 		String key = porg.getKey("key");
+		String asy = "";
+		String format = "a<-getAnywhere('%s')";
+		if(key==null || key.length()==0)return;
+		
+		try {
+			globale_config.rcoonnect.voidEval(String.format(format, key));
+			globale_config.rcoonnect.voidEval("c<-as.character(a)");
+			String[] my;
+
+			my = globale_config.rcoonnect.eval("c").asStrings();
+
+			for (int i = 0; i < my.length; i++) {
+				asy += my[i] + "<br />";
+			}
+		} catch (RserveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (REXPMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		super.setHtml(asy);
+
 	}
 
 }

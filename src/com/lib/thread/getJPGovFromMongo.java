@@ -137,7 +137,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		MGDB mgdb = new MGDB();
 		String Col = "getMetaInfo_" + statsField;
 		mgdb.SetCollection(Col);
-		int offset = 0;
+		int offset = 0, limit=1;
 		boolean isLoop = true;
 		cList = getClassIfy();
 
@@ -149,8 +149,8 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		while (isLoop) {
 
 			mgdb.setDBOffset(offset);
-			mgdb.setLimit(500);
-			offset += 500;
+			mgdb.setLimit(limit);
+			offset += limit;
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
 
@@ -402,7 +402,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	private void clazz() {
 
-		int offset = 0;
+		int offset = 0, limit=1;
 		boolean isLoop = true, r = true;
 		cList = getClassIfy();
 
@@ -422,9 +422,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		while (isLoop) {
 
 			mgdb.setDBOffset(offset);
-			mgdb.setLimit(500);
-			offset += 500;
+			mgdb.setLimit(limit);
+			offset += limit;
 			isLoop = mgdb.FetchList();
+			
+			echo("offset: " + offset);
 			if (isLoop) {
 				while (r) {
 					Map<String, Object> rmap = mgdb.GetValueLoop();
@@ -498,8 +500,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			m = 1;
 			ValueClazz += String.format(formatClazz, rule, values) + ",";
 		}
-
-		echo("view: " + id + " rule:" + rule);
+		
 		if (ValueClazz.length() > 0) {
 			fields = "";
 			for (int i = 0; i < L; i++) {

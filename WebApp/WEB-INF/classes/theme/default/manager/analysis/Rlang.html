@@ -23,28 +23,26 @@
       <!-- /.page-header --> 
       <div class="row"> 
       	<div class="col-xs-12 well bigger-175 blue">
-      	<#if error??>
-						<div class="alert alert-danger">
-							<button data-dismiss="alert" class="close" type="button">
-								<i class="icon-remove"></i>
-							</button>
-							<strong> <i class="icon-remove"></i> Oh Bug!
-							</strong> ${error!""}. <br />
-						</div>
-						</#if>
-						
-					<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
-				
-					<textarea id="r_query" name="r_query" ></textarea>
-					          
-					<button class="btn btn-info btn-sm" type="submit">
-						<i class="icon-search nav-search-icon"></i>
-							执行
-					</button>
-					
-						
-					</form>
-				</div>
+	      	<#if error??>
+			<div class="alert alert-danger">
+				<button data-dismiss="alert" class="close" type="button">
+					<i class="icon-remove"></i>
+				</button>
+				<strong> <i class="icon-remove"></i> Oh Bug!
+				</strong> ${error!""}. <br />
+			</div>
+			</#if>
+			<div class="col-xs-6 well bigger-175 blue">	
+			<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
+		
+			<textarea id="r_query" name="r_query" ></textarea>
+
+			</form>
+			</div>
+			<div class="col-xs-6 well bigger-175 blue">
+			<textarea id="example_1" name="example_1"  rows="20" cols="100"></textarea>
+			</div>
+	    </div>
 
        <div class="col-xs-12"> 
         
@@ -63,21 +61,23 @@
    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
   </div> 
   <!-- /.main-container --> 
+  
+  <script language="Javascript" type="text/javascript" src="${static_js_uri}/textline/jquery-linedtextarea.js"></script>
+  
   <script src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
 
     
     
   <script type="text/javascript">
-  		
+  
+  
+  
 jQuery(function($) {
 	
-
-   	
-	//var elements = ['{}','PorG', 'PorG.r', 'PorG.gt_ms', 'PorG.u', 'SERVER.HTTP_HOST','SERVER.HTTP_COOKIE','$gt','$lt'];
 		var completes = [
-							{ // emoji strategy
-								  mongo : ${r_key_list},
-					    	  match: /\$(\w*)$/,
+							{
+							mongo : ${r_key_list},
+					    	match: /\b([a-zA-Z._]{2,})$/,
 					        search: function (term, callback) {
 					            callback($.map(this.mongo, function (element) {
 					                return element.indexOf(term) === 0 ? element : null;
@@ -91,7 +91,13 @@ jQuery(function($) {
 					    					    
 					];	
 		$('#r_query').textcomplete(completes);
-
+		
+		$('#example_1').textcomplete(completes);
+		$("#example_1").linedtextarea(
+				{selectedLine: 1}
+			);
+		 
+		
 	});
 	
 	$(document).on("keyup", function(e) {
@@ -130,7 +136,7 @@ jQuery(function($) {
 				  //option = option.replace(/[\r\n]/g, "");							  
 				  
 				  console.log("success:"+option);
-				  
+				  $("#tips").html(option);
 			  }
 			});
 	}
