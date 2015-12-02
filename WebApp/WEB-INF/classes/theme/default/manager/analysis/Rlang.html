@@ -35,12 +35,13 @@
 			<div class="col-xs-6 well bigger-175 blue">	
 			<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
 		
-			<textarea id="r_query" name="r_query" ></textarea>
+			
+			<textarea id="r_query" name="r_query"  rows="20" cols="100"></textarea>
 
 			</form>
 			</div>
 			<div class="col-xs-6 well bigger-175 blue">
-			<textarea id="example_1" name="example_1"  rows="20" cols="100"></textarea>
+			<span id="tips" name="tips"></span>
 			</div>
 	    </div>
 
@@ -91,9 +92,8 @@ jQuery(function($) {
 					    					    
 					];	
 		$('#r_query').textcomplete(completes);
-		
-		$('#example_1').textcomplete(completes);
-		$("#example_1").linedtextarea(
+
+		$("#r_query").linedtextarea(
 				{selectedLine: 1}
 			);
 		 
