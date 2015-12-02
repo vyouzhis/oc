@@ -69,7 +69,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			sR = globale_config.rcoonnect.eval("ls('package:base')")
 					.asStrings();
 			String json = JSON.toJSONString(sR);
-			echo(json);
+			//echo(json);
 			setRoot("r_key_list", json);
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -114,7 +114,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			my = globale_config.rcoonnect.eval("c").asStrings();
 
 			for (int i = 0; i < my.length; i++) {
-				asy += my[i] + "<br />";
+				asy += my[i]+"<br/>";
 			}
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -123,6 +123,9 @@ public class Rlang extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		asy = asy.replace(" ", "&nbsp;");
+		asy = asy.replace("<br/>", "<br />");
+		asy = asy.replace("\n", "<br />");
 		super.setHtml(asy);
 
 	}
