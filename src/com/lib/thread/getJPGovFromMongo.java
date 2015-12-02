@@ -14,10 +14,9 @@ import com.alibaba.fastjson.JSON;
 
 public class getJPGovFromMongo extends BaseRapidThread {
 	private String statsField = "";
-	private MGDB mgdb = new MGDB();
+
 	private long pid;
 	private List<Map<String, Object>> cList;
-	private Map<String, Object> KeyList;
 
 	@Override
 	public String title() {
@@ -32,7 +31,10 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		// TODO Auto-generated method stub
 		pid = mConfig.GetInt("jp.pid");
 		Classify();
+		echo("1");
 		getMetaInfo();
+		echo("2");
+		clazz();
 	}
 
 	@Override
@@ -55,6 +57,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	@SuppressWarnings("unchecked")
 	private void Classify() {
+		MGDB mgdb = new MGDB();
 		String Col = "getMetaInfo_" + statsField;
 		mgdb.SetCollection(Col);
 		int offset = 0;
@@ -131,6 +134,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	}
 
 	private void getMetaInfo() {
+		MGDB mgdb = new MGDB();
 		String Col = "getMetaInfo_" + statsField;
 		mgdb.SetCollection(Col);
 		int offset = 0;
@@ -156,6 +160,8 @@ public class getJPGovFromMongo extends BaseRapidThread {
 						break;
 					ViewMetaInfo(rmap);
 				}
+			} else {
+				break;
 			}
 		}
 
@@ -361,18 +367,6 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			// TODO Auto-generated catch block
 		}
 		// String mView = views.substring(0, views.length()-1);
-		format = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM " + DB_HOR_PRE
-				+ "class WHERE rule=%d and act_v%d='L1'";
-		sql = String.format(format, view, views, tpid, views.split(",").length);
-		// echo(sql);
-		try {
-			dbcreate(sql);
-
-			CommitDB();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		return tpid;
 	}
@@ -406,21 +400,23 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private void clazz(String fields, String values) {
-		MGDB dmgdb = new MGDB();
-		KeyList = new HashMap<>();
-		String Col = "getMetaInfo_" + statsField;
-		mgdb.SetCollection(Col);
+	private void clazz() {
+
 		int offset = 0;
-		boolean isLoop = true;
+		boolean isLoop = true, r = true;
 		cList = getClassIfy();
 
 		Map<String, Object> jMap = new HashMap<String, Object>();
-		jMap.put("GET_META_INFO.METADATA_INF.CLASS_INF.CLASS_OBJ", 1);
-		jMap.put("GET_META_INFO.METADATA_INF.TABLE_INF.SUB_CATEGORY.volume", 1);
-		jMap.put("GET_META_INFO.METADATA_INF.TABLE_INF.id", 1);
+		jMap.put("GET_STATS_DATA.STATISTICAL_DATA.TABLE_INF.id", 1);
+		jMap.put(
+				"GET_STATS_DATA.STATISTICAL_DATA.TABLE_INF.SUB_CATEGORY.volume",
+				1);
+		jMap.put("GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE", 1);
 		String json = JSON.toJSONString(jMap);
+		MGDB mgdb = new MGDB();
+
+		String Col = "getStatsData_" + statsField;
+		mgdb.SetCollection(Col);
 		mgdb.JsonColumn(json);
 
 		while (isLoop) {
@@ -430,84 +426,112 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			offset += 500;
 			isLoop = mgdb.FetchList();
 			if (isLoop) {
-				
-				while (true) {
+				while (r) {
 					Map<String, Object> rmap = mgdb.GetValueLoop();
-					if(rmap==null)break;
-					Map<String, Object> GET_META_INFO = (Map<String, Object>) rmap
-							.get("GET_META_INFO");
-					Map<String, Object> METADATA_INF = (Map<String, Object>) GET_META_INFO
-							.get("METADATA_INF");
-					Map<String, Object> CLASS_INF = (Map<String, Object>) METADATA_INF
-							.get("CLASS_INF");
-
-					List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
-							.get("CLASS_OBJ");
-					for (Map<String, Object> cmap : CLASS_OBJ) {
-						String id = cmap.get("id").toString();
-						if(id.equals("area") || id.equals("unit"))continue;
-						List<Map<String, Object>> CLAZZ = (List<Map<String, Object>>) cmap
-								.get("CLASS");						
-						KeyList.put(id, CLAZZ.get(0).get("code"));						
-					}
-
-					Map<String, Object> TABLE_INF = (Map<String, Object>) METADATA_INF
-							.get("TABLE_INF");
-					String dataId = TABLE_INF.get("id").toString();
-					Map<String, Object> SUB_CATEGORY = (Map<String, Object>) TABLE_INF
-							.get("SUB_CATEGORY");
-					String subcate = SUB_CATEGORY.get("volume").toString();
-					
-					dmgdb.SetCollection("getStatsData_"+statsField);
-					Map<String, Object> dw = new HashMap<>();
-					Map<String, Object> wh = new HashMap<>();
-					wh.put("$regex", dataId);
-					dw.put("GET_STATS_DATA.STATISTICAL_DATA.TABLE_INF.id", wh);
-					dmgdb.JsonWhere(JSON.toJSONString(dw));
-					
-					Map<String, Object> cMap = new HashMap<>();
-					cMap.put("GET_STATS_DATA.STATISTICAL_DATA.DATA_INF.VALUE", 1);
-					dmgdb.JsonColumn(JSON.toJSONString(cMap));
-					while (true) {
-						Map<String, Object> dres = dmgdb.GetValueLoop();
-						if(dres==null)break;
-						Map<String, Object> GET_STATS_DATA = (Map<String, Object>) dres.get("GET_STATS_DATA");
-						Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA.get("STATISTICAL_DATA");
-						Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA.get("DATA_INF");
-						List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF.get("VALUE");
-						boolean isSame = false;
-						for (Map<String, Object> dMap:VALUE) {
-							if(dMap.get("area").equals("00000"))continue;
-							for (String key:KeyList.keySet()) {
-								if(dMap.get(key).toString().equals(KeyList.get(key).toString())){
-									isSame = true;
-								}else {
-									isSame = false;
-								}
-							}
-							
-						}
-						
-					}
+					if (rmap == null)
+						break;
+					r = clazzPar(rmap);
 				}
 			}
 		}
-		
-		
-		
 
-		String format = " insert INTO " + DB_HOR_PRE
-				+ "class (rule,%s)values %s;";
-		String sql = String.format(format, fields, values);
-		// echo(sql);
-		try {
-			insert(sql);
-			CommitDB();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean clazzPar(Map<String, Object> rmap) {
+		int L = 0;
+		String formatInfo = "select id from " + DB_HOR_PRE
+				+ "classinfo where view_name='j%s'  limit 1 ";
+		String formatClazz = "(%s, %s)";
+		String formatView = "";
+		String ValueClazz = "";
+		String sqlView = "", sqlInfo = "", act = "", values = "", fields = "";
+		String views = "";
+
+		ValueClazz = "";
+		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) rmap
+				.get("GET_STATS_DATA");
+		Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA
+				.get("STATISTICAL_DATA");
+		Map<String, Object> TABLE_INF = (Map<String, Object>) STATISTICAL_DATA
+				.get("TABLE_INF");
+		Map<String, Object> DATA_INF = (Map<String, Object>) STATISTICAL_DATA
+				.get("DATA_INF");
+
+		String id = TABLE_INF.get("id").toString();
+
+		if (!(DATA_INF.get("VALUE") instanceof List)) {
+			echo("ramp value is empty:" + rmap);
+			return false;
+		}
+		List<Map<String, Object>> VALUE = (List<Map<String, Object>>) DATA_INF
+				.get("VALUE");
+
+		sqlInfo = String.format(formatInfo, id);
+		Map<String, Object> res = FetchOne(sqlInfo);
+		if (res == null) {
+			echo("id:" + id);
+			return false;
 		}
 
+		String rule = res.get("id").toString();
+
+		ValueClazz = "";
+		views = "";
+		int m = 0;
+		for (Map<String, Object> map : VALUE) {
+			L = 0;
+			values = "";
+
+			for (String key : map.keySet()) {
+				if (key.equals("unit"))
+					continue;
+				values += "'" + map.get(key) + "',";
+				act = "act_v" + Integer.toHexString(L);
+				if (m == 0) {
+					views += act + " AS " + key + ",";
+				}
+				L++;
+
+			}
+			values = values + "'L1'";
+			m = 1;
+			ValueClazz += String.format(formatClazz, rule, values) + ",";
+		}
+
+		echo("view: " + id + " rule:" + rule);
+		if (ValueClazz.length() > 0) {
+			fields = "";
+			for (int i = 0; i < L; i++) {
+				act = "act_v" + Integer.toHexString(i);
+
+				fields += act + ",";
+			}
+
+			formatView = "CREATE OR REPLACE VIEW j%s AS SELECT %s FROM "
+					+ DB_HOR_PRE + "class WHERE rule=%s and act_v%d='L1'";
+			sqlView = String.format(formatView, id,
+					views.substring(0, views.length() - 1), rule, L);
+
+			fields = fields + "act_v" + Integer.toHexString(L);
+
+			ValueClazz = ValueClazz.substring(0, ValueClazz.length() - 1);
+			// echo(ValueClazz);
+			String formatI = " insert INTO " + DB_HOR_PRE
+					+ "class (rule,%s)values %s;";
+			String sqlI = String.format(formatI, fields, ValueClazz);
+			// echo(sql);
+			try {
+				insert("DROP VIEW IF EXISTS j" + id);
+				dbcreate(sqlView);
+				insert(sqlI);
+				CommitDB();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return true;
 	}
 
 	private String CheckCategory(String desc, long id) {

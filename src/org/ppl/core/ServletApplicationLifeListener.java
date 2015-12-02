@@ -50,12 +50,12 @@ public class ServletApplicationLifeListener extends PObject implements
 			
 		int autorun = mConfig.GetInt("autorun");
 		
-		try {
-			globale_config.rcoonnect = new RConnection();
-		} catch (RserveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			globale_config.rcoonnect = new RConnection();
+//		} catch (RserveException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		globale_config.RapidListQueue = new ArrayList<>();
 		globale_config.RapidList = new HashMap<>();

@@ -1,4 +1,4 @@
-package com.lib.manager.datasource;
+package com.lib.manager.analysis;
 
 import java.util.List;
 
@@ -6,15 +6,14 @@ import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 
-public class plugApi extends Permission implements BasePerminterface {
+public class RList extends Permission implements BasePerminterface {
 	private List<String> rmc;
 	private int Limit = 10;
 	private int page = 0;
 
-	public plugApi() {
+	public RList() {
 		// TODO Auto-generated constructor stub
 		String className = this.getClass().getCanonicalName();
-		// stdClass = className;
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
 
@@ -28,20 +27,29 @@ public class plugApi extends Permission implements BasePerminterface {
 			return;
 
 		rmc = porg.getRmc();
+
 		if (rmc.size() != 2) {
 			Msg(_CLang("error_role"));
 			return;
 		}
-
-		page = toInt(porg.getKey("p"));
+		int p = toInt(porg.getKey("p"));
+		if (p > 0) {
+			page = p;
+		}
 
 		switch (rmc.get(1).toString()) {
 		case "read":
 			read(null);
 			break;
+		case "search":
+			search(null);
+			break;
 		case "create":
 			create(null);
 			return;
+		case "edit":
+			edit(null);
+			break;
 		default:
 			Msg(_CLang("error_role"));
 			return;
@@ -53,23 +61,15 @@ public class plugApi extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
+		
 		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("runUrl", ucl.create(SliceName(stdClass)));		
+		setRoot("r_create_url", ucl.read("Rlang"));
 	}
 
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
 
-		UrlClassList ucl = UrlClassList.getInstance();
-		String pack = porg.getKey("pack");
-		//TellPostMan(pack, null);
-		//for (int i = 1; i < 4; i++) {			
-			TellPostMan(pack, String.format("%02d", 2));
-		//}
-		//TellPostMan(pack, "99");
-				
-		TipMessage(ucl.read(SliceName(stdClass)), _CLang("ok_save"));
 	}
 
 	@Override

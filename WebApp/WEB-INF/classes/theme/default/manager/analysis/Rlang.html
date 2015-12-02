@@ -1,0 +1,138 @@
+
+<body> 
+  ${navbar!""}
+  <div class="main-container" id="main-container"> 
+   <script type="text/javascript">
+				try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+			</script> 
+   <div class="main-container-inner"> 
+    
+    ${menu!""}
+     <div class="main-content"> 
+     <div class="breadcrumbs" id="breadcrumbs"> 
+      <script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script> 
+      <ul class="breadcrumb"> 
+       <li> <i class="icon-home home-icon"></i> <a href="#">首页</a> </li> 
+       <li class="active">${name}</li> 
+      </ul> 
+      <!-- #nav-search --> 
+     </div> 
+     <div class="page-content"> 
+      <!-- /.page-header --> 
+      <div class="row"> 
+      	<div class="col-xs-12 well bigger-175 blue">
+      	<#if error??>
+						<div class="alert alert-danger">
+							<button data-dismiss="alert" class="close" type="button">
+								<i class="icon-remove"></i>
+							</button>
+							<strong> <i class="icon-remove"></i> Oh Bug!
+							</strong> ${error!""}. <br />
+						</div>
+						</#if>
+						
+					<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
+				
+					<textarea id="r_query" name="r_query" ></textarea>
+					          
+					<button class="btn btn-info btn-sm" type="submit">
+						<i class="icon-search nav-search-icon"></i>
+							执行
+					</button>
+					
+						
+					</form>
+				</div>
+
+       <div class="col-xs-12"> 
+        
+        <div class="table-header">
+          		结果:
+        </div> 
+        <h5><span id="json_result" name="json_result"></span></h5> 
+       <!-- /row --> 
+      </div> 
+     </div> 
+     <!-- /.row --> 
+    <!-- /.main-content --> 
+    
+   </div> 
+   <!-- /.main-container-inner --> 
+   <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse"> <i class="icon-double-angle-up icon-only bigger-110"></i> </a> 
+  </div> 
+  <!-- /.main-container --> 
+  <script src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
+
+    
+    
+  <script type="text/javascript">
+  		
+jQuery(function($) {
+	
+
+   	
+	//var elements = ['{}','PorG', 'PorG.r', 'PorG.gt_ms', 'PorG.u', 'SERVER.HTTP_HOST','SERVER.HTTP_COOKIE','$gt','$lt'];
+		var completes = [
+							{ // emoji strategy
+								  mongo : ${r_key_list},
+					    	  match: /\$(\w*)$/,
+					        search: function (term, callback) {
+					            callback($.map(this.mongo, function (element) {
+					                return element.indexOf(term) === 0 ? element : null;
+					            }));
+					        },
+					        index: 1,
+					        replace: function (element) {
+					            return ['"$'+element+'":',  ''];
+					        }
+					    },
+					    					    
+					];	
+		$('#r_query').textcomplete(completes);
+
+	});
+	
+	$(document).on("keyup", function(e) {
+		
+	    var code = e.which;
+	    if (code == 40) {
+	    	var val = $(".textcomplete-item.active").html();	   		
+            val = val.trim();
+            val = val.substr(3, val.length-7);
+        	console.log(val);
+	    	getKeyTip(val);
+	    } else if (code == 38) {
+	    	var val = $(".textcomplete-item.active").html();	   		
+            val = val.trim();
+            val = val.substr(3, val.length-7);
+        	console.log(val);
+	    	getKeyTip(val);
+	    }
+	                
+	});
+	
+	function getKeyTip(o){
+		$.ajax({
+			  url: "${search_url}?jsoncallback=?",
+			  contentType: 'text/html;charset=utf-8',
+			  
+			  data:{"key":o},
+			  success: function(result){
+				  console.log("success"+result);
+			  },
+			  error: function(request, textStatus, errorThrown) {
+			    //alert(textStatus);
+			  },
+			  complete: function(request, textStatus) { //for additional info
+				  var option = request.responseText;
+				  //option = option.replace(/[\r\n]/g, "");							  
+				  
+				  console.log("success:"+option);
+				  
+			  }
+			});
+	}
+</script>  
+ 
