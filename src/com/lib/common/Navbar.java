@@ -28,6 +28,7 @@ public class Navbar extends BaseModule {
 		int uid = aclGetUid();
 		if(uid==1){
 			setRoot("role_update_url", ucl.BuildUrl("admin_index", "")+"?update=1");
+			setRoot("temple_clear_url", ucl.BuildUrl("admin_index", "")+"?clear=1");
 		}
 	}
 

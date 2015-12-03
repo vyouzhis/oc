@@ -55,4 +55,8 @@ public class FMConfig extends function {
 
 		return null;
 	}
+	
+	public void clearTL() {
+		TempList.clear();
+	}
 }

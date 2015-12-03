@@ -6,6 +6,7 @@ import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
+import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;
 
@@ -63,21 +64,14 @@ public class Rlang extends Permission implements BasePerminterface {
 		UrlClassList ucl = UrlClassList.getInstance();
 		setRoot("action_url", ucl.read(SliceName(stdClass)));
 		setRoot("search_url", ucl.search(SliceName(stdClass)));
-		String[] sR;
+		setRoot("script_url", ucl.read("RAction"));
+		Rlan rlan = new Rlan();
+		String[] sR = rlan.ls();
 
-		try {
-			sR = globale_config.rcoonnect.eval("ls('package:base')")
-					.asStrings();
-			String json = JSON.toJSONString(sR);
-			//echo(json);
-			setRoot("r_key_list", json);
-		} catch (RserveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (REXPMismatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String json = JSON.toJSONString(sR);
+		// echo(json);
+		setRoot("r_key_list", json);
+
 	}
 
 	@Override
@@ -104,17 +98,19 @@ public class Rlang extends Permission implements BasePerminterface {
 		String key = porg.getKey("key");
 		String asy = "";
 		String format = "a<-getAnywhere('%s')";
-		if(key==null || key.length()==0)return;
-		
+		if (key == null || key.length() == 0)
+			return;
+
 		try {
 			globale_config.rcoonnect.voidEval(String.format(format, key));
 			globale_config.rcoonnect.voidEval("c<-as.character(a)");
 			String[] my;
 
 			my = globale_config.rcoonnect.eval("c").asStrings();
-
-			for (int i = 0; i < my.length; i++) {
-				asy += my[i]+"<br/>";
+			if (my.length > 1) {
+				for (int i = 1; i < my.length; i++) {
+					asy += my[i] + "<br/>";
+				}
 			}
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block

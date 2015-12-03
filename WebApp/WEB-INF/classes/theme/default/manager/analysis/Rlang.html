@@ -22,7 +22,7 @@
      <div class="page-content"> 
       <!-- /.page-header --> 
       <div class="row"> 
-      	<div class="col-xs-12 well bigger-175 blue">
+      	<div class="col-xs-12 ">
 	      	<#if error??>
 			<div class="alert alert-danger">
 				<button data-dismiss="alert" class="close" type="button">
@@ -32,27 +32,42 @@
 				</strong> ${error!""}. <br />
 			</div>
 			</#if>
-			<div class="col-xs-6 well bigger-175 blue">	
-			<form enctype="multipart/form-data" action='${action_url}' method="POST" class="form-inline">
-		
-			
-			<textarea id="r_query" name="r_query"  rows="20" cols="100"></textarea>
-
-			</form>
+			<div class="col-xs-6">
+			   	<div class="col-xs-12 well">				
+					<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;"></textarea>	
+				</div>
+				<div class="col-xs-12">
+				<h3 class="header smaller lighter blue">
+						[<a href="javascript:void(0)" onclick="ScriptR()">查询</a>] <small>结果:
+						</small>
+					</h3>
+				</div>
+			  	<div class="col-xs-12"> 
+        
+			       
+			        <h5><span id="json_result" name="json_result"></span></h5> 
+			       
+		      	</div>		
 			</div>
-			<div class="col-xs-6 well blue">
-			<span id="tips" name="tips"></span>
+			<div class="col-xs-6">
+				<div class="widget-box">
+					<div class="widget-header widget-header-flat">
+						<h4 class="smaller">
+							<i class="icon-code"></i>
+							帮助:<span id="cname" name="cname"></span>
+						</h4>
+					</div>
+	
+					<div class="widget-body">
+						<div class="widget-main">
+							<pre class="prettyprint linenums" id="tips" name="tips"></pre>
+						</div>
+					</div>
+				</div>			
 			</div>
 	    </div>
 
-       <div class="col-xs-12"> 
-        
-        <div class="table-header">
-          		结果:
-        </div> 
-        <h5><span id="json_result" name="json_result"></span></h5> 
-       <!-- /row --> 
-      </div> 
+       
      </div> 
      <!-- /.row --> 
     <!-- /.main-content --> 
@@ -64,7 +79,9 @@
   <!-- /.main-container --> 
   
   <script language="Javascript" type="text/javascript" src="${static_js_uri}/textline/jquery-linedtextarea.js"></script>
-  
+    <script type="text/javascript" src="${static_js_uri}/pretty_json/underscore-min.js" ></script>
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/backbone-min.js" ></script>
+  <script type="text/javascript" src="${static_js_uri}/pretty_json/pretty-json-min.js" ></script>
   <script src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
 
     
@@ -86,7 +103,7 @@ jQuery(function($) {
 					        },
 					        index: 1,
 					        replace: function (element) {
-					            return ['"$'+element+'":',  ''];
+					            return [element+'(',  ')'];
 					        }
 					    },
 					    					    
@@ -107,13 +124,15 @@ jQuery(function($) {
 	    	var val = $(".textcomplete-item.active").html();	   		
             val = val.trim();
             val = val.substr(3, val.length-7);
-        	console.log(val);
+        	//console.log(val);
+        	$("#cname").html(val);
 	    	getKeyTip(val);
 	    } else if (code == 38) {
 	    	var val = $(".textcomplete-item.active").html();	   		
             val = val.trim();
             val = val.substr(3, val.length-7);
-        	console.log(val);
+        	//console.log(val);
+        	$("#cname").html(val);
 	    	getKeyTip(val);
 	    }
 	                
@@ -137,6 +156,38 @@ jQuery(function($) {
 				  
 				  console.log("success:"+option);
 				  $("#tips").html(option);
+			  }
+			});
+	}
+	
+	function ScriptR(){
+		$.ajax({
+			  url: "${script_url}?jsoncallback=?",
+			  contentType: 'text/html;charset=utf-8',			  
+			  data:{"query":$("#r_query").val()},
+			  success: function(result){
+				  console.log("success"+result);
+			  },
+			  error: function(request, textStatus, errorThrown) {
+			    //alert(textStatus);
+			  },
+			  complete: function(request, textStatus) { //for additional info
+				  var option = request.responseText;
+				 // option = option.replace(/[\r\n]/g, "<br />");							  
+				  
+				  console.log("success:"+option);
+				  
+				 
+				  var json_res = JSON.parse(option);
+					
+					
+				  var node = new PrettyJSON.view.Node({
+					  el:$('#json_result'),
+					  data:json_res
+				  });
+					
+				  node.expandAll();
+				 /// $("#json_result").html(option);
 			  }
 			});
 	}

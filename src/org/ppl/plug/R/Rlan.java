@@ -37,4 +37,28 @@ public class Rlan {
 		}
 		return Rres;
 	}
+	
+	public String[] ls() {
+		try {
+			String[] sRbase = globale_config.rcoonnect.eval(
+					"ls('package:base')").asStrings();
+			String[] sRutils = globale_config.rcoonnect.eval(
+					"ls('package:utils')").asStrings();
+			String[] sR = new String[sRbase.length + sRutils.length];
+			for (int i = 0; i < sRbase.length; i++) {
+				sR[i] = sRbase[i];
+			}
+			for (int i = 0; i < sRutils.length; i++) {
+				sR[sRbase.length + i] = sRutils[i];
+			}
+			return sR;
+		} catch (RserveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (REXPMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
