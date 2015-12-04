@@ -147,24 +147,44 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		mgdb.JsonColumn(json);
 
 		while (isLoop) {
-
-			mgdb.setDBOffset(offset);
-			mgdb.setLimit(limit);
+			MetaInfoMogo(offset);
+//			mgdb.setDBOffset(offset);
+//			mgdb.setLimit(limit);
 			offset += limit;
-			isLoop = mgdb.FetchList();
-			if (isLoop) {
-
-				while (true) {
-					Map<String, Object> rmap = mgdb.GetValueLoop();
-					if (rmap == null)
-						break;
-					ViewMetaInfo(rmap);
-				}
-			} else {
-				break;
-			}
+//			isLoop = mgdb.FetchList();
+//			if (isLoop) {
+//
+//				while (true) {
+//					Map<String, Object> rmap = mgdb.GetValueLoop();
+//					if (rmap == null)
+//						break;
+//					ViewMetaInfo(rmap);
+//				}
+//			} else {
+//				break;
+//			}
 		}
 
+	}
+	
+	private boolean MetaInfoMogo(int offset) {
+		int  limit=1;
+		MGDB mgdb = new MGDB();
+		mgdb.setDBOffset(offset);
+		mgdb.setLimit(limit);
+		boolean isLoop = true;
+		isLoop = mgdb.FetchList();
+		if (isLoop) {
+
+			while (true) {
+				Map<String, Object> rmap = mgdb.GetValueLoop();
+				if (rmap == null)
+					return false;
+				ViewMetaInfo(rmap);
+			}
+		} else {
+			return false;
+		}
 	}
 
 	private List<Map<String, Object>> getClassIfy() {

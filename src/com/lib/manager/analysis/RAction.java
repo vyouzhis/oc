@@ -101,7 +101,7 @@ public class RAction extends Permission implements BasePerminterface {
 			} else if (r.isInteger()) {
 				int[] rint = r.asIntegers();
 				Map<String, Object> map = new HashMap<String, Object>();
-				if (key.length() == 0) {
+				if (key==null || key.length() == 0) {
 					map.put(index + "", rint);
 					index++;
 				} else {
