@@ -10,6 +10,7 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.etc.globale_config;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.RFactor;
 import org.rosuda.REngine.RList;
 import org.rosuda.REngine.Rserve.RserveException;
 
@@ -71,8 +72,8 @@ public class RAction extends Permission implements BasePerminterface {
 		RListJson = new ArrayList<>();
 		try {
 			r = globale_config.rcoonnect.eval(RJson);
-			SelectREXP(r._attr(), "");
-			SelectREXP(r, "");
+			SelectREXP(r._attr(), "attr");
+			SelectREXP(r, "val");
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,6 +84,7 @@ public class RAction extends Permission implements BasePerminterface {
 
 	private void SelectREXP(REXP r, String key) {
 		// REXP r = c.eval("print(df)");
+		if(r==null)return;
 		try {
 			if (r.isComplex()) {
 				echo("isComplex");
@@ -91,38 +93,55 @@ public class RAction extends Permission implements BasePerminterface {
 			} else if (r.isExpression()) {
 				echo("isExpression");
 			} else if (r.isFactor()) {
+				RFactor factors = r.asFactor();
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(key, factors.asStrings());
+				RListJson.add(map);
 				echo("isFactor");
 			} else if (r.isInteger()) {
 				int[] rint = r.asIntegers();
 				Map<String, Object> map = new HashMap<String, Object>();
 				if (key.length() == 0) {
-					map.put("[" + index + "]", rint);
+					map.put(index + "", rint);
+					index++;
 				} else {
 					map.put(key, rint);
 				}
-				index++;
+				SelectREXP(r._attr(), key);
 				RListJson.add(map);
 				echo("isInteger");
 			} else if (r.isLanguage()) {
+				RList lanList = r.asList();
+				String nkey="";
+				for (int i = 0; i < lanList.size(); i++) {
+					nkey = lanList.keyAt(i);
+					if(nkey == null) nkey = key;					
+					SelectREXP(lanList.at(i), nkey);
+				}
 				echo("isLanguage");
 			} else if (r.isList()) {
 				echo("isList");
 				RList rList;
-
+				String nkey = "";
 				rList = r.asList();
 
 				for (int i = 0; i < rList.size(); i++) {
-					SelectREXP(rList.at(i), rList.keyAt(i));
+					nkey = rList.keyAt(i);
+					if(nkey == null) nkey = key;
+					if (nkey.equals("dim"))
+						continue;
+					SelectREXP(rList.at(i), nkey);
 				}
 			} else if (r.isLogical()) {
 				String[] b = r.asStrings();
 				Map<String, Object> map = new HashMap<String, Object>();
-				if (key==null || key.length() == 0) {
-					map.put("[" + index + "]", b);
+				if (key == null || key.length() == 0) {
+					map.put(index + "", b);
+					index++;
 				} else {
 					map.put(key, b);
 				}
-				index++;
+
 				RListJson.add(map);
 				echo("isLogical");
 			} else if (r.isNull()) {
@@ -132,12 +151,13 @@ public class RAction extends Permission implements BasePerminterface {
 
 				int[] dim = r.dim();
 
-				if (dim == null) {
+				if (dim == null || dim.length==1) {
 
 					double[] m = r.asDoubles();
 
 					if (key.length() == 0) {
-						map.put("[" + index + "]", m);
+						map.put(index + "", m);
+						index++;
 					} else {
 						map.put(key, m);
 					}
@@ -145,14 +165,15 @@ public class RAction extends Permission implements BasePerminterface {
 				} else {
 					double[][] md = r.asDoubleMatrix();
 
-					if (key==null || key.length() == 0) {
-						map.put("[" + index + "]", md);
+					if (key == null || key.length() == 0) {
+						map.put(index + "", md);
+						index++;
 					} else {
 						map.put(key, md);
 					}
 
 				}
-				index++;
+
 				RListJson.add(map);
 				echo("isNumeric");
 			} else if (r.isPairList()) {
@@ -167,15 +188,19 @@ public class RAction extends Permission implements BasePerminterface {
 				String[] d = r.asStrings();
 
 				Map<String, Object> map = new HashMap<String, Object>();
-				if (key==null || key.length() == 0) {
-					map.put("[" + index + "]", d);
+				if (key == null || key.length() == 0) {
+					map.put(index + "", d);
+					index++;
 				} else {
 					map.put(key, d);
 				}
-				index++;
+
 				RListJson.add(map);
 				echo("isString");
 			} else if (r.isSymbol()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(key, r.asString());
+				RListJson.add(map);
 				echo("isSymbol");
 			} else if (r.isVector()) {
 				echo("isVector");
