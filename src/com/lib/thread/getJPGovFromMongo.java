@@ -134,42 +134,44 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	}
 
 	private void getMetaInfo() {
-		MGDB mgdb = new MGDB();
-		String Col = "getMetaInfo_" + statsField;
-		mgdb.SetCollection(Col);
-		int offset = 0, limit=1;
+
+		int offset = 0, limit = 1;
 		boolean isLoop = true;
 		cList = getClassIfy();
+
+		while (isLoop) {
+			isLoop = MetaInfoMogo(offset);
+			// mgdb.setDBOffset(offset);
+			// mgdb.setLimit(limit);
+			offset += limit;
+			// isLoop = mgdb.FetchList();
+			// if (isLoop) {
+			//
+			// while (true) {
+			// Map<String, Object> rmap = mgdb.GetValueLoop();
+			// if (rmap == null)
+			// break;
+			// ViewMetaInfo(rmap);
+			// }
+			// } else {
+			// break;
+			// }
+		}
+
+	}
+
+	private boolean MetaInfoMogo(int offset) {
+		int limit = 1;
+		MGDB mgdb = new MGDB();
+
+		String Col = "getMetaInfo_" + statsField;
+		mgdb.SetCollection(Col);
 
 		Map<String, Object> jMap = new HashMap<String, Object>();
 		jMap.put("GET_META_INFO", 1);
 		String json = JSON.toJSONString(jMap);
 		mgdb.JsonColumn(json);
 
-		while (isLoop) {
-			MetaInfoMogo(offset);
-//			mgdb.setDBOffset(offset);
-//			mgdb.setLimit(limit);
-			offset += limit;
-//			isLoop = mgdb.FetchList();
-//			if (isLoop) {
-//
-//				while (true) {
-//					Map<String, Object> rmap = mgdb.GetValueLoop();
-//					if (rmap == null)
-//						break;
-//					ViewMetaInfo(rmap);
-//				}
-//			} else {
-//				break;
-//			}
-		}
-
-	}
-	
-	private boolean MetaInfoMogo(int offset) {
-		int  limit=1;
-		MGDB mgdb = new MGDB();
 		mgdb.setDBOffset(offset);
 		mgdb.setLimit(limit);
 		boolean isLoop = true;
@@ -179,12 +181,12 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			while (true) {
 				Map<String, Object> rmap = mgdb.GetValueLoop();
 				if (rmap == null)
-					return false;
+					break;
 				ViewMetaInfo(rmap);
 			}
-		} else {
-			return false;
 		}
+		return isLoop;
+
 	}
 
 	private List<Map<String, Object>> getClassIfy() {
@@ -422,10 +424,19 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 	private void clazz() {
 
-		int offset = 0, limit=1;
-		boolean isLoop = true, r = true;
-		cList = getClassIfy();
+		int offset = 0, limit = 1;
+		boolean isLoop = true;
 
+		while (isLoop) {
+			isLoop = clazzLoop(offset);
+			offset += limit;			
+		}
+
+	}
+	
+	private boolean clazzLoop(int offset) {
+		int limit = 1;
+		boolean isLoop = true;
 		Map<String, Object> jMap = new HashMap<String, Object>();
 		jMap.put("GET_STATS_DATA.STATISTICAL_DATA.TABLE_INF.id", 1);
 		jMap.put(
@@ -438,25 +449,22 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		String Col = "getStatsData_" + statsField;
 		mgdb.SetCollection(Col);
 		mgdb.JsonColumn(json);
+		
+		mgdb.setDBOffset(offset);
+		mgdb.setLimit(limit);
+		
+		isLoop = mgdb.FetchList();
 
-		while (isLoop) {
-
-			mgdb.setDBOffset(offset);
-			mgdb.setLimit(limit);
-			offset += limit;
-			isLoop = mgdb.FetchList();
-			
-			echo("offset: " + offset);
-			if (isLoop) {
-				while (r) {
-					Map<String, Object> rmap = mgdb.GetValueLoop();
-					if (rmap == null)
-						break;
-					r = clazzPar(rmap);
-				}
+		echo("offset: " + offset);
+		if (isLoop) {
+			while (true) {
+				Map<String, Object> rmap = mgdb.GetValueLoop();
+				if (rmap == null)
+					break;
+				if(clazzPar(rmap)==false)break;
 			}
 		}
-
+		return isLoop;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -520,7 +528,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			m = 1;
 			ValueClazz += String.format(formatClazz, rule, values) + ",";
 		}
-		
+
 		if (ValueClazz.length() > 0) {
 			fields = "";
 			for (int i = 0; i < L; i++) {

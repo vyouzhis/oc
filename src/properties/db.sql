@@ -243,6 +243,27 @@ COMMENT ON COLUMN hor_classify.uid IS 'user id';
 COMMENT ON COLUMN hor_classify.isshare IS '0 no share, 1 share';
 
 
+CREATE TABLE hor_rlanguage
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  cid integer NOT NULL DEFAULT 0,
+  day integer NOT NULL DEFAULT 0,
+  hour integer NOT NULL DEFAULT 0,
+  minu integer NOT NULL DEFAULT 0,
+  uid integer NOT NULL DEFAULT 1,
+  isshare integer NOT NULL DEFAULT 0,
+  rdesc character varying(266) NOT NULL DEFAULT ''::character varying, -- desc
+  rcode text NOT NULL DEFAULT ''::text, -- 代码
+  CONSTRAINT hor_rlanguage_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hor_rlanguage
+  OWNER TO bi;
+COMMENT ON COLUMN hor_rlanguage.rdesc IS 'desc';
+COMMENT ON COLUMN hor_rlanguage.rcode IS '代码';
 
 CREATE TABLE hor_classinfo
 (

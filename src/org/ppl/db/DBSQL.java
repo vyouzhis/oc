@@ -204,6 +204,7 @@ public class DBSQL extends BaseLang {
 				numRowsUpdated = rs.getLong(1);
 			}			
 		}
+		
 		return numRowsUpdated;
 	}
 
@@ -256,11 +257,13 @@ public class DBSQL extends BaseLang {
 		InitConDB();
 
 		try {
-			ConDB.commit();
+			ConDB.commit();		
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+				
 	}
 
 	public String getErrorMsg() {

@@ -1,6 +1,8 @@
 package com.lib.manager.analysis;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
@@ -62,7 +64,7 @@ public class Rlang extends Permission implements BasePerminterface {
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
 		UrlClassList ucl = UrlClassList.getInstance();
-		setRoot("action_url", ucl.read(SliceName(stdClass)));
+		setRoot("action_url", ucl.create(SliceName(stdClass)));
 		setRoot("search_url", ucl.search(SliceName(stdClass)));
 		setRoot("script_url", ucl.read("RAction"));
 		Rlan rlan = new Rlan();
@@ -71,13 +73,37 @@ public class Rlang extends Permission implements BasePerminterface {
 		String json = JSON.toJSONString(sR);
 		// echo(json);
 		setRoot("r_key_list", json);
+		
+		listPid();
 
 	}
 
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
-
+		String title = porg.getKey("title");
+		String cid = porg.getKey("cid_list");
+		String day = porg.getKey("loopday");
+		String hour = porg.getKey("loophour");
+		String minu = porg.getKey("loopminu");
+		String rdesc = porg.getKey("rdesc");
+		String rcode = porg.getKey("r_query");
+		UrlClassList ucl = UrlClassList.getInstance();
+		
+		String format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare)values('%s',%s,%s,%s,%s,'%s','%s',%d,%d);";
+		String sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0);
+		
+		String msg = ""; 
+		try {
+			insert(sql);
+			msg = _CLang("ok_save");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			
+			msg = _CLang(getErrorMsg());
+		}
+		
+		TipMessage(ucl.read(SliceName(stdClass)), msg);
 	}
 
 	@Override
@@ -124,6 +150,26 @@ public class Rlang extends Permission implements BasePerminterface {
 		asy = asy.replace("\n", "<br />");
 		super.setHtml(asy);
 
+	}
+	
+	private void listPid() {
+
+		int pid = toInt(porg.getKey("pid"));
+		setRoot("pid", pid);
+
+		String sql = "select id,name from " + DB_HOR_PRE
+				+ "classify where "+UserPermi()+" order by id desc";
+		List<Map<String, Object>> res;
+
+		try {
+			res = FetchAll(sql);
+			if (res != null) {
+				setRoot("pid_list", res);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
