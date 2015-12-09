@@ -12,12 +12,13 @@ import com.zaxxer.hikari.HikariDataSource;
 public class HikariConnectionPool extends PObject {
 	static HikariConnectionPool source;
 	public HikariDataSource ds = null;
-
+	private Boolean initialized;
+	static{
+		source = new HikariConnectionPool();
+	}
+	
 	public static HikariConnectionPool getInstance() {
-		if (source == null) {
-			source = new HikariConnectionPool();
-		}
-
+	
 		return source;
 	}
 
@@ -28,6 +29,7 @@ public class HikariConnectionPool extends PObject {
 	}
 	
 	private void InitConnect() {
+		initialized = false;
 		String className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
 						
@@ -46,6 +48,7 @@ public class HikariConnectionPool extends PObject {
 		
 		ds = new HikariDataSource(config);
 		ds.setMaximumPoolSize(myConfig.GetInt("database.MaximumPoolSize"));
+		initialized = true;
 	}
 
 	private void LoadDBLib() {
@@ -59,18 +62,17 @@ public class HikariConnectionPool extends PObject {
 	}
 
 	public void GetCon() {
-
+		if(!initialized){
+			throw new UnsupportedOperationException("Debe inicializar mediante el método Init() primero!!!!!."); 
+		}
+		
 		synchronized (globale_config.GDB) {	
 			long tid = myThreadId();
 			//echo("tid:"+tid);
 			Connection con;
 			try {
 				con = ds.getConnection();	
-				if(con.isClosed()==true){
-					InitConnect();
-					con = ds.getConnection();
-					echo("connect error!!");
-				}
+				
 				con.setAutoCommit(false);
 				globale_config.GDB.put(tid, con);
 			} catch (SQLException e) {
@@ -89,6 +91,7 @@ public class HikariConnectionPool extends PObject {
 				try {					
 					con.commit();						
 					con.close();
+					
 					//echo("close db");
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block

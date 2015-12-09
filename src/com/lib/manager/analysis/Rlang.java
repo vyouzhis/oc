@@ -87,7 +87,8 @@ public class Rlang extends Permission implements BasePerminterface {
 		String hour = porg.getKey("loophour");
 		String minu = porg.getKey("loopminu");
 		String rdesc = porg.getKey("rdesc");
-		String rcode = porg.getKey("r_query");
+		String rcode = porg.getKey("rcode");
+		
 		UrlClassList ucl = UrlClassList.getInstance();
 		
 		String format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare)values('%s',%s,%s,%s,%s,'%s','%s',%d,%d);";

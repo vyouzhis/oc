@@ -16,14 +16,9 @@ import org.ppl.etc.globale_config;
 
 public class DBSQL extends BaseLang {
 
-	public static DBSQL dataSource = null;
+	//public static DBSQL dataSource = null;
 	private Connection ConDB = null;
-	private Statement stmt = null;
-	protected String DB_NAME = mConfig.GetValue("db.name");
-	protected String DB_PRE = mConfig.GetValue("db.rule.ext");
-	protected String DB_HOR_PRE = mConfig.GetValue("db.hor.ext");
-	protected String DB_WEB_PRE = mConfig.GetValue("db.web.ext");
-
+	// private Statement stmt = null;
 	private String ErrorMsg = "";
 	private ResultSet rs = null;
 	private int Cursor = 0;
@@ -38,15 +33,15 @@ public class DBSQL extends BaseLang {
 	}
 
 	public void end() {
-		try {
-			if (stmt != null)
-				stmt.close();
-			// c.commit();
-			// c.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// try {
+		// // if (stmt != null)
+		// // stmt.close();
+		// // c.commit();
+		// // c.close();
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 	}
 
 	public void free() {
@@ -106,7 +101,7 @@ public class DBSQL extends BaseLang {
 
 	private List<Map<String, Object>> query(String sql) throws SQLException {
 		List<Map<String, Object>> results = null;
-
+		Statement stmt = null;
 		if (Cursor < MaxLimit) {
 
 			InitConDB();
@@ -133,7 +128,8 @@ public class DBSQL extends BaseLang {
 		if (Cursor < MaxLimit) {
 
 			rs.close();
-			stmt.close();
+			if(stmt!=null)
+				stmt.close();
 			Cursor = 0;
 		}
 
@@ -152,13 +148,14 @@ public class DBSQL extends BaseLang {
 	public List<Map<String, Object>> Fetch(String sql) throws SQLException {
 		return query(sql);
 	}
-	
+
 	public List<Map<String, Object>> FetchAll(String sql) throws SQLException {
 		List<Map<String, Object>> tmp, res;
 		res = new ArrayList<>();
 		while (true) {
 			tmp = query(sql);
-			if(tmp==null)break;
+			if (tmp == null)
+				break;
 			res.addAll(tmp);
 			if (isFetchFinal())
 				break;
@@ -184,39 +181,33 @@ public class DBSQL extends BaseLang {
 	}
 
 	public long update(String sql) throws SQLException {
-		return exec(sql, false);
+		long id = exec(sql, false, true);
+
+		return id;
 	}
 
-	public long insert(String sql) throws SQLException {
-		long numRowsUpdated = -1;
-		exec(sql, false);
+	public void insert(String sql) throws SQLException {
 
-		return numRowsUpdated;
+		exec(sql, false, false);
+
 	}
 
 	public long insert(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
-		exec(sql, ret);
-		if (ret) {
-			ResultSet rs = stmt.getGeneratedKeys();
-			if(rs==null)return -1;
-			if (rs.next()) {
-				numRowsUpdated = rs.getLong(1);
-			}			
-		}
-		
+		numRowsUpdated = exec(sql, ret, false);
 		return numRowsUpdated;
 	}
 
 	public void dbcreate(String sql) throws SQLException {
-		exec(sql, false);
+		exec(sql, false, false);
 	}
 
-	private long exec(String sql, boolean ret) throws SQLException {
+	private long exec(String sql, boolean ret, boolean isud)
+			throws SQLException {
 		long numRowsUpdated = -1;
-
+		Statement stmt = null;
 		InitConDB();
-
+		
 		String clearSQL = sql;
 		if (myConfig.GetValue("database.driverClassName").equals(
 				"org.postgresql.Driver")) {
@@ -229,20 +220,30 @@ public class DBSQL extends BaseLang {
 		}
 
 		stmt = ConDB.createStatement();
-
+		
+		//echo("clearSQL:"+ clearSQL);
 		// stmt.clearBatch();
 		try {
 			if (ret) {
 				numRowsUpdated = stmt.executeUpdate(clearSQL,
 						Statement.RETURN_GENERATED_KEYS);
+			} else if (isud) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs == null)
+					return -1;
+				if (rs.next()) {
+					numRowsUpdated = rs.getLong(1);
+				}
 			} else {
 				stmt.executeUpdate(clearSQL);
 			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			ConDB.commit();
 		}
-
+		
+		clearSQL = null;
 		return numRowsUpdated;
 	}
 
@@ -257,13 +258,13 @@ public class DBSQL extends BaseLang {
 		InitConDB();
 
 		try {
-			ConDB.commit();		
-			
+			ConDB.commit();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
+
 	}
 
 	public String getErrorMsg() {
@@ -279,7 +280,7 @@ public class DBSQL extends BaseLang {
 		return ConDB;
 	}
 
-	public List<String> getTables() {			
+	public List<String> getTables() {
 		InitConDB();
 		DatabaseMetaData md;
 		List<String> res = new ArrayList<>();
@@ -287,18 +288,18 @@ public class DBSQL extends BaseLang {
 			md = ConDB.getMetaData();
 			ResultSet rs = md.getTables(null, null, "c_%", null);
 			while (rs.next()) {
-				if(rs.getString(3).substring(0,2).equals("c_")){
+				if (rs.getString(3).substring(0, 2).equals("c_")) {
 					res.add(rs.getString(3));
 				}
-			  
+
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return res;
-		
+
 	}
 
 }

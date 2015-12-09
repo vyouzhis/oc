@@ -23,8 +23,7 @@
       <!-- /.page-header --> 
       <div class="row"> 
       	<div class="col-xs-12 ">
-      	<form id="target" name="target"  class="form-horizontal id-message-form col-xs-12" enctype="multipart/form-data"
-									action='${action_url!""}' method="POST" class="form-inline">
+      	
 	      	<#if error??>
 			<div class="alert alert-danger">
 				<button data-dismiss="alert" class="close" type="button">
@@ -86,9 +85,12 @@
 
 					<div class="tab-content">
 						
-									
+								
 						<div id="home4" class="tab-pane in active">
-
+							<form id="target" name="target"  onsubmit="return validateForm()"  class="form-horizontal id-message-form" enctype="multipart/form-data"
+									action='${action_url!""}' method="POST" class="form-inline">
+							<textarea id="rcode" name="rcode"  rows=10" cols="10" style="display: none;" ></textarea>
+							
 							<h3 class="header smaller lighter blue">分类：</h3>
 
 							<div class="form-group">
@@ -119,20 +121,40 @@
 							<h3 class="header smaller lighter blue">描述：</h3>
 							<input type="text" value="" placeholder="描述"  id="rdesc" name="rdesc">
 							<button type="submit" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button>
+							</form>
 						</div>
 						
 
 						<div id="excel" class="tab-pane">
 				
 							<h3 class="header smaller lighter blue">
-								<i class="icon-code"></i>
+								<i class="icon-folder-open"></i>
 								文件:
 							</h3>
 			
 							<h3 class="header smaller lighter blue">选择文件：</h3>
 							<input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-							
-							
+							<h3 class="header smaller lighter blue">文件列表：</h3>
+								<table class="table table-striped table-bordered table-hover"
+										id="sample-table-1">
+									<thead>
+										<tr>
+											<th>id</th>
+											<th>名称</th>
+											<th class="hidden-480">路径</th>
+											<th class="hidden-480">时间</th>
+										</tr>
+									</thead>
+									<tbody id="sqlparams" name="sqlparams">										
+									<tr>
+										<td class='center'>1</td>
+										<td class='center'>文件名</td>
+										<td class='center'>./data/daer.xle</td>
+										<td class='center'>2015-12-8</td>
+									</tr>
+									</tbody>
+								</table>
+								
 						</div>
 						<div id="helps" class="tab-pane">
 				
@@ -152,7 +174,7 @@
 				</div>
 					
 			</div>
-			</form>
+			
 	    </div>
 
        
@@ -172,6 +194,7 @@
   <script type="text/javascript" src="${static_js_uri}/pretty_json/pretty-json-min.js" ></script>
   <script type="text/javascript" src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
   <script src="${static_js_uri}/fuelux/fuelux.spinner.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="${static_js_uri}/cookie.js"></script>
   <script type="text/javascript">
   
   
@@ -188,7 +211,7 @@ jQuery(function($) {
 	
 	$('#loopday').ace_spinner({value:0,min:0,max:31,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
 	$('#loophour').ace_spinner({value:0,min:0,max:24,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
-	$('#loopminu').ace_spinner({value:0,min:0,max:60,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
+	$('#loopminu').ace_spinner({value:0,min:0,max:60,step:5, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
 	
 		var completes = [
 							{
@@ -211,9 +234,39 @@ jQuery(function($) {
 		$("#r_query").linedtextarea(
 				{selectedLine: 1}
 			);
-		 
 		
+		
+		setTimeout(initEdits, 2000);
+		
+	   	setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
+
 	});
+	function initEdits(){
+	  var initEDit = getCookie("REdit");
+	  var editCon = "${REdit!''}";
+	  if(editCon.length > 0){
+		   $("#r_query").val(unescape(editCon));
+	   }
+	  else if(initEDit.length >0){			    	   
+		  $("#r_query").val(unescape(initEDit));
+	    }
+	    
+	   // console.log("initEDit:"+initEDit);
+	}
+	function myInterval()
+		{
+	   var stemTxt=$("#r_query").val();
+	   if(stemTxt.length > 1){
+	   		setCookie("REdit", escape(stemTxt), 1);
+	   }
+	   //console.log("initEDit:"+stemTxt);
+	}
+
+	
+	function validateForm(){
+		$("#rcode").val($("#r_query").val());
+		return true;
+	}
 	
 	$(document).on("keyup", function(e) {
 		

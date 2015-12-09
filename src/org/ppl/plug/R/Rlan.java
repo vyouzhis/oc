@@ -40,18 +40,31 @@ public class Rlan {
 	
 	public String[] ls() {
 		try {
-			String[] sRbase = globale_config.rcoonnect.eval(
-					"ls('package:base')").asStrings();
-			String[] sRutils = globale_config.rcoonnect.eval(
-					"ls('package:utils')").asStrings();
-			String[] sR = new String[sRbase.length + sRutils.length];
-			for (int i = 0; i < sRbase.length; i++) {
-				sR[i] = sRbase[i];
+			String[] Search = globale_config.rcoonnect.eval("search()").asStrings();	
+			String sR[][] =  new String[Search.length][] ;
+			for (int i = 0; i < Search.length; i++) {
+				
+				String[] sRutils = globale_config.rcoonnect.eval("ls('"+Search[i]+"')").asStrings();
+				 sR[i] = sRutils;
 			}
-			for (int i = 0; i < sRutils.length; i++) {
-				sR[sRbase.length + i] = sRutils[i];
+			
+			int m = 0;
+			for (int i = 0; i < sR.length; i++) {
+				for (int j = 0; j < sR[i].length; j++) {
+					//echo(sR[i][j]);
+					m++;
+				}
 			}
-			return sR;
+			String[] res = new String[m];
+			m=0;
+			for (int i = 0; i < sR.length; i++) {
+				for (int j = 0; j < sR[i].length; j++) {
+					res [m] = sR[i][j];
+					m++;
+				}
+			}
+			
+			return res;
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
