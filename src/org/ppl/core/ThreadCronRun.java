@@ -16,7 +16,7 @@ public class ThreadCronRun extends function implements Runnable {
 	private String tpKey;
 	private int sTime = 0;
 	private boolean isRun=false;
-	private BaseCronThread cron;
+	private BaseCronThread cron=null;
 	private String title;
 	public ThreadCronRun(String key, int now) {
 		// TODO Auto-generated constructor stub
@@ -105,7 +105,7 @@ public class ThreadCronRun extends function implements Runnable {
 	}
 	
 	private void ThreadRuns() {
-		if(isRun){
+		if(isRun && cron!=null){
 			synchronized (globale_config.CronListQueue) {		
 				globale_config.CronListQueue.get(title).put("rtime", time());
 				int munber = (int) globale_config.CronListQueue.get(title).get("munber");

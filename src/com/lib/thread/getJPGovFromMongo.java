@@ -143,7 +143,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			isLoop = MetaInfoMogo(offset);
 			offset += limit;
 		}
-
+		cList = null;
 	}
 
 	private boolean MetaInfoMogo(int offset) {
@@ -169,8 +169,10 @@ public class getJPGovFromMongo extends BaseRapidThread {
 				if (rmap == null)
 					break;
 				ViewMetaInfo(rmap);
+				rmap = null;
 			}
 		}
+		mgdb = null;
 		return isLoop;
 
 	}

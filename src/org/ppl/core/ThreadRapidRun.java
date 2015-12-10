@@ -64,7 +64,7 @@ public class ThreadRapidRun extends function implements Runnable {
 		} finally {
 			rapid.free();
 		}
-
+		rapid = null;
 		echo("rapid end!!");
 	}
 }
