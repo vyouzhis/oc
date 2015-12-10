@@ -34,7 +34,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		echo("1");
 		getMetaInfo();
 		echo("2");
-		clazz();
+		//clazz();
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		int offset = 0;
 		boolean isLoop = true;
 		long mainpid = 0;
-		String title = "", mainCode = "", subCode = "";
+		String  mainCode = "", subCode = "";
 
 		Map<String, Object> jMap = new HashMap<String, Object>();
 		jMap.put("GET_META_INFO.METADATA_INF.TABLE_INF", 1);
@@ -141,21 +141,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 		while (isLoop) {
 			isLoop = MetaInfoMogo(offset);
-			// mgdb.setDBOffset(offset);
-			// mgdb.setLimit(limit);
 			offset += limit;
-			// isLoop = mgdb.FetchList();
-			// if (isLoop) {
-			//
-			// while (true) {
-			// Map<String, Object> rmap = mgdb.GetValueLoop();
-			// if (rmap == null)
-			// break;
-			// ViewMetaInfo(rmap);
-			// }
-			// } else {
-			// break;
-			// }
 		}
 
 	}
@@ -429,11 +415,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 		while (isLoop) {
 			isLoop = clazzLoop(offset);
-			offset += limit;			
+			offset += limit;
 		}
 
 	}
-	
+
 	private boolean clazzLoop(int offset) {
 		int limit = 1;
 		boolean isLoop = true;
@@ -449,19 +435,20 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		String Col = "getStatsData_" + statsField;
 		mgdb.SetCollection(Col);
 		mgdb.JsonColumn(json);
-		
+
 		mgdb.setDBOffset(offset);
 		mgdb.setLimit(limit);
-		
+
 		isLoop = mgdb.FetchList();
 
-		echo("offset: " + offset);
+		// echo("offset: " + offset);
 		if (isLoop) {
 			while (true) {
 				Map<String, Object> rmap = mgdb.GetValueLoop();
 				if (rmap == null)
 					break;
-				if(clazzPar(rmap)==false)break;
+				if (clazzPar(rmap) == false)
+					break;
 			}
 		}
 		return isLoop;
@@ -473,12 +460,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		String formatInfo = "select id from " + DB_HOR_PRE
 				+ "classinfo where view_name='j%s'  limit 1 ";
 		String formatClazz = "(%s, %s)";
-		String formatView = "";
+		//String formatView = "";
 		String ValueClazz = "";
-		String sqlView = "", sqlInfo = "", act = "", values = "", fields = "";
+		String  sqlInfo = "", act = "", values = "";
 		String views = "";
 
-		ValueClazz = "";
 		Map<String, Object> GET_STATS_DATA = (Map<String, Object>) rmap
 				.get("GET_STATS_DATA");
 		Map<String, Object> STATISTICAL_DATA = (Map<String, Object>) GET_STATS_DATA
@@ -506,9 +492,9 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 		String rule = res.get("id").toString();
 
-		ValueClazz = "";
 		views = "";
 		int m = 0;
+		echo("value size:"+VALUE.size()+ " id:"+id);
 		for (Map<String, Object> map : VALUE) {
 			L = 0;
 			values = "";
@@ -525,12 +511,24 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 			}
 			values = values + "'L1'";
-			m = 1;
+			m++;
 			ValueClazz += String.format(formatClazz, rule, values) + ",";
+			if (m == 50) {
+				SaveClazz(ValueClazz, L, id, views, rule);
+				m = 1;
+				ValueClazz = "";
+			}
 		}
 
+		ValueClazz = "";
+		return true;
+	}
+
+	private void SaveClazz(String ValueClazz, int L, String id, String views,
+			String rule) {
+		String fields = "", act = "", formatView = "", sqlView;
 		if (ValueClazz.length() > 0) {
-			fields = "";
+
 			for (int i = 0; i < L; i++) {
 				act = "act_v" + Integer.toHexString(i);
 
@@ -545,11 +543,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 			fields = fields + "act_v" + Integer.toHexString(L);
 
 			ValueClazz = ValueClazz.substring(0, ValueClazz.length() - 1);
-			// echo(ValueClazz);
+
 			String formatI = " insert INTO " + DB_HOR_PRE
 					+ "class (rule,%s)values %s;";
 			String sqlI = String.format(formatI, fields, ValueClazz);
-			// echo(sql);
+
 			try {
 				insert("DROP VIEW IF EXISTS j" + id);
 				dbcreate(sqlView);
@@ -560,7 +558,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 				e.printStackTrace();
 			}
 		}
-		return true;
+		ValueClazz = "";
 	}
 
 	private String CheckCategory(String desc, long id) {

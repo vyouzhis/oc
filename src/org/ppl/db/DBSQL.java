@@ -221,8 +221,6 @@ public class DBSQL extends BaseLang {
 
 		stmt = ConDB.createStatement();
 		
-		//echo("clearSQL:"+ clearSQL);
-		// stmt.clearBatch();
 		try {
 			if (ret) {
 				numRowsUpdated = stmt.executeUpdate(clearSQL,
@@ -236,13 +234,14 @@ public class DBSQL extends BaseLang {
 				}
 			} else {
 				stmt.executeUpdate(clearSQL);
+				
 			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			ConDB.commit();
 		}
-		
+				
 		clearSQL = null;
 		return numRowsUpdated;
 	}
