@@ -275,16 +275,16 @@
 			for(var i=0; i<rLine.length; i++){
 				if(rLine[i].indexOf("<-") > 0){
 					var rVar = rLine[i].split("<-");
-					console.log("rVar:"+rVar[0]+" fun:"+rVar[1]+" isfun:"+rVar[1].indexOf("function"));	
+					//console.log("rVar:"+rVar[0]+" fun:"+rVar[1]+" isfun:"+rVar[1].indexOf("function"));	
 					if(rVar[1].indexOf("function") >=0){
 						if(RKeyWords.indexOf(rVar[0]+"_fun")==-1){
 							RKeyWords.push(rVar[0]+"_fun");
-							console.log("fun_:"+rVar[0]);
+							//console.log("fun_:"+rVar[0]);
 						}
 					}else{ 
 						if(RKeyWords.indexOf(rVar[0]+"_var")==-1){
 							RKeyWords.push(rVar[0]+"_var");
-							console.log("var_:"+rVar[0]);
+							//console.log("var_:"+rVar[0]);
 						}
 					}
 					
