@@ -34,7 +34,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		echo("1");
 		getMetaInfo();
 		echo("2");
-		//clazz();
+		clazz();
 	}
 
 	@Override
@@ -231,7 +231,10 @@ public class getJPGovFromMongo extends BaseRapidThread {
 				.get("CLASS_INF");
 		List<Map<String, Object>> CLASS_OBJ = (List<Map<String, Object>>) CLASS_INF
 				.get("CLASS_OBJ");
-		for (Map<String, Object> map : CLASS_OBJ) {
+		int size = CLASS_OBJ.size();
+		Map<String, Object> map=null;
+		for (int m=0; m<size; m++) {
+			 map = CLASS_OBJ.get(m);
 			objid = map.get("id").toString();
 			// KeyList.add("" + objid);
 			objname = map.get("name").toString();
@@ -497,7 +500,10 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		views = "";
 		int m = 0;
 		echo("value size:"+VALUE.size()+ " id:"+id);
-		for (Map<String, Object> map : VALUE) {
+		int size = VALUE.size();
+		Map<String, Object> map = null;
+		for (int l=0;l<size; l++) {
+			map = VALUE.get(l);
 			L = 0;
 			values = "";
 
@@ -571,6 +577,7 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		res = FetchOne(sql);
 		if (res != null && res.size() == 1)
 			return res.get("id").toString();
+		
 		return null;
 	}
 

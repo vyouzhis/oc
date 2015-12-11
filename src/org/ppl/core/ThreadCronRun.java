@@ -114,6 +114,7 @@ public class ThreadCronRun extends function implements Runnable {
 			cron.Run();
 			cron.free();
 		}
+		cron = null;
 //		else {
 //			echo("no run!");
 //		}

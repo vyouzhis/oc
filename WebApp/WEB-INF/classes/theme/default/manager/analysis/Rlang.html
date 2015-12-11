@@ -47,7 +47,7 @@
 		
 						<div class="widget-body">
 							<div class="widget-main">
-								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;"></textarea>
+								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)"></textarea>
 							</div>
 						</div>
 					</div>	
@@ -126,14 +126,18 @@
 						
 
 						<div id="excel" class="tab-pane">
-				
+					
 							<h3 class="header smaller lighter blue">
 								<i class="icon-folder-open"></i>
 								文件:
 							</h3>
-			
+							<form id="target" name="target"  onsubmit="return validateForm()"  class="form-horizontal id-message-form" enctype="multipart/form-data"
+									action='${action_url!""}' method="POST" class="form-inline">
 							<h3 class="header smaller lighter blue">选择文件：</h3>
 							<input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+							<a href="javascript:void(0)" id="saveImg" name="saveImg" class="btn btn-primary"
+										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-beaker align-top bigger-125"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
+							</form>
 							<h3 class="header smaller lighter blue">文件列表：</h3>
 								<table class="table table-striped table-bordered table-hover"
 										id="sample-table-1">
@@ -197,34 +201,54 @@
   <script type="text/javascript" charset="utf-8" src="${static_js_uri}/cookie.js"></script>
   <script type="text/javascript">
   
+	var RKeyWords = ${r_key_list};
   
-  
-jQuery(function($) {
+	jQuery(function($) {
 	
-	$('.id-message-form .ace-file-input').closest('.file-input-container:not(:first-child)').remove();
-	$('.id-message-form input[type=file]').ace_file_input('reset_input');
-
-	$('.id-message-form input[type=file]').ace_file_input()
-	//and the wrap it inside .span7 for better display, perhaps
-	.closest('.ace-file-input').addClass('width-90 inline').wrap('<div class="row file-input-container"><div class="col-sm-7"></div></div>');
+		$('.id-message-form .ace-file-input').closest('.file-input-container:not(:first-child)').remove();
+		$('.id-message-form input[type=file]').ace_file_input('reset_input');
 	
-	
-	$('#loopday').ace_spinner({value:0,min:0,max:31,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
-	$('#loophour').ace_spinner({value:0,min:0,max:24,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
-	$('#loopminu').ace_spinner({value:0,min:0,max:60,step:5, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
-	
+		$('.id-message-form input[type=file]').ace_file_input()
+		//and the wrap it inside .span7 for better display, perhaps
+		.closest('.ace-file-input').addClass('width-90 inline').wrap('<div class="row file-input-container"><div class="col-sm-7"></div></div>');
+		
+		
+		$('#loopday').ace_spinner({value:0,min:0,max:31,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
+		$('#loophour').ace_spinner({value:0,min:0,max:24,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
+		$('#loopminu').ace_spinner({value:0,min:0,max:60,step:5, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
+		
 		var completes = [
-							{
-							mongo : ${r_key_list},
+							{							
 					    	match: /\b([a-zA-Z._]{2,})$/,
 					        search: function (term, callback) {
-					            callback($.map(this.mongo, function (element) {
+					            callback($.map(RKeyWords, function (element) {
 					                return element.indexOf(term) === 0 ? element : null;
 					            }));
 					        },
+					        template: function (value) {
+					        	var val = value.substr(0, value.length-4);
+					        	if(value.indexOf("_var") >= 0){					        		
+					        		return '<i class="orange icon-exclamation-sign"></i>&nbsp;' + val;	
+					        	}else if(value.indexOf("_fun") >= 0){
+									return '<i class="purple icon-exclamation-sign"></i>&nbsp;' + val;
+					        	}
+					        	else{
+					        		return '<i class="green icon-exclamation-sign"></i>&nbsp;' + value;
+					        	}
+					            
+					        },
 					        index: 1,
 					        replace: function (element) {
-					            return [element+'(',  ')'];
+					        	var val = element.substr(0, element.length-4);
+					        	if(element.indexOf("_var") >= 0){
+					        		return val;
+					        	}else if(element.indexOf("_fun") >= 0){
+					        		return [val+'(',  ')'];
+					        	}
+					        	else{
+					        		return [element+'(',  ')'];
+					        	}
+
 					        }
 					    },
 					    					    
@@ -241,6 +265,35 @@ jQuery(function($) {
 	   	setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
 
 	});
+	
+	function FoundVar(e){
+		if(e.keyCode == 13){
+			var stemTxt=$("#r_query").val();
+			//console.log("stemTxt:"+stemTxt);	
+			var rLine = stemTxt.replace("\r","").split("\n");;
+			//console.log("length:"+rLine.length);
+			for(var i=0; i<rLine.length; i++){
+				if(rLine[i].indexOf("<-") > 0){
+					var rVar = rLine[i].split("<-");
+					console.log("rVar:"+rVar[0]+" fun:"+rVar[1]+" isfun:"+rVar[1].indexOf("function"));	
+					if(rVar[1].indexOf("function") >=0){
+						if(RKeyWords.indexOf(rVar[0]+"_fun")==-1){
+							RKeyWords.push(rVar[0]+"_fun");
+							console.log("fun_:"+rVar[0]);
+						}
+					}else{ 
+						if(RKeyWords.indexOf(rVar[0]+"_var")==-1){
+							RKeyWords.push(rVar[0]+"_var");
+							console.log("var_:"+rVar[0]);
+						}
+					}
+					
+				}
+			}
+		}
+		
+	}
+
 	function initEdits(){
 	  var initEDit = getCookie("REdit");
 	  var editCon = "${REdit!''}";
@@ -268,35 +321,35 @@ jQuery(function($) {
 		return true;
 	}
 	
+
 	$(document).on("keyup", function(e) {
 		
 	    var code = e.which;
-	    if (code == 40) {
-	    	var val = $(".textcomplete-item.active").html();	   		
-            val = val.trim();
-            val = val.substr(3, val.length-7);
-        	//console.log(val);
-        	$("#cname").html(val);
-	    	getKeyTip(val);
-	    } else if (code == 38) {
-	    	var val = $(".textcomplete-item.active").html();	   		
-            val = val.trim();
-            val = val.substr(3, val.length-7);
-        	//console.log(val);
-        	$("#cname").html(val);
-	    	getKeyTip(val);
+	    if (code == 40 || code == 38) {
+	  
+	    	var val = $(".textcomplete-item.active").html();
+	    	
+	    	 if(typeof  val != 'undefined' && val.indexOf("_var")==-1 && val.indexOf("_fun")==-1){
+	             val = val.trim();
+	             val = val.substr(3, val.length-7);
+	         	//console.log(val);
+	         	$("#cname").html(val);
+	 	    	getKeyTip(val);
+	     	}     
 	    }
-	                
+	       
 	});
 	
 	function getKeyTip(o){
+		var key = o.split(";")
+		key = key[1];
 		$.ajax({
 			  url: "${search_url}?jsoncallback=?",
 			  contentType: 'text/html;charset=utf-8',
 			  
-			  data:{"key":o},
+			  data:{"key":key},
 			  success: function(result){
-				  console.log("success"+result);
+				  //console.log("success:"+result);
 			  },
 			  error: function(request, textStatus, errorThrown) {
 			    //alert(textStatus);
@@ -305,7 +358,7 @@ jQuery(function($) {
 				  var option = request.responseText;
 				  //option = option.replace(/[\r\n]/g, "");							  
 				  
-				  console.log("success:"+option);
+				 // console.log("success:"+option);
 				  $("#tips").html(option);
 			  }
 			});
