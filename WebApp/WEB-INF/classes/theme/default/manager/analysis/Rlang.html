@@ -80,6 +80,9 @@
 						<li>
 							<a data-toggle="tab" href="#helps">帮助</a>
 						</li>
+						<li>
+							<a data-toggle="tab" href="#pack">安装包</a>
+						</li>
 
 					</ul>
 
@@ -136,7 +139,7 @@
 							<h3 class="header smaller lighter blue">选择文件：</h3>
 							<input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
 							<a href="javascript:void(0)" id="saveImg" name="saveImg" class="btn btn-primary"
-										onclick="SaveImg()"><i  id="loop_ico" name="loop_ico"  class="icon-beaker align-top bigger-125"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
+										onclick="SaveFile()"><i  id="loop_ico" name="loop_ico"  class="icon-beaker align-top bigger-125"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
 							</form>
 							<h3 class="header smaller lighter blue">文件列表：</h3>
 								<table class="table table-striped table-bordered table-hover"
@@ -172,6 +175,25 @@
 							</div>
 							
 						</div>
+						<div id="pack" class="tab-pane">
+				
+			
+							<h3 class="header smaller lighter blue">已安装包列表：</h3>
+								<table class="table table-striped table-bordered table-hover"
+										id="sample-table-1">
+									<thead>
+										<tr>
+											<th>id</th>
+											<th>名称</th>
+											<th>版本</th>
+										</tr>
+									</thead>
+									<tbody id="packlist" name="packlist">										
+									
+									</tbody>
+								</table>
+							
+						</div>
 
 						
 					</div>
@@ -204,7 +226,7 @@
 	var RKeyWords = ${r_key_list};
   
 	jQuery(function($) {
-	
+			 
 		$('.id-message-form .ace-file-input').closest('.file-input-container:not(:first-child)').remove();
 		$('.id-message-form input[type=file]').ace_file_input('reset_input');
 	
@@ -263,8 +285,57 @@
 		setTimeout(initEdits, 2000);
 		
 	   	setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
-
+		
+	   	ListUserInstallPack();
 	});
+	
+	
+	function ListUserInstallPack(){
+		
+		$.ajax({
+			  url: "${script_url}?jsoncallback=?",
+			  contentType: 'text/html;charset=utf-8',			  
+			  data:{"listPack":1},
+			  success: function(result){
+				  console.log("success"+result);
+			  },
+			  error: function(request, textStatus, errorThrown) {
+			    //alert(textStatus);
+			  },
+			  complete: function(request, textStatus) { //for additional info
+				  var option = request.responseText;
+				 // option = option.replace(/[\r\n]/g, "<br />");							  
+				  
+				 // console.log("success:"+option);
+				  var pack=[];
+				  var version=[];
+				  var json_res = JSON.parse(option);
+				  for (var jkey in json_res) {
+					  
+				  	  for(var jl in json_res[jkey] ){
+				  		console.log("Key:" + jl);  
+				  		if(jl=="Package"){
+				  			pack = json_res[jkey][jl];
+				  		}
+				  		if(jl=="Version"){
+				  			version = json_res[jkey][jl];
+				  		}
+				  	  }     
+				  }
+				  var table = "";
+				  for(var i=0; i<pack.length;i++){
+					  table += "<tr>"+
+									"<td class='center'>"+i+"</td>"+
+									"<td class='center'>"+pack[i]+"</td>"+
+									"<td class='center'>"+version[i]+"</td>"+								
+								"</tr>";
+				  }
+				  
+				  $("#packlist").html(table);
+			  }
+			});
+		
+	}
 	
 	function FoundVar(e){
 		if(e.keyCode == 13){
@@ -394,6 +465,78 @@
 				 /// $("#json_result").html(option);
 			  }
 			});
+	}
+	
+	function SaveFile() {
+		$("#saveImg").attr("class", "disabled btn btn-xs btn-app btn-primary");
+		//var timestamp = Date.parse(new Date());
+		
+	
+	     console.log("filePath:"+$("#attachment").prop('files'));
+	     
+
+		//checkFile(md5Name);
+		
+	}
+	
+	function ajaxLoog(o, dataName){
+		var dataURL = myChart.getDataURL();
+		var step = 1024*2;
+		var len = Math.ceil(dataURL.length/step) ;
+		if(o>=len) return;
+		
+		$("#loop_ico").attr("class","icon-spinner icon-spin orange bigger-125");
+
+		var datasplit = dataURL.substr(o*step, step);
+		$.ajax({
+		  url: "${saveimg_url!''}?jsoncallback=?",
+		  contentType: 'text/html;charset=utf-8',
+		  //async: false,
+		  data:{"data":datasplit,"n":o,"len":len,"name":dataName},
+		  success: function(result){
+			 // console.log("success:"+result);
+		  },
+		  error: function(request, textStatus, errorThrown) {
+		    //alert(textStatus);
+		  },
+		  complete: function(request, textStatus) { //for additional info
+			  var option = request.responseText;
+			 // console.log("option:"+option);
+			  $("#loop_name").html( Math.ceil(option/len*100) +"%");
+			  if(parseInt(option)==len-1){					  
+				CreateImg(dataName);
+				$("#loop_ico").attr("class","icon-th-large");
+				$("#loop_name").html( "保存图表");
+			  }else{
+				  ajaxLoog(o+1, dataName);
+			  }
+		  }
+		});			
+		
+	}
+	
+	function checkFile(ImgName){
+		$.ajax({
+			  url: "${searchimg_url!''}?jsoncallback=?",
+			  contentType: 'text/html;charset=utf-8',
+			  //async: false,
+			  data:{"ImgName":ImgName},
+			  success: function(result){
+				 // console.log("success:"+result);
+			  },
+			  error: function(request, textStatus, errorThrown) {
+			    //alert(textStatus);
+			  },
+			  complete: function(request, textStatus) { //for additional info
+				  var option = request.responseText;
+				 // console.log("option:"+option);
+				  if(parseInt(option)==1){						  
+					  CreateImg(ImgName);				
+				  }else{
+					  ajaxLoog(0, ImgName);
+				  }
+			  }
+			});		
 	}
 </script>  
  

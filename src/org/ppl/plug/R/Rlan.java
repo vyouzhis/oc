@@ -8,8 +8,8 @@ import org.rosuda.REngine.Rserve.RserveException;
 
 public class Rlan {
 	public Rlan() {
-		// TODO Auto-generated constructor stub		
-		if(globale_config.rcoonnect==null){
+		// TODO Auto-generated constructor stub
+		if (globale_config.rcoonnect == null) {
 			try {
 				globale_config.rcoonnect = new RConnection();
 			} catch (RserveException e) {
@@ -18,7 +18,7 @@ public class Rlan {
 			}
 		}
 	}
-		
+
 	public double lm(double[] dataX, double[] dataY) {
 		double Rres = 0;
 		try {
@@ -27,7 +27,8 @@ public class Rlan {
 
 			globale_config.rcoonnect.voidEval("lm.r<-lm(dataX ~ dataY)");
 
-			Rres = (globale_config.rcoonnect.eval("lm.r$coefficients[[1]]").asDouble());
+			Rres = (globale_config.rcoonnect.eval("lm.r$coefficients[[1]]")
+					.asDouble());
 		} catch (REngineException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,33 +38,35 @@ public class Rlan {
 		}
 		return Rres;
 	}
-	
+
 	public String[] ls() {
 		try {
-			String[] Search = globale_config.rcoonnect.eval("search()").asStrings();	
-			String sR[][] =  new String[Search.length][] ;
+			String[] Search = globale_config.rcoonnect.eval("search()")
+					.asStrings();
+			String sR[][] = new String[Search.length][];
 			for (int i = 0; i < Search.length; i++) {
-				
-				String[] sRutils = globale_config.rcoonnect.eval("ls('"+Search[i]+"')").asStrings();
-				 sR[i] = sRutils;
+
+				String[] sRutils = globale_config.rcoonnect.eval(
+						"ls('" + Search[i] + "')").asStrings();
+				sR[i] = sRutils;
 			}
-			
+
 			int m = 0;
 			for (int i = 0; i < sR.length; i++) {
 				for (int j = 0; j < sR[i].length; j++) {
-					//echo(sR[i][j]);
+					// echo(sR[i][j]);
 					m++;
 				}
 			}
 			String[] res = new String[m];
-			m=0;
+			m = 0;
 			for (int i = 0; i < sR.length; i++) {
 				for (int j = 0; j < sR[i].length; j++) {
-					res [m] = sR[i][j];
+					res[m] = sR[i][j];
 					m++;
 				}
 			}
-			
+
 			return res;
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
@@ -73,5 +76,14 @@ public class Rlan {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public String lsUserInstallPack() {
+		String script = "ip <- as.data.frame(installed.packages()[,c(1,3:4)]) "
+				+ "rownames(ip) <- NULL"
+				+ "ip <- ip[is.na(ip$Priority),1:2,drop=FALSE]"
+				+ "print(ip, row.names=FALSE)";
+
+		return "";
 	}
 }

@@ -63,28 +63,42 @@ public class RAction extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 
 		String RJson = porg.getKey("query");
-		echo(RJson);
-		if (RJson == null || RJson.length() == 0)
-			return;
+		int listPack = toInt(porg.getKey("listPack"));
 
 		REXP r = null;
 
 		RListJson = new ArrayList<>();
 		try {
-			r = globale_config.rcoonnect.eval(RJson);
-			SelectREXP(r._attr(), "attr");
-			SelectREXP(r, "val");
+			if (listPack == 1) {
+
+				globale_config.rcoonnect
+						.voidEval("ip <- as.data.frame(installed.packages()[,c(1,3:4)]) ");
+				globale_config.rcoonnect.voidEval("rownames(ip) <- NULL");
+				globale_config.rcoonnect
+						.voidEval("ip <- ip[is.na(ip$Priority),1:2,drop=FALSE]");
+				r = globale_config.rcoonnect.eval("print(ip, row.names=FALSE)");
+
+			} else {
+				if (RJson == null || RJson.length() == 0)
+					return;
+				r = globale_config.rcoonnect.eval(RJson);
+
+			}
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		if (r != null) {
+			SelectREXP(r._attr(), "attr");
+			SelectREXP(r, "val");
+		}
 		super.setHtml(JSON.toJSONString(RListJson));
 	}
 
 	private void SelectREXP(REXP r, String key) {
 		// REXP r = c.eval("print(df)");
-		if(r==null)return;
+		if (r == null)
+			return;
 		try {
 			if (r.isComplex()) {
 				echo("isComplex");
@@ -101,7 +115,7 @@ public class RAction extends Permission implements BasePerminterface {
 			} else if (r.isInteger()) {
 				int[] rint = r.asIntegers();
 				Map<String, Object> map = new HashMap<String, Object>();
-				if (key==null || key.length() == 0) {
+				if (key == null || key.length() == 0) {
 					map.put(index + "", rint);
 					index++;
 				} else {
@@ -112,10 +126,11 @@ public class RAction extends Permission implements BasePerminterface {
 				echo("isInteger");
 			} else if (r.isLanguage()) {
 				RList lanList = r.asList();
-				String nkey="";
+				String nkey = "";
 				for (int i = 0; i < lanList.size(); i++) {
 					nkey = lanList.keyAt(i);
-					if(nkey == null) nkey = key;					
+					if (nkey == null)
+						nkey = key;
 					SelectREXP(lanList.at(i), nkey);
 				}
 				echo("isLanguage");
@@ -127,7 +142,8 @@ public class RAction extends Permission implements BasePerminterface {
 
 				for (int i = 0; i < rList.size(); i++) {
 					nkey = rList.keyAt(i);
-					if(nkey == null) nkey = key;
+					if (nkey == null)
+						nkey = key;
 					if (nkey.equals("dim"))
 						continue;
 					SelectREXP(rList.at(i), nkey);
@@ -151,7 +167,7 @@ public class RAction extends Permission implements BasePerminterface {
 
 				int[] dim = r.dim();
 
-				if (dim == null || dim.length==1) {
+				if (dim == null || dim.length == 1) {
 
 					double[] m = r.asDoubles();
 
