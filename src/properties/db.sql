@@ -257,6 +257,7 @@ CREATE TABLE hor_rlanguage
   rcode text NOT NULL DEFAULT ''::text, -- 代码
   ctime integer NOT NULL DEFAULT 0, -- create time
   etime integer NOT NULL DEFAULT 0, -- edit time
+  ishow integer NOT NULL DEFAULT 0, -- 0 not show chart, 1 show in chart
   CONSTRAINT hor_rlanguage_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -268,6 +269,8 @@ COMMENT ON COLUMN hor_rlanguage.rdesc IS 'desc';
 COMMENT ON COLUMN hor_rlanguage.rcode IS '代码';
 COMMENT ON COLUMN hor_rlanguage.ctime IS 'create time';
 COMMENT ON COLUMN hor_rlanguage.etime IS 'edit time';
+COMMENT ON COLUMN hor_rlanguage.ishow IS '0 not show chart, 1 show in chart';
+
 
 CREATE TABLE hor_rexcel
 (

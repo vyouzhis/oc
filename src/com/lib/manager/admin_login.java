@@ -53,18 +53,18 @@ public class admin_login extends Permission {
 		
 		// 打印变量
 		
-		if(globale_config.rcoonnect == null) return;
-		try {
-			String version = globale_config.rcoonnect.eval("R.version.string").asString();
-			// 循环打印数组
-			double[] arr = globale_config.rcoonnect.eval("rnorm(10)").asDoubles();
-			for (double a : arr) {
-				echo(a + ",");
-			}
-		} catch (RserveException | REXPMismatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		if(globale_config.rcoonnect == null) return;
+//		try {
+//			String version = globale_config.rcoonnect.eval("R.version.string").asString();
+//			// 循环打印数组
+//			double[] arr = globale_config.rcoonnect.eval("rnorm(10)").asDoubles();
+//			for (double a : arr) {
+//				echo(a + ",");
+//			}
+//		} catch (RserveException | REXPMismatchException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		//echo(version);
 
 		

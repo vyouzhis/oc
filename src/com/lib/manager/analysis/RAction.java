@@ -10,8 +10,8 @@ import java.util.Map;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
 import org.ppl.io.ProjectPath;
+import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.RFactor;
@@ -70,15 +70,16 @@ public class RAction extends Permission implements BasePerminterface {
 		REXP r = null;
 
 		RListJson = new ArrayList<>();
+		Rlan rcoonnect = Rlan.getInstance();
 		try {
 			if (listPack == 1) {
 
-				globale_config.rcoonnect
+				rcoonnect.connection()
 						.voidEval("ip <- as.data.frame(installed.packages()[,c(1,3:4)]) ");
-				globale_config.rcoonnect.voidEval("rownames(ip) <- NULL");
-				globale_config.rcoonnect
+				rcoonnect.connection().voidEval("rownames(ip) <- NULL");
+				rcoonnect.connection()
 						.voidEval("ip <- ip[is.na(ip$Priority),1:2,drop=FALSE]");
-				r = globale_config.rcoonnect.eval("print(ip, row.names=FALSE)");
+				r = rcoonnect.connection().eval("print(ip, row.names=FALSE)");
 
 			} else {
 				if (RJson == null || RJson.length() == 0)
@@ -88,9 +89,9 @@ public class RAction extends Permission implements BasePerminterface {
 				String path = uri.getPath().substring(1);
 				String setwd = String.format("setwd('%s')", path);
 				// echo(setwd);
-				globale_config.rcoonnect.voidEval(setwd);
+				rcoonnect.connection().voidEval(setwd);
 				// globale_config.rcoonnect.voidEval("if (!is.null(WD)) setwd(WD)");
-				r = globale_config.rcoonnect.eval(RJson);
+				r = rcoonnect.connection().eval(RJson);
 
 			}
 		} catch (RserveException e) {
@@ -100,9 +101,10 @@ public class RAction extends Permission implements BasePerminterface {
 		if (r != null) {
 			SelectREXP(r._attr(), "attr");
 			SelectREXP(r, "val");
-			globale_config.rcoonnect.close();
+			rcoonnect.connection().close();
 			echo("end");
 		}
+		rcoonnect.close();
 		super.setHtml(JSON.toJSONString(RListJson));
 	}
 

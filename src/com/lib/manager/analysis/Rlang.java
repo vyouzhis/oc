@@ -70,7 +70,7 @@ public class Rlang extends Permission implements BasePerminterface {
 		setRoot("script_url", ucl.read("RAction"));
 		setRoot("file_url", ucl.create("RAction"));
 		
-		Rlan rlan = new Rlan();
+		Rlan rlan = Rlan.getInstance();
 		String[] sR = rlan.ls();
 
 		String json = JSON.toJSONString(sR);
@@ -108,16 +108,22 @@ public class Rlang extends Permission implements BasePerminterface {
 	
 	private void SaveRlan() {
 		String title = porg.getKey("title");
-		String cid = porg.getKey("cid_list");
-		String day = porg.getKey("loopday");
-		String hour = porg.getKey("loophour");
-		String minu = porg.getKey("loopminu");
+		int cid = toInt(porg.getKey("cid_list"));
+		int day = toInt(porg.getKey("loopday"));
+		int hour = toInt(porg.getKey("loophour"));
+		int minu = toInt(porg.getKey("loopminu"));
 		String rdesc = porg.getKey("rdesc");
 		String rcode = porg.getKey("rcode");
+		int isshow=0;
+		String showchart = porg.getKey("showchart");
+		if(showchart!=null){
+			isshow = 1;			
+		}
+		
 		UrlClassList ucl = UrlClassList.getInstance();
 		
 		
-		if(title == null || cid==null || rdesc == null || rcode == null){
+		if(title == null || cid==0 || rdesc == null || rcode == null){
 
 			TipMessage(ucl.read("RList"), _CLang("error_null"));
 			return ;
@@ -130,11 +136,11 @@ public class Rlang extends Permission implements BasePerminterface {
 		String format = "", sql="";
 		
 		if(id==0){
-			format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare, ctime,etime)values('%s',%s,%s,%s,%s,'%s','%s',%d,%d, %d, %d);";
-			sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0, now,now);
+			format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare, ctime,etime,ishow)values('%s',%d,%d,%d,%d,'%s','%s',%d,%d, %d, %d, %d);";
+			sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0, now,now, isshow);
 		}else {
-			format = "update "+DB_HOR_PRE+"rlanguage SET title='%s',cid=%s,day=%s,hour=%s,minu=%s,rdesc='%s',rcode='%s',etime = %d  where id=%d";
-			sql = String.format(format, title, cid, day,hour, minu, rdesc, rcode, now, id);
+			format = "update "+DB_HOR_PRE+"rlanguage SET title='%s',cid=%d,day=%d,hour=%d,minu=%d,rdesc='%s',rcode='%s',etime = %d, ishow=%d  where id=%d";
+			sql = String.format(format, title, cid, day,hour, minu, rdesc, rcode, now, isshow, id);
 		}
 		String msg = ""; 
 		try {
@@ -164,12 +170,13 @@ public class Rlang extends Permission implements BasePerminterface {
 		if (key == null || key.length() == 0)
 			return;
 
+		Rlan rcoonnect = Rlan.getInstance();
 		try {
-			globale_config.rcoonnect.voidEval(String.format(format, key));
-			globale_config.rcoonnect.voidEval("c<-as.character(a)");
+			rcoonnect.connection().voidEval(String.format(format, key));
+			rcoonnect.connection().voidEval("c<-as.character(a)");
 			String[] my;
 
-			my = globale_config.rcoonnect.eval("c").asStrings();
+			my = rcoonnect.connection().eval("c").asStrings();
 			if (my.length > 1) {
 				for (int i = 1; i < my.length; i++) {
 					asy += my[i] + "<br/>";
@@ -182,6 +189,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		rcoonnect.close();
 		asy = asy.replace(" ", "&nbsp;");
 		asy = asy.replace("<br/>", "<br />");
 		asy = asy.replace("\n", "<br />");

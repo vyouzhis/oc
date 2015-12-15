@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.core.IsAnything;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.db.MGDB;
 
@@ -445,11 +444,11 @@ public class getJPGovFromMongo extends BaseRapidThread {
 		mgdb.setLimit(limit);
 
 		isLoop = mgdb.FetchList();
-
+		Map<String, Object> rmap;
 		// echo("offset: " + offset);
 		if (isLoop) {
 			while (true) {
-				Map<String, Object> rmap = mgdb.GetValueLoop();
+				rmap = mgdb.GetValueLoop();
 				if (rmap == null)
 					break;
 				if (clazzPar(rmap) == false)
@@ -535,6 +534,9 @@ public class getJPGovFromMongo extends BaseRapidThread {
 	private void SaveClazz(String ValueClazz, int L, String id, String views,
 			String rule) {
 		String fields = "", act = "", formatView = "", sqlView;
+		String formatI = " insert INTO " + DB_HOR_PRE
+				+ "class (rule,%s)values %s;";
+		String sqlI = "";
 		if (ValueClazz.length() > 0) {
 
 			for (int i = 0; i < L; i++) {
@@ -552,9 +554,8 @@ public class getJPGovFromMongo extends BaseRapidThread {
 
 			ValueClazz = ValueClazz.substring(0, ValueClazz.length() - 1);
 
-			String formatI = " insert INTO " + DB_HOR_PRE
-					+ "class (rule,%s)values %s;";
-			String sqlI = String.format(formatI, fields, ValueClazz);
+			
+			sqlI = String.format(formatI, fields, ValueClazz);
 
 			try {
 				insert("DROP VIEW IF EXISTS j" + id);

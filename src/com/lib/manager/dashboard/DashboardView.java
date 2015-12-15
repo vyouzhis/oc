@@ -11,6 +11,7 @@ import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
+import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;
 
@@ -122,10 +123,10 @@ public class DashboardView extends Permission implements BasePerminterface {
 		for (double i = 1; i < 51; i++) {
 			xAxis.add(i);
 		}
-				
+		Rlan rcoonnect = Rlan.getInstance();
 		try {
-			globale_config.rcoonnect.voidEval("mlg<-c(1:51)");
-			yAxis = globale_config.rcoonnect.eval("log(mlg)").asDoubles();
+			rcoonnect.connection().voidEval("mlg<-c(1:51)");
+			yAxis = rcoonnect.connection().eval("log(mlg)").asDoubles();
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,6 +135,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 			e.printStackTrace();
 		}
 		
+		rcoonnect.close();
 		
 		if(yAxis != null){
 			setRoot("xAxis", JSON.toJSONString(yAxis));
