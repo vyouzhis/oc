@@ -1,6 +1,7 @@
 package org.ppl.common;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.ppl.etc.UrlClassList;
 import org.ppl.io.TimeClass;
 
 public class function extends InitCore {
-	
+
 	public void echo(Object o) {
 		if (stdClass != null) {
 			Logger log = Logger.getLogger(stdClass);
@@ -91,7 +92,7 @@ public class function extends InitCore {
 	}
 
 	public List<String> PermUrlMap() {
-		
+
 		String path = this.getClass().getResource("/").getPath()
 				+ mConfig.GetValue("perm_class_path");
 
@@ -214,4 +215,43 @@ public class function extends InitCore {
 		return news;
 
 	}
+
+	public Map<String, Object> SetTree(List<Map<String, Object>> res, int id,
+			String name) {
+		Map<String, Map<String, String>> file = new HashMap<>();
+		Map<String, String> Item = null;
+		if (res != null) {
+			for (Map<String, Object> map : res) {
+				Item = new HashMap<>();
+				Item.put("type", "item");
+
+				Item.put("id", map.get("id").toString());
+				Item.put("name", map.get("name").toString());
+				if (map.containsKey("qaction")) {
+					Item.put("qaction", map.get("qaction").toString());
+				} else if (map.containsKey("sql_type")) {
+					Item.put("qaction", "4");
+				} else {
+					Item.put("qaction", "5");
+				}
+
+				if (map.containsKey("sql_type")) {
+					Item.put("sql_type", map.get("sql_type").toString());
+				}
+				if (map.containsKey("sqltmp")) {
+					Item.put("sqltmp", map.get("sqltmp").toString());
+				}
+
+				file.put(map.get("id").toString(), Item);
+			}
+		}
+		Map<String, Object> Mongo;
+		Mongo = new HashMap<String, Object>();
+
+		Mongo.put("children", file);
+		Mongo.put("name", name);
+		Mongo.put("id", id);
+		return Mongo;
+	}
+
 }

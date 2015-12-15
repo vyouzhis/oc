@@ -35,7 +35,7 @@
 							<div id="custom-container" style="height:378px;" class="well col-xs-10 col-sm-10">
 							</div>
 							<div class="col-xs-1 col-sm-1"></div>
-							<div class="col-xs-12 col-sm-12 well">							
+							<div class="col-xs-12 col-sm-12">							
 								<div class="widget-box">
 									<div class="widget-header widget-header-flat">
 										<h4 class="smaller">
@@ -272,7 +272,7 @@
 							       		</div>
 							       	</div>
 						       	</div>
-						       	<div class="col-xs-12 col-sm-12 well">
+						       	<div class="col-xs-12 col-sm-12">
 					       			<h5 class="bigger lighter">
 										<a class="btn btn-xs btn-app btn-primary" href="javascript:void(0)"
 											onclick="focusGraphic()"> <i class="icon-bar-chart"></i>生成图表
@@ -319,10 +319,33 @@
 											</div>
 											--> 
 										</div>		
-										<div class="widget-body">		
-											<div class="widget-main no-padding">
-												<div id="tree1" class="tree"></div>
-											</div>				
+										<div class="widget-body">	
+										
+											<div class="tabbable">
+												<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+													<li class="active">
+														<a data-toggle="tab" href="#sql">SQL</a>
+													</li>
+													<li>
+														<a data-toggle="tab" href="#cloudR">云端R</a>
+													</li>
+													
+												</ul>
+												<div class="tab-content">														
+													<div id="sql" class="tab-pane in active">
+														<div class="widget-main no-padding">
+															<div id="sqltree" class="tree"></div>
+														</div>	
+													</div>
+													<div id="cloudR" class="tab-pane in">
+														<div class="widget-main no-padding">
+															<div id="cloudRtree" class="tree"></div>
+														</div>	
+														
+													</div>
+												</div>
+											</div>
+														
 										</div>			
 									
 								</div>
@@ -423,7 +446,7 @@
 							pname = options.additionalParameters.name;
 							//console.log("param:"+JSON.stringify(param));
 							//console.log("pname:"+JSON.stringify(pname));
-							console.log("2");
+							//console.log("2");
 							$.ajax({
 		                        url: this.url+"?jsoncallback=?",
 		                        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -445,7 +468,7 @@
 		                        }
 		                    })
 						} else{
-							console.log("3");
+							//console.log("3");
 							//console.log(options);
 							
 							pid = options.id;
@@ -541,11 +564,11 @@
 					}else{
 						$("#tmp_list").html("");
 					}
-			}
+				}
 
 				jQuery(function($) {
 										 				       				    				       
-					$('#tree1').on("click", function(){
+					$('#sqltree').on("click", function(){
 						var o = $(this).tree('selectedItems');
 						//console.log("tree:"+JSON.stringify(o));
 						addTmp(o);
@@ -559,7 +582,7 @@
 					});
 					
 					
-					$('#tree1')
+					$('#sqltree')
 						.ace_tree(
 								{
 									//dataSource : treeDataSource,
@@ -572,6 +595,20 @@
 									'selected-icon' : 'icon-ok',
 									'unselected-icon' : 'icon-remove'
 								});
+					
+					$('#cloudRtree')
+					.ace_tree(
+							{
+								//dataSource : treeDataSource,
+								dataSource : new DataSourceTree({ url: "${listR_url}" }),
+								loadingHTML : '<div class="tree-loading"><i class="icon-refresh icon-spin blue"></i></div>',
+								'selectable' : true,
+								multiSelect : true,									
+								'open-icon' : 'icon-minus',
+								'close-icon' : 'icon-plus',									
+								'selected-icon' : 'icon-ok',
+								'unselected-icon' : 'icon-remove'
+							});
 					
 					$('.chart_1').on("click", function(){
 						var attr = $(this).attr("class").substr(18);
@@ -660,11 +697,7 @@
 					});
 
 				});
-				
-				
-			</script>
-			<script type="text/javascript">
-			
+							
 				var option_1 = option = {
 
 					    tooltip : {
@@ -716,7 +749,7 @@
 					myChart.on(ecConfig.EVENT.DBLCLICK, function (param){
 						console.log("dial:"+param.name+"- volume:"+param.value);
 						//获取同一刻度下面的不同数据 对比
-						$("#juxtapose").attr("class", "col-xs-12 col-sm-12");
+						//$("#juxtapose").attr("class", "col-xs-12 col-sm-12");
 					});
 					
 				    window.onresize = myChart.resize;
@@ -806,7 +839,7 @@
 							 if(chk=='html'){
 								alert("还没登录或超时退出!");
 							 }
-							 var o = $('#tree1').tree('selectedItems');
+							 var o = $('#sqltree').tree('selectedItems');
 							 var table = JSON.parse(option);
 							 console.log(option);
 							 var editTable = "";
@@ -832,7 +865,7 @@
 				}
 					
 				function TreeJson(){
-					var o = $('#tree1').tree('selectedItems');
+					var o = $('#sqltree').tree('selectedItems');
 					var JsonData = {};
 					
 					var selectedItems = escape(JSON.stringify(o));

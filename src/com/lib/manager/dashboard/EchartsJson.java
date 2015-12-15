@@ -1050,8 +1050,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				if (res != null) {
 					ret.add(res);
-					echo("time:"+(end - start));
-					if (end - start > mConfig.GetInt("cache.time")) {
+					//echo("time:"+(end - start));
+					if ((end - start) > mConfig.GetInt("cache.time")) {
 						setCache(sql, id.get("name").toString(), res);
 					}
 				}

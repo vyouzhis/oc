@@ -72,6 +72,7 @@ public class DashboardView extends Permission implements BasePerminterface {
 		setRoot("searchimg_url", ucl.search("SaveImg"));
 		setRoot("doc_url", ucl.create("SaveDoc"));
 		setRoot("listSQL_url", ucl.read("ListSQL"));
+		setRoot("listR_url", ucl.read("ListR"));
 		cardioid();
 	}
 

@@ -6,18 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 
 import com.alibaba.fastjson.JSON;
 
 public class ListSQL extends Permission implements BasePerminterface {
-	private List<String> rmc;
-	private Map<String, Map<String, Object>> TreeObject;
+	private List<String> rmc;	
 	private int lid;
 	private String pname = "";
-	private String RootSQL = "";
+	private final String RootSQL = "select id,name from "+DB_HOR_PRE+"classify where pid=%d and "
+			+ UserPermi() + " order by id";
 
 	// private Map<String, Map<String, Map<String, String>>> Mongo;
 
@@ -66,18 +65,17 @@ public class ListSQL extends Permission implements BasePerminterface {
 
 	private String ListMainClassify() {
 
-		RootSQL = "select id,name from "+DB_HOR_PRE+"classify where pid=%d and "
-				+ UserPermi() + " order by id";
-		TreeObject = new HashMap<>();
+		
+		 Map<String, Map<String, Object>> TreeObject = null;
 		
 		lid = toInt(porg.getKey("id"));
 		if (lid == 0 || porg.getKey("id").toString().substring(0,1).equals("t")) {
 			lid = toInt(porg.getKey("id").toString().substring(1));
-			tmpSQL();			
+			TreeObject = tmpSQL();			
 		} else if (lid > 0) {
-			subTreeRoot();
+			TreeObject = subTreeRoot();
 		} else {
-			DefaultRoot();
+			TreeObject = DefaultRoot();
 		}
 
 		String treeObjectJson = JSON.toJSONString(TreeObject);
@@ -86,7 +84,8 @@ public class ListSQL extends Permission implements BasePerminterface {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void subTreeRoot() {
+	private Map<String, Map<String, Object>> subTreeRoot() {
+		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
 		Map<String, Object> SubTree, FloderTree;
 		Map<String, Object> RootTree;
 		String sql = String.format(RootSQL, lid);
@@ -113,6 +112,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		}
 
 		TreeObject.put("additionalParameters", FloderTree);		
+		return TreeObject;
 	}
 	
 	private List<Map<String, Object>> ItemTree() {
@@ -153,7 +153,9 @@ public class ListSQL extends Permission implements BasePerminterface {
 	}
 	
 
-	private void DefaultRoot() {
+	private Map<String, Map<String, Object>> DefaultRoot() {
+		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
+		
 		Map<String, Object> SubTree;
 
 		String sql = String.format(RootSQL, 1);
@@ -184,10 +186,12 @@ public class ListSQL extends Permission implements BasePerminterface {
 		SubTree.put("additionalParameters", SetTree(tRest, 0, _MLang("tmp")));
 
 		TreeObject.put(_MLang("tmp"), SubTree);
+		return TreeObject;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void tmpSQL() {
+	private Map<String, Map<String, Object>> tmpSQL() {
+		Map<String, Map<String, Object>> TreeObject = new HashMap<>();
 		int cid=lid;
 		if(lid==0) cid=1;
 		Map<String, Object> SubTree, FloderTree;
@@ -216,6 +220,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		}
 
 		TreeObject.put("additionalParameters", FloderTree);
+		return TreeObject;
 	}
 	
 	private List<Map<String, Object>> TmpItemTree() {
@@ -235,42 +240,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		return null;
 	}
 
-	private Map<String, Object> SetTree(List<Map<String, Object>> res, int id,
-			String name) {
-		Map<String, Map<String, String>> file = new HashMap<>();
-
-		for (Map<String, Object> map : res) {
-			Map<String, String> Item = new HashMap<>();
-			Item.put("type", "item");
-
-			Item.put("id", map.get("id").toString());
-			Item.put("name", map.get("name").toString());
-			if (map.containsKey("qaction")) {
-				Item.put("qaction", map.get("qaction").toString());
-			} else if (map.containsKey("sql_type")) {
-				Item.put("qaction", "4");
-			} else {
-				Item.put("qaction", "5");
-			}
-
-			if (map.containsKey("sql_type")) {
-				Item.put("sql_type", map.get("sql_type").toString());
-			}
-			if (map.containsKey("sqltmp")) {
-				Item.put("sqltmp", map.get("sqltmp").toString());
-			}
-
-			file.put(map.get("id").toString(), Item);
-		}
-
-		Map<String, Object> Mongo;
-		Mongo = new HashMap<String, Object>();
-
-		Mongo.put("children", file);
-		Mongo.put("name", name);
-		Mongo.put("id", id);
-		return Mongo;
-	}
+	
 
 	@Override
 	public void create(Object arg) {

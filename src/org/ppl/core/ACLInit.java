@@ -269,7 +269,7 @@ public class ACLInit extends DBSQL {
 		} else {
 			format = "UPDATE `" + DB_PRE
 					+ "group` SET " + " `mainrole` = '%s',  `etime` = '%d' "
-					+ "WHERE `role_group`.`id` = %d;";
+					+ "WHERE `"+DB_PRE+"group`.`id` = %d;";
 
 			sql = String.format(format, MainRole, now, gid);
 

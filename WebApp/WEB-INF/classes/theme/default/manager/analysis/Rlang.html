@@ -365,21 +365,19 @@
 					var rVar = rLine[i].split("<-");
 					//console.log("rVar:"+rVar[0]+" fun:"+rVar[1]+" isfun:"+rVar[1].indexOf("function"));	
 					if(rVar[1].indexOf("function") >=0){
-						if(RKeyWords.indexOf(rVar[0]+"_fun")==-1){
-							RKeyWords.push(rVar[0]+"_fun");
+						if(RKeyWords.indexOf(rVar[0].trim()+"_fun")==-1){
+							RKeyWords.push(rVar[0].trim()+"_fun");
 							//console.log("fun_:"+rVar[0]);
 						}
 					}else{ 
-						if(RKeyWords.indexOf(rVar[0]+"_var")==-1){
-							RKeyWords.push(rVar[0]+"_var");
+						if(RKeyWords.indexOf(rVar[0].trim()+"_var")==-1){
+							RKeyWords.push(rVar[0].trim()+"_var");
 							//console.log("var_:"+rVar[0]);
 						}
-					}
-					
+					}					
 				}
 			}
-		}
-		
+		}		
 	}
 
 	function initEdits(){
