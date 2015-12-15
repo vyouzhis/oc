@@ -45,7 +45,7 @@ public class globale_config {
 	
 	public static Injector injector = null;
 	
-	public static RConnection rcoonnect = null;
+	//public static RConnection rcoonnect = null;
 	
 	public static Map<Long, Connection> GDB = null;
 	

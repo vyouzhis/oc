@@ -39,7 +39,7 @@
 					<div class="widget-box">
 						<div class="widget-header widget-header-flat">
 							<h4 class="smaller">
-								<i class="icon-code"></i>
+								<i class="icon-code" id="rload" name="rload"></i>
 								R代码编辑器
 																
 							</h4>
@@ -47,7 +47,7 @@
 		
 						<div class="widget-body">
 							<div class="widget-main">
-								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)"></textarea>
+								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)"><#if rlang??>${rlang.rcode!""}</#if></textarea>
 							</div>
 						</div>
 					</div>	
@@ -91,7 +91,7 @@
 								
 						<div id="home4" class="tab-pane in active">
 							<form id="target" name="target"  onsubmit="return validateForm()"  class="form-horizontal id-message-form" enctype="multipart/form-data"
-									action='${action_url!""}' method="POST" class="form-inline">
+									action='${action_url!""}?id=<#if rlang??>${rlang.id!""}</#if>' method="POST" class="form-inline">
 							<textarea id="rcode" name="rcode"  rows=10" cols="10" style="display: none;" ></textarea>
 							
 							<h3 class="header smaller lighter blue">分类：</h3>
@@ -109,6 +109,7 @@
 								</select>
 
 							</div>
+							<!-- 
 							<h3 class="header smaller lighter blue">定时运行：
 								<span class="help-button" title=""
 								data-content="只是显示目前有多少 个mongodb规则 可用" data-html="true"
@@ -118,11 +119,11 @@
 							天：<input type="text" class="input-mini" id="loopday"  name="loopday" />
 							小时：<input type="text" class="input-mini" id="loophour" name="loophour" />
 							分：<input type="text" class="input-mini" id="loopminu"  name="loopminu" />
-							
+							 -->
 							<h3 class="header smaller lighter blue">名称：</h3>
-							<input type="text" value="" placeholder="名称"  id="title" name="title">
+							<input type="text" value='<#if rlang??>${rlang.title!""}</#if>' placeholder="名称"  id="title" name="title">
 							<h3 class="header smaller lighter blue">描述：</h3>
-							<input type="text" value="" placeholder="描述"  id="rdesc" name="rdesc">
+							<textarea placeholder="描述"  id="rdesc" name="rdesc"><#if rlang??>${rlang.rdesc!""}</#if> </textarea>
 							<button type="submit" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button>
 							</form>
 						</div>
@@ -134,12 +135,14 @@
 								<i class="icon-folder-open"></i>
 								文件:
 							</h3>
-							<form id="target" name="target"  onsubmit="return validateForm()"  class="form-horizontal id-message-form" enctype="multipart/form-data"
-									action='${action_url!""}' method="POST" class="form-inline">
-							<h3 class="header smaller lighter blue">选择文件：</h3>
-							<input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-							<a href="javascript:void(0)" id="saveImg" name="saveImg" class="btn btn-primary"
-										onclick="SaveFile()"><i  id="loop_ico" name="loop_ico"  class="icon-beaker align-top bigger-125"></i> <span id="loop_name" name="loop_name">保存图表</span></a>
+							<form id="target" name="target" class="form-horizontal id-message-form" enctype="multipart/form-data"
+									action='${file_url!""}' method="POST" class="form-inline">
+								<h3 class="header smaller lighter blue">选择文件：</h3>
+								<input type="file" name="attachment" id="attachment"  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+								<button type="submit"  class="btn btn-primary">
+									<i  id="loop_ico" name="loop_ico"  class="icon-beaker align-top bigger-125"></i> 
+									<span id="loop_name" name="loop_name">保存文件</span>
+								</button>
 							</form>
 							<h3 class="header smaller lighter blue">文件列表：</h3>
 								<table class="table table-striped table-bordered table-hover"
@@ -152,13 +155,17 @@
 											<th class="hidden-480">时间</th>
 										</tr>
 									</thead>
-									<tbody id="sqlparams" name="sqlparams">										
+									<tbody id="sqlparams" name="sqlparams">		
+									<#if ListFile??>
+									<#list ListFile as item>								
 									<tr>
-										<td class='center'>1</td>
-										<td class='center'>文件名</td>
-										<td class='center'>./data/daer.xle</td>
-										<td class='center'>2015-12-8</td>
+										<td class='center'>${item.id}</td>
+										<td class='center'>${item.title}</td>
+										<td class='center'>./${item.path}</td>
+										<td class='center'>${fun.DateFormat(item.etime, "yyyy-MM-dd HH:mm")}</td>
 									</tr>
+									</#list>
+									</#if>
 									</tbody>
 								</table>
 								
@@ -369,7 +376,7 @@
 
 	function initEdits(){
 	  var initEDit = getCookie("REdit");
-	  var editCon = "${REdit!''}";
+	  var editCon = '${REdit!""}';
 	  if(editCon.length > 0){
 		   $("#r_query").val(unescape(editCon));
 	   }
@@ -438,6 +445,7 @@
 	}
 	
 	function ScriptR(){
+		$("#rload").attr("class","icon-spinner icon-spin orange bigger-125");
 		$.ajax({
 			  url: "${script_url}?jsoncallback=?",
 			  contentType: 'text/html;charset=utf-8',			  
@@ -464,23 +472,12 @@
 				  });
 					
 				  node.expandAll();
+				  $("#rload").attr("class","icon-code");
 				 /// $("#json_result").html(option);
 			  }
 			});
 	}
-	
-	function SaveFile() {
-		$("#saveImg").attr("class", "disabled btn btn-xs btn-app btn-primary");
-		//var timestamp = Date.parse(new Date());
 		
-	
-	     console.log("filePath:"+$("#attachment").prop('files'));
-	     
-
-		//checkFile(md5Name);
-		
-	}
-	
 	function ajaxLoog(o, dataName){
 		var dataURL = myChart.getDataURL();
 		var step = 1024*2;

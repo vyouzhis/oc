@@ -255,6 +255,8 @@ CREATE TABLE hor_rlanguage
   isshare integer NOT NULL DEFAULT 0,
   rdesc character varying(266) NOT NULL DEFAULT ''::character varying, -- desc
   rcode text NOT NULL DEFAULT ''::text, -- 代码
+  ctime integer NOT NULL DEFAULT 0, -- create time
+  etime integer NOT NULL DEFAULT 0, -- edit time
   CONSTRAINT hor_rlanguage_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -264,6 +266,25 @@ ALTER TABLE hor_rlanguage
   OWNER TO bi;
 COMMENT ON COLUMN hor_rlanguage.rdesc IS 'desc';
 COMMENT ON COLUMN hor_rlanguage.rcode IS '代码';
+COMMENT ON COLUMN hor_rlanguage.ctime IS 'create time';
+COMMENT ON COLUMN hor_rlanguage.etime IS 'edit time';
+
+CREATE TABLE hor_rexcel
+(
+  id serial NOT NULL,
+  title character varying NOT NULL,
+  path text NOT NULL DEFAULT ''::text,
+  ctime integer NOT NULL DEFAULT 0,
+  etime integer NOT NULL DEFAULT 0,
+  uid integer NOT NULL DEFAULT 1,
+  isshare integer NOT NULL DEFAULT 0,
+  CONSTRAINT hor_rexcel_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE hor_rexcel
+  OWNER TO bi;
 
 CREATE TABLE hor_classinfo
 (

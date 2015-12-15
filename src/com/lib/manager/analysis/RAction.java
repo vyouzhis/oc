@@ -1,5 +1,7 @@
 package com.lib.manager.analysis;
 
+import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +9,9 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
+import org.ppl.io.ProjectPath;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.RFactor;
@@ -28,8 +32,6 @@ public class RAction extends Permission implements BasePerminterface {
 		super.GetSubClassName(className);
 		setRoot("name", _MLang("name"));
 		InAction(); // 设置只是动作
-		setAjax(true); // 设置是 ajax
-		isAutoHtml = false; // 不用加载页头和页脚
 	}
 
 	@Override
@@ -48,9 +50,9 @@ public class RAction extends Permission implements BasePerminterface {
 		case "read":
 			read(null);
 			break;
-		case "search":
-			search(null);
-			break;
+		case "create":
+			create(null);
+			return;
 
 		default:
 			Msg(_CLang("error_role"));
@@ -81,6 +83,13 @@ public class RAction extends Permission implements BasePerminterface {
 			} else {
 				if (RJson == null || RJson.length() == 0)
 					return;
+				ProjectPath pp = ProjectPath.getInstance();
+				URI uri = pp.DataDir();
+				String path = uri.getPath().substring(1);
+				String setwd = String.format("setwd('%s')", path);
+				// echo(setwd);
+				globale_config.rcoonnect.voidEval(setwd);
+				// globale_config.rcoonnect.voidEval("if (!is.null(WD)) setwd(WD)");
 				r = globale_config.rcoonnect.eval(RJson);
 
 			}
@@ -91,6 +100,8 @@ public class RAction extends Permission implements BasePerminterface {
 		if (r != null) {
 			SelectREXP(r._attr(), "attr");
 			SelectREXP(r, "val");
+			globale_config.rcoonnect.close();
+			echo("end");
 		}
 		super.setHtml(JSON.toJSONString(RListJson));
 	}
@@ -234,6 +245,47 @@ public class RAction extends Permission implements BasePerminterface {
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
+		UrlClassList ucl = UrlClassList.getInstance();
+		Map<String, byte[]> file = porg.getUpload_string();
+		// String name = porg.getKey("attachment");
+		Map<String, String> fileName = porg.getUpload_name();
+		ProjectPath pp = ProjectPath.getInstance();
+		String dir = "rexcel";
+		String path = "";
+		boolean bool = false;
+		if (pp.isDir(dir) == false) {
+			bool = pp.mkDir(dir);
+			if (bool == false) {
+				TipMessage(ucl.read("Rlang"), _CLang("error_nothing"));
+			}
+		}
+
+		for (String key : file.keySet()) {
+			echo(fileName.get(key));
+			path = dir + "/" + time() + "." + fileName.get(key).split("\\.")[1];
+
+			Save(fileName.get(key), path);
+
+			pp.SaveFile(path, file.get(key), false);
+		}
+
+		TipMessage(ucl.read("Rlang"), _CLang("ok_save"));
+	}
+
+	private void Save(String title, String path) {
+		int now = time();
+		String format = " insert INTO "
+				+ DB_HOR_PRE
+				+ "rexcel ( title,path,uid,isshare, ctime,etime)values('%s', '%s', %d,%d, %d,%d);";
+		String sql = String.format(format, title, path, aclGetUid(), 0, now,
+				now);
+
+		try {
+			insert(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

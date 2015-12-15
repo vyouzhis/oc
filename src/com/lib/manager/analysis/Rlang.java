@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
+import org.ppl.common.Escape;
 import org.ppl.etc.UrlClassList;
 import org.ppl.etc.globale_config;
 import org.ppl.plug.R.Rlan;
@@ -67,6 +68,8 @@ public class Rlang extends Permission implements BasePerminterface {
 		setRoot("action_url", ucl.create(SliceName(stdClass)));
 		setRoot("search_url", ucl.search(SliceName(stdClass)));
 		setRoot("script_url", ucl.read("RAction"));
+		setRoot("file_url", ucl.create("RAction"));
+		
 		Rlan rlan = new Rlan();
 		String[] sR = rlan.ls();
 
@@ -75,12 +78,35 @@ public class Rlang extends Permission implements BasePerminterface {
 		setRoot("r_key_list", json);
 		
 		listPid();
-
+		
+		int id = toInt(porg.getKey("id"));
+		if(id>0){
+			String format = "select * from "+DB_HOR_PRE+"rlanguage where "+UserPermi()+"  and id=%d limit 1; ";
+			String sql = String.format(format, id);
+			Map<String, Object> res;
+			
+			res = FetchOne(sql);
+			if(res!=null){
+				setRoot("rlang", res);
+				setRoot("REdit", Escape.escape(res.get("rcode").toString()));
+			}
+		}
+		listFile();	
 	}
-
+	
 	@Override
 	public void create(Object arg) {
 		// TODO Auto-generated method stub
+		SaveRlan();
+	}
+
+	@Override
+	public void edit(Object arg) {
+		// TODO Auto-generated method stub
+		SaveRlan();
+	}
+	
+	private void SaveRlan() {
 		String title = porg.getKey("title");
 		String cid = porg.getKey("cid_list");
 		String day = porg.getKey("loopday");
@@ -88,12 +114,28 @@ public class Rlang extends Permission implements BasePerminterface {
 		String minu = porg.getKey("loopminu");
 		String rdesc = porg.getKey("rdesc");
 		String rcode = porg.getKey("rcode");
-		
 		UrlClassList ucl = UrlClassList.getInstance();
 		
-		String format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare)values('%s',%s,%s,%s,%s,'%s','%s',%d,%d);";
-		String sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0);
 		
+		if(title == null || cid==null || rdesc == null || rcode == null){
+
+			TipMessage(ucl.read("RList"), _CLang("error_null"));
+			return ;
+		}
+		
+		int id = toInt(porg.getKey("id"));
+		int now = time();
+		
+		
+		String format = "", sql="";
+		
+		if(id==0){
+			format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare, ctime,etime)values('%s',%s,%s,%s,%s,'%s','%s',%d,%d, %d, %d);";
+			sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0, now,now);
+		}else {
+			format = "update "+DB_HOR_PRE+"rlanguage SET title='%s',cid=%s,day=%s,hour=%s,minu=%s,rdesc='%s',rcode='%s',etime = %d  where id=%d";
+			sql = String.format(format, title, cid, day,hour, minu, rdesc, rcode, now, id);
+		}
 		String msg = ""; 
 		try {
 			insert(sql);
@@ -104,13 +146,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			msg = _CLang(getErrorMsg());
 		}
 		
-		TipMessage(ucl.read(SliceName(stdClass)), msg);
-	}
-
-	@Override
-	public void edit(Object arg) {
-		// TODO Auto-generated method stub
-
+		TipMessage(ucl.read("RList"), msg);
 	}
 
 	@Override
@@ -166,6 +202,21 @@ public class Rlang extends Permission implements BasePerminterface {
 			res = FetchAll(sql);
 			if (res != null) {
 				setRoot("pid_list", res);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void listFile() {
+		String sql = "select * from "+DB_HOR_PRE+"rexcel where "+UserPermi()+" order by id desc";
+		List<Map<String, Object>> res = null;
+		
+		try {
+			res = FetchAll(sql);
+			if(res!=null){
+				setRoot("ListFile", res);				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

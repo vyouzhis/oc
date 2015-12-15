@@ -103,7 +103,7 @@ public class SaveImg extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		String ImgName = porg.getKey("ImgName");
 		ProjectPath pp = ProjectPath.getInstance();
-		boolean  re = pp.fineFile(ImgName);
+		boolean  re = pp.findFile(ImgName);
 		if(re==true){
 			super.setHtml("1");
 		}else {
