@@ -145,6 +145,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		PaserJson();
 		if (ftype == 0) {
 			pieList = getEcharts();
+			echo(pieList);
 		} else {
 			pieList = getRList();
 			echo(pieList);
@@ -1094,6 +1095,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	private List<List<Map<String, Object>>> getRList() {
 		List<List<Map<String, Object>>> ret = new ArrayList<>();
+		List<Map<String, Object>> RListObject = new ArrayList<>();
 		String format = "select rcode  from " + DB_HOR_PRE
 				+ "rlanguage where id=%s limit 1";
 		String sql = "";
@@ -1106,6 +1108,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		//String[] scode;
 		String rcode = "";
 		REXP r;
+		int size;
+		double[] volume;
+		String[] dial;
+		Map<String, Object> val;
 		try {			
 			rcoonnect.connection().voidEval(setwd);
 			for (Map<String, String> id : JsonIds) {
@@ -1120,26 +1126,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				
 				rcode = Escape.unescape(rcode);
 				rcode = rcode.replace("\r", "");
-//				//echo(rcode);
-//				scode = rcode.split("\n");
-//				//echo("length:"+scode.length);
-//				for (int i = 0; i < scode.length-1; i++) {
-//					echo(scode[i]);
-//					rcoonnect.connection().voidEval(scode[i]);
-//				}
+
 				r = rcoonnect.connection().eval(rcode);
 				
 				if (r != null) {
-					//SelectREXP(r._attr(), "attr");
 					SelectREXP(r, "val");
-					ret.add(RListJson);
-					//echo("end");
+					
+					volume = (double[]) RListJson.get(0).get("volume");
+					dial = (String[]) RListJson.get(1).get("dial");
+					size = volume.length;
+					for (int i = 0; i < size; i++) {
+						val = new HashMap<>();
+						
+						val.put("volume",volume[i]);
+						val.put("dial", dial[i]);
+						RListObject.add(val);
+					}
+					ret.add(RListObject);
 				}				
 			}
 			
 		} catch (RserveException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();			
+			// TODO Auto-generated catch block		
 			echo(rcoonnect.connection().getLastError());
 		}finally{
 			rcoonnect.close();
