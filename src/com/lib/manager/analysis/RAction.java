@@ -100,8 +100,7 @@ public class RAction extends Permission implements BasePerminterface {
 		}
 		if (r != null) {
 			SelectREXP(r._attr(), "attr");
-			SelectREXP(r, "val");
-			rcoonnect.connection().close();
+			SelectREXP(r, "val");			
 			echo("end");
 		}
 		rcoonnect.close();

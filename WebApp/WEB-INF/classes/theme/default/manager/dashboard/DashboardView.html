@@ -428,6 +428,12 @@
 	                                callback({ data: response.data });
 	                        },
 	                        complete: function(request, textStatus) {
+	                        	var option = request.responseText;
+	                        	var chk = option.substring(1, 5);
+
+								  if(chk=='html'){
+									  alert("还没登录或超时退出!");
+								  }
 	                        	$data = JSON.parse(request.responseText);
 	                        	//console.log("1");
 	                            callback({ data:  $data });
@@ -459,6 +465,12 @@
 		                                callback({ data: response.data });
 		                        },
 		                        complete: function(request, textStatus) {
+		                        	var option = request.responseText;
+		                        	var chk = option.substring(1, 5);
+
+									  if(chk=='html'){
+										  alert("还没登录或超时退出!");
+									  }
 		                        	var datas = JSON.parse(request.responseText);
 		                        	//console.log(datas);
 		                           callback({ data:  datas.additionalParameters.children });
@@ -488,6 +500,13 @@
 		                                callback({ data: response.data });
 		                        },
 		                        complete: function(request, textStatus) {
+		                        	var option = request.responseText;
+		                        	var chk = option.substring(1, 5);
+
+									  if(chk=='html'){
+										  alert("还没登录或超时退出!");
+									  }
+									  
 		                        	var datas = JSON.parse(request.responseText);
 		                        	//console.log(datas);
 		                           callback({ data:  datas.additionalParameters.children });
@@ -568,13 +587,6 @@
 
 				jQuery(function($) {
 										 				       				    				       
-					$('#sqltree').on("click", function(){
-						var o = $(this).tree('selectedItems');
-						//console.log("tree:"+JSON.stringify(o));
-						addTmp(o);
-					});
-
-					
 					$('#bword').on("click", function(){
 						var stemTxt=CKEDITOR.instances.editor1.getData();
 						$("#docEdit").html(stemTxt);
@@ -595,6 +607,11 @@
 									'selected-icon' : 'icon-ok',
 									'unselected-icon' : 'icon-remove'
 								});
+					$('#sqltree').on("click", function(){
+						var o = $(this).tree('selectedItems');
+						//console.log("tree:"+JSON.stringify(o));
+						addTmp(o);
+					});
 					
 					$('#cloudRtree')
 					.ace_tree(
@@ -609,6 +626,12 @@
 								'selected-icon' : 'icon-ok',
 								'unselected-icon' : 'icon-remove'
 							});
+					$('#cloudRtree').on("click", function(){
+						var o = $(this).tree('selectedItems');
+						console.log("tree:"+JSON.stringify(o));
+						//addTmp(o);
+					});
+					
 					
 					$('.chart_1').on("click", function(){
 						var attr = $(this).attr("class").substr(18);
@@ -841,7 +864,7 @@
 							 }
 							 var o = $('#sqltree').tree('selectedItems');
 							 var table = JSON.parse(option);
-							 console.log(option);
+							// console.log(option);
 							 var editTable = "";
 							 for(var m in o){
 								 //console.log("name:"+o[0].name);
@@ -864,7 +887,7 @@
 						});
 				}
 					
-				function TreeJson(){
+				function TreeSQLJson(){
 					var o = $('#sqltree').tree('selectedItems');
 					var JsonData = {};
 					
@@ -880,7 +903,7 @@
 					
 					var tmp_list = JSON.stringify(tmp);
 					 
-					startTime = new Date().getTime(); 
+					
 					JsonData['ids'] = selectedItems;
 					JsonData['graph_type'] = $('input[name="graph_type"]:checked').val();
 					JsonData['tmp_list'] = tmp_list;
@@ -897,14 +920,44 @@
 					
 					return JsonData;
 				}
+				
+				function TreeRJson(){
+					var o = $('#cloudRtree').tree('selectedItems');
+					var JsonData = {};
+					
+					var selectedItems = escape(JSON.stringify(o));
+					console.log( JSON.stringify(o) );
+																				 					
+					JsonData['ids'] = selectedItems;
+					JsonData['graph_type'] = $('input[name="graph_type"]:checked').val();
+					
+					$("input:checked").each(function(index, element) {
+						var argname = $(this).attr('name');
+						var name = argname.substr(4);
+						var arg = argname.substr(0,4);
+						if(arg=='arg_'){						
+							JsonData[name] = 1;
+						}
+						
+				    });
+					
+					return JsonData;
+				}
 					
 				function refresh() {
-					var JsonData = TreeJson();
-
+					var JsonData;
+					var refresh_type = 0;
+					var startTime = new Date().getTime(); 
+					if($("#cloudR").attr("class").indexOf("active")>0){
+						JsonData = TreeRJson();
+						refresh_type = 1;
+					}else{
+						JsonData = TreeSQLJson();
+					}
 					//console.log("JsonData:"+JSON.stringify(JsonData));
 										
 					$.ajax({
-						  url: "${json_url}?jsoncallback=?",
+						  url: "${json_url}?ftype="+refresh_type+"&jsoncallback=?",
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
 						  data:JsonData,

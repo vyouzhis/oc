@@ -87,8 +87,9 @@ public class Rlang extends Permission implements BasePerminterface {
 			
 			res = FetchOne(sql);
 			if(res!=null){
+				//res.put("rcode", Escape.unescape(res.get("rcode").toString()));
 				setRoot("rlang", res);
-				setRoot("REdit", Escape.escape(res.get("rcode").toString()));
+				setRoot("REdit", res.get("rcode").toString());
 			}
 		}
 		listFile();	
@@ -131,10 +132,10 @@ public class Rlang extends Permission implements BasePerminterface {
 		
 		int id = toInt(porg.getKey("id"));
 		int now = time();
-		
-		
+				
 		String format = "", sql="";
 		
+		rcode = Escape.escape(rcode);
 		if(id==0){
 			format ="insert into "+DB_HOR_PRE+"rlanguage ( title,cid,day,hour,minu,rdesc,rcode,uid,isshare, ctime,etime,ishow)values('%s',%d,%d,%d,%d,'%s','%s',%d,%d, %d, %d, %d);";
 			sql = String.format(format, title,cid,day,hour,minu, rdesc,rcode,aclGetUid(), 0, now,now, isshow);

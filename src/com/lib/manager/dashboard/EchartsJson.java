@@ -1,19 +1,25 @@
 package com.lib.manager.dashboard;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.naming.factory.EjbFactory;
 import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
 import org.ppl.db.UserCoreDB;
 import org.ppl.io.DesEncrypter;
 import org.ppl.io.Encrypt;
+import org.ppl.io.ProjectPath;
 import org.ppl.plug.R.Rlan;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.RFactor;
+import org.rosuda.REngine.RList;
+import org.rosuda.REngine.Rserve.RserveException;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -56,6 +62,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			math_diff = 0;
 	private int math_lm = 0;
 	private int order_desc = 0;
+	private int ftype = 0;
+	private List<Map<String, Object>> RListJson;
+	private int index = 0;
 
 	public EchartsJson() {
 		// TODO Auto-generated constructor stub
@@ -120,6 +129,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
+		ftype = toInt(porg.getKey("ftype"));
+
 		String gt = "";
 		String EJson = "";
 		if (porg.getKey("graph_type") != null) {
@@ -132,8 +143,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		GL = JSON.parseObject(glJson, List.class);
 
 		PaserJson();
-
-		pieList = getEcharts();
+		if (ftype == 0) {
+			pieList = getEcharts();
+		} else {
+			pieList = getRList();
+			echo(pieList);
+		}
 
 		math_lm = toInt(porg.getKey("math_lm"));
 
@@ -548,7 +563,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Map<String, Object>> dList = pieList.get(0);
 
 		Line pOption = new Line();
-		Rlan rlan = new Rlan();
+		Rlan rlan = Rlan.getInstance();
 
 		double m;
 		double[] dataX, dataY;
@@ -596,6 +611,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		option.legend(_MLang("lm"));
 
 		option.series(pOption);
+		rlan.close();
 	}
 
 	private void math_sma() {
@@ -681,7 +697,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private String JsonScatter() {
 
 		option.tooltip().trigger(Trigger.item).formatter("{c}");
-
+		List<Map<String, Object>> list;
 		if (pieList == null || pieList.size() == 0)
 			return "";
 
@@ -692,7 +708,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				continue;
 			}
 
-			List<Map<String, Object>> list = pieList.get(l);
+			list = pieList.get(l);
 			l++;
 
 			Scatter scatter = new Scatter();
@@ -741,7 +757,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		Polar polar = new Polar();
 		Legend legend = new Legend();
 		legend.x(X.right).y(Y.bottom).orient(Orient.vertical);
-		
+
 		List<Map<String, Object>> indicator = new ArrayList<>();
 
 		option.tooltip().trigger(Trigger.axis);
@@ -750,7 +766,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			return "";
 
 		int l = 0;
-		
+
 		Map<String, Object> data, iMap;
 
 		for (Map<String, String> id : JsonIds) {
@@ -759,16 +775,17 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			}
 
 			List<Map<String, Object>> list = pieList.get(l);
-			
+
 			Radar radar = new Radar();
 			legend.data(id.get("name").toString());
-			
-			int i=0;
+
+			int i = 0;
 			data = new HashMap<>();
-			List<Object> m = new ArrayList<>();;
-			
+			List<Object> m = new ArrayList<>();
+			;
+
 			for (Map<String, Object> key : list) {
-				
+
 				float val = toFloat(key.get("volume"));
 				if (val == 0) {
 					m.add(key.get("volume"));
@@ -776,35 +793,37 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					m.add(Float.valueOf(String.format("%.2f", val)));
 				}
 				String dial = key.get("dial").toString();
-				
-				if(l==0){
-					iMap = new HashMap<>();					
+
+				if (l == 0) {
+					iMap = new HashMap<>();
 					iMap.put("text", dial);
 					iMap.put("max", Math.ceil(val));
 					indicator.add(iMap);
-				}else {
-					if(indicator.get(i).get("text").equals(dial) && Double.valueOf(indicator.get(i).get("max").toString())< val){
+				} else {
+					if (indicator.get(i).get("text").equals(dial)
+							&& Double.valueOf(indicator.get(i).get("max")
+									.toString()) < val) {
 						indicator.get(i).put("max", Math.ceil(val));
 					}
 				}
 				i++;
-				
-				//m.add(val);
+
+				// m.add(val);
 			}
 			data.put("value", m);
 			data.put("name", id.get("name").toString());
 			radar.data(data);
 			l++;
-			
+
 			radar.setName(id.get("name").toString());
 
 			option.series(radar);
-			//option.title(id.get("name").toString());
+			// option.title(id.get("name").toString());
 		}
 		for (int i = 0; i < indicator.size(); i++) {
 			polar.indicator(indicator.get(i));
 		}
-		
+
 		option.polar(polar);
 		option.legend(legend);
 		return option.toString();
@@ -855,7 +874,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	private String JsonMap() {
 		option.tooltip().trigger(Trigger.item).formatter("{b} <br/> {c}");
-		List<List<Map<String, Object>>> mapList = getEcharts();
+		// List<List<Map<String, Object>>> mapList = getEcharts();
 		ItemStyle itemStyle = new ItemStyle();
 		Normal normal = new Normal();
 		Label label = new Label();
@@ -870,7 +889,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		int max = 0;
 		int tmp = 0;
 
-		if (mapList == null || mapList.size() == 0)
+		if (pieList == null || pieList.size() == 0)
 			return "";
 		// List<String> legendTitle = new ArrayList<>();
 		int l = 0;
@@ -880,7 +899,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			option.legend(id.get("name").toString());
 
-			List<Map<String, Object>> list = mapList.get(l);
+			List<Map<String, Object>> list = pieList.get(l);
 			l++;
 			com.github.abel533.echarts.series.Map map = new com.github.abel533.echarts.series.Map();
 			// legendTitle = new ArrayList<>();
@@ -942,6 +961,15 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	private List<List<Map<String, Object>>> getEcharts() {
 		List<List<Map<String, Object>>> ret = new ArrayList<>();
 		int qaction = 0;
+		int dtype = 0;
+		String sql = "";
+		int tid = 0;
+		Map<String, Object> ures;
+		Map<String, Object> tres;
+		String usql = "";
+		Map<String, String> tList = null;
+		List<List<String>> uList = null;
+		Map<String, Object> tmpRes;
 		String format = "select rule,volume,dial from " + DB_HOR_PRE
 				+ "webvisitcount  where rule = %d and dial > 2015011100 and "
 				+ UserPermi() + " order by rule, dial ;";
@@ -949,6 +977,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Map<String, Object>> res = null;
 		String tmp_list = porg.getKey("tmp_list");
 		Map<String, String> tmp_map = null;
+
 		if (tmp_list != null) {
 			tmp_map = JSON.parseObject(tmp_list, Map.class);
 		}
@@ -956,18 +985,17 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		for (Map<String, String> id : JsonIds) {
 
 			qaction = toInt(id.get("qaction"));
-			int dtype = 0;
+
 			if (qaction == 0)
 				continue;
 
-			String sql = String.format(format, toInt(id.get("id")));
-			int tid = toInt(id.get("id"));
+			sql = String.format(format, toInt(id.get("id")));
+			tid = toInt(id.get("id"));
 			if (qaction == 4) {
 
-				String usql = "select sql,dtype from " + DB_HOR_PRE
+				usql = "select sql,dtype from " + DB_HOR_PRE
 						+ "usersql where id=" + tid + " and " + UserPermi()
 						+ " LIMIT 1";
-				Map<String, Object> ures;
 
 				ures = FetchOne(usql);
 
@@ -985,7 +1013,6 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						+ aclGetUid() + " or u.isshare=1) and t.id=" + tid
 						+ " limit 1";
 
-				Map<String, Object> tres;
 				tres = FetchOne(sql);
 				// echo(tsql);
 				if (tres == null)
@@ -995,9 +1022,9 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				String tJson = tres.get("sqltmp").toString();
 				String uJson = tres.get("usqltmp").toString();
 				dtype = toInt(tres.get("dtype"));
-				Map<String, String> tList = JSON.parseObject(tJson, Map.class);
+				tList = JSON.parseObject(tJson, Map.class);
 
-				List<List<String>> uList = JSON.parseObject(uJson, List.class);
+				uList = JSON.parseObject(uJson, List.class);
 
 				for (String key : tList.keySet()) {
 					sql = sql.replace("@" + key + "@", tList.get(key));
@@ -1008,7 +1035,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				}
 
 				sql = escapeHtml(sql);
-				echo(sql);
+				// echo(sql);
 
 			} else if (qaction == 6) {
 				if (tmp_map == null)
@@ -1016,7 +1043,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				sql = "SELECT sql,dtype from " + DB_HOR_PRE
 						+ "usersql where id=" + tid + " and " + UserPermi()
 						+ " limit 1";
-				Map<String, Object> tmpRes;
+
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
 					continue;
@@ -1050,7 +1077,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				if (res != null) {
 					ret.add(res);
-					//echo("time:"+(end - start));
+					// echo("time:"+(end - start));
 					if ((end - start) > mConfig.GetInt("cache.time")) {
 						setCache(sql, id.get("name").toString(), res);
 					}
@@ -1063,6 +1090,190 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		}
 
 		return ret;
+	}
+
+	private List<List<Map<String, Object>>> getRList() {
+		List<List<Map<String, Object>>> ret = new ArrayList<>();
+		String format = "select rcode  from " + DB_HOR_PRE
+				+ "rlanguage where id=%s limit 1";
+		String sql = "";
+		Map<String, Object> res;
+		Rlan rcoonnect = Rlan.getInstance();
+		ProjectPath pp = ProjectPath.getInstance();
+		URI uri = pp.DataDir();
+		String path = uri.getPath().substring(1);
+		String setwd = String.format("setwd('%s')", path);
+	
+		String rcode = "";
+		REXP r;
+		try {
+			
+			rcoonnect.connection().voidEval(setwd);
+			for (Map<String, String> id : JsonIds) {
+				RListJson = new ArrayList<>();
+				index = 0;
+				rcode = "";
+				sql = String.format(format, id.get("id").toString());
+				res = FetchOne(sql);
+				if (res == null)
+					continue;
+				rcode = res.get("rcode").toString();
+				
+				rcode = Escape.unescape(rcode);
+								
+				r = rcoonnect.connection().eval(rcode);
+				
+				if (r != null) {
+					SelectREXP(r._attr(), "attr");
+					SelectREXP(r, "val");
+					ret.add(RListJson);
+					//echo("end");
+				}				
+			}
+			
+		} catch (RserveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			rcoonnect.close();
+		}
+		return ret;
+	}
+
+	private void SelectREXP(REXP r, String key) {
+		// REXP r = c.eval("print(df)");
+		if (r == null)
+			return;
+		try {
+			if (r.isComplex()) {
+				echo("isComplex");
+			} else if (r.isEnvironment()) {
+				echo("isEnvironment");
+			} else if (r.isExpression()) {
+				echo("isExpression");
+			} else if (r.isFactor()) {
+				RFactor factors = r.asFactor();
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(key, factors.asStrings());
+				RListJson.add(map);
+				echo("isFactor");
+			} else if (r.isInteger()) {
+				int[] rint = r.asIntegers();
+				Map<String, Object> map = new HashMap<String, Object>();
+				if (key == null || key.length() == 0) {
+					map.put(index + "", rint);
+					index++;
+				} else {
+					map.put(key, rint);
+				}
+				SelectREXP(r._attr(), key);
+				RListJson.add(map);
+				echo("isInteger");
+			} else if (r.isLanguage()) {
+				RList lanList = r.asList();
+				String nkey = "";
+				for (int i = 0; i < lanList.size(); i++) {
+					nkey = lanList.keyAt(i);
+					if (nkey == null)
+						nkey = key;
+					SelectREXP(lanList.at(i), nkey);
+				}
+				echo("isLanguage");
+			} else if (r.isList()) {
+				echo("isList");
+				RList rList;
+				String nkey = "";
+				rList = r.asList();
+
+				for (int i = 0; i < rList.size(); i++) {
+					nkey = rList.keyAt(i);
+					if (nkey == null)
+						nkey = key;
+					if (nkey.equals("dim"))
+						continue;
+					SelectREXP(rList.at(i), nkey);
+				}
+			} else if (r.isLogical()) {
+				String[] b = r.asStrings();
+				Map<String, Object> map = new HashMap<String, Object>();
+				if (key == null || key.length() == 0) {
+					map.put(index + "", b);
+					index++;
+				} else {
+					map.put(key, b);
+				}
+
+				RListJson.add(map);
+				echo("isLogical");
+			} else if (r.isNull()) {
+				echo("isNull");
+			} else if (r.isNumeric()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+
+				int[] dim = r.dim();
+
+				if (dim == null || dim.length == 1) {
+
+					double[] m = r.asDoubles();
+
+					if (key.length() == 0) {
+						map.put(index + "", m);
+						index++;
+					} else {
+						map.put(key, m);
+					}
+
+				} else {
+					double[][] md = r.asDoubleMatrix();
+
+					if (key == null || key.length() == 0) {
+						map.put(index + "", md);
+						index++;
+					} else {
+						map.put(key, md);
+					}
+
+				}
+
+				RListJson.add(map);
+				echo("isNumeric");
+			} else if (r.isPairList()) {
+				echo("isPairList");
+			} else if (r.isRaw()) {
+				echo("isRaw");
+			} else if (r.isRecursive()) {
+				echo("isRecursive");
+			} else if (r.isReference()) {
+				echo("isReference");
+			} else if (r.isString()) {
+				String[] d = r.asStrings();
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				if (key == null || key.length() == 0) {
+					map.put(index + "", d);
+					index++;
+				} else {
+					map.put(key, d);
+				}
+
+				RListJson.add(map);
+				echo("isString");
+			} else if (r.isSymbol()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put(key, r.asString());
+				RListJson.add(map);
+				echo("isSymbol");
+			} else if (r.isVector()) {
+				echo("isVector");
+			} else {
+				echo("else");
+				echo(r.isNull());
+			}
+
+		} catch (REXPMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1176,6 +1387,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 	@Override
 	public void search(Object arg) {
 		// TODO Auto-generated method stub
+		// build table for editor
 		PaserJson();
 
 		List<List<Map<String, Object>>> eList = getEcharts();
