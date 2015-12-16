@@ -1103,11 +1103,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		URI uri = pp.DataDir();
 		String path = uri.getPath().substring(1);
 		String setwd = String.format("setwd('%s')", path);
-	
+		//String[] scode;
 		String rcode = "";
 		REXP r;
-		try {
-			
+		try {			
 			rcoonnect.connection().voidEval(setwd);
 			for (Map<String, String> id : JsonIds) {
 				RListJson = new ArrayList<>();
@@ -1120,11 +1119,18 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				rcode = res.get("rcode").toString();
 				
 				rcode = Escape.unescape(rcode);
-								
+				rcode = rcode.replace("\r", "");
+//				//echo(rcode);
+//				scode = rcode.split("\n");
+//				//echo("length:"+scode.length);
+//				for (int i = 0; i < scode.length-1; i++) {
+//					echo(scode[i]);
+//					rcoonnect.connection().voidEval(scode[i]);
+//				}
 				r = rcoonnect.connection().eval(rcode);
 				
 				if (r != null) {
-					SelectREXP(r._attr(), "attr");
+					//SelectREXP(r._attr(), "attr");
 					SelectREXP(r, "val");
 					ret.add(RListJson);
 					//echo("end");
@@ -1133,7 +1139,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			
 		} catch (RserveException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();			
+			echo(rcoonnect.connection().getLastError());
 		}finally{
 			rcoonnect.close();
 		}
