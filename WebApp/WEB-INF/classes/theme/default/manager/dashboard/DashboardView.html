@@ -836,10 +836,20 @@
 					};
 					
 				function buildTable(){
-					var JsonData = TreeJson();
+					var JsonData;
+					
+					var refresh_type = 0;
+					
+					if($("#cloudR").attr("class").indexOf("active")>0){
+						JsonData = TreeRJson();
+						refresh_type = 1;
+					}else{
+						JsonData = TreeSQLJson();
+					}
+					
 					
 					$.ajax({
-						  url: "${table_url}?jsoncallback=?",
+						  url: "${table_url}?ftype="+refresh_type+"&jsoncallback=?",
 						  contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 						  dataType: 'json',
 						  data:JsonData,
@@ -863,8 +873,12 @@
 								alert("还没登录或超时退出!");
 							 }
 							 var o = $('#sqltree').tree('selectedItems');
+							 if(refresh_type==1){
+							 	o = $('#cloudRtree').tree('selectedItems');
+							 }
+							 
 							 var table = JSON.parse(option);
-							// console.log(option);
+							 
 							 var editTable = "";
 							 for(var m in o){
 								 //console.log("name:"+o[0].name);
@@ -872,7 +886,7 @@
 								 editTable += "<table border='1' align='center' cellpadding='1' cellspacing='1' style='width:500px' summary='"+o[m].name+"'>";
 								  								 
 								 var cont = "";
-								 cont += "<tr><td>数据</td><td>标题</td></tr>";
+								 cont += "<tr><td>volume</td><td>dial</td></tr>";
 																 
 							 	 for(var n in table[m]){								
 									//console.log(table[i][n].volume+"--"+table[i][n].dial);
@@ -882,6 +896,7 @@
 							     editTable += cont +"</table>"; 
 							 }
 							 var stemTxt=CKEDITOR.instances.editor1.getData(); 
+							 console.log(stemTxt);
 							 CKEDITOR.instances.editor1.setData( stemTxt+editTable );	
 						  }
 						});

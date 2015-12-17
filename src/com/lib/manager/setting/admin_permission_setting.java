@@ -211,7 +211,7 @@ public class admin_permission_setting extends Permission implements
 
 		String sql = String.format(format, group_name, group_desc, MainRole,
 				SubRole, now, gid);
-
+		
 		try {
 			update(sql);
 		} catch (SQLException e) {

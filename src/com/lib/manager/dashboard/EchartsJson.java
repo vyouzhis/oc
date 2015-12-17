@@ -145,10 +145,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		PaserJson();
 		if (ftype == 0) {
 			pieList = getEcharts();
-			echo(pieList);
+			//echo(pieList);
 		} else {
 			pieList = getRList();
-			echo(pieList);
+			//echo(pieList);
 		}
 
 		math_lm = toInt(porg.getKey("math_lm"));
@@ -1422,8 +1422,16 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		// TODO Auto-generated method stub
 		// build table for editor
 		PaserJson();
-
-		List<List<Map<String, Object>>> eList = getEcharts();
+		ftype = toInt(porg.getKey("ftype"));
+		
+		List<List<Map<String, Object>>> eList = null;
+		
+		if (ftype == 0) {
+			eList = getEcharts();			
+		} else {
+			eList = getRList();			
+		}
+		
 		String listJson = JSON.toJSONString(eList);
 
 		super.setHtml(listJson);

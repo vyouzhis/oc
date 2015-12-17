@@ -225,16 +225,17 @@ public class DBSQL extends BaseLang {
 			if (ret) {
 				numRowsUpdated = stmt.executeUpdate(clearSQL,
 						Statement.RETURN_GENERATED_KEYS);
-			} else if (isud) {
+			}else {
+				stmt.executeUpdate(clearSQL);			
+			}
+			
+			if (isud) {
 				ResultSet rs = stmt.getGeneratedKeys();
 				if (rs == null)
 					return -1;
 				if (rs.next()) {
 					numRowsUpdated = rs.getLong(1);
 				}
-			} else {
-				stmt.executeUpdate(clearSQL);
-				
 			}
 
 		} catch (Exception e) {
