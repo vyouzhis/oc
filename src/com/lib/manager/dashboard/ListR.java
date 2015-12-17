@@ -116,8 +116,7 @@ public class ListR extends Permission implements BasePerminterface {
 
 		String tsql = "SELECT id,title as name, cid from " + DB_HOR_PRE
 				+ "rlanguage WHERE ishow=1 and cid=" + lid + " and "
-				+ UserPermi() + " order by id desc;";
-		echo(tsql);
+				+ UserPermi() + " order by id desc;";		
 		try {
 			RootRes = FetchAll(tsql);
 		} catch (SQLException e) {
