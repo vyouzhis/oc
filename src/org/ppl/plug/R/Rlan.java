@@ -60,12 +60,13 @@ public class Rlan {
 		try {
 			String[] Search = rcoonnect.eval("search()")
 					.asStrings();
-			String sR[][] = new String[Search.length][];
-			for (int i = 0; i < Search.length; i++) {
+			
+			String sR[][] = new String[Search.length-1][];
+			for (int i = 1; i < Search.length; i++) {
 
 				String[] sRutils = rcoonnect.eval(
 						"ls('" + Search[i] + "')").asStrings();
-				sR[i] = sRutils;
+				sR[i-1] = sRutils;
 			}
 
 			int m = 0;

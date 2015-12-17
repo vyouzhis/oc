@@ -89,6 +89,7 @@ public class Rlang extends Permission implements BasePerminterface {
 			if(res!=null){
 				//res.put("rcode", Escape.unescape(res.get("rcode").toString()));
 				setRoot("rlang", res);
+				//echo(res.get("rcode").toString());
 				setRoot("REdit", res.get("rcode").toString());
 			}
 		}

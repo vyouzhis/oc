@@ -1110,7 +1110,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		REXP r;
 		int size;
 		double[] volume;
-		String[] dial;
+		double[] diald=null;
+		String[] dials=null;
+		int[] dialf=null;
+		
 		Map<String, Object> val;
 		try {			
 			rcoonnect.connection().voidEval(setwd);
@@ -1133,13 +1136,28 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					SelectREXP(r, "val");
 					
 					volume = (double[]) RListJson.get(0).get("volume");
-					dial = (String[]) RListJson.get(1).get("dial");
+					
+					if(RListJson.get(1).get("dial") instanceof double[]){
+						diald = (double[]) RListJson.get(1).get("dial");
+					}else if (RListJson.get(1).get("dial") instanceof int[]) {
+						dialf = (int[]) RListJson.get(1).get("dial");					
+					}else {
+						dials = (String[]) RListJson.get(1).get("dial");
+					}
+					
+					
 					size = volume.length;
 					for (int i = 0; i < size; i++) {
 						val = new HashMap<>();
 						
 						val.put("volume",volume[i]);
-						val.put("dial", dial[i]);
+						if(diald!=null){
+							val.put("dial", diald[i]);
+						}else if (dialf!=null) {
+							val.put("dial", dialf[i]);
+						}else {
+							val.put("dial", dials[i]);
+						}
 						RListObject.add(val);
 					}
 					ret.add(RListObject);
@@ -1247,7 +1265,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 					} else {
 						map.put(key, md);
 					}
-
+					echo("[][] double");
 				}
 
 				RListJson.add(map);

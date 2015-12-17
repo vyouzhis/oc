@@ -47,7 +47,7 @@
 		
 						<div class="widget-body">
 							<div class="widget-main">
-								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)">${REdit!""}</textarea>
+								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)">${rcode!""}</textarea>
 							</div>
 						</div>
 					</div>	
@@ -66,16 +66,19 @@
 
 				<div class="tabbable">
 					<ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
-						<li class="active">
-							<a data-toggle="tab" href="#home4">保存</a>
+						<li id="li_save" class="active">
+							<a data-toggle="tab" href="#save">保存</a>
 						</li>
-						<li>
+						<li id="li_excel">
 							<a data-toggle="tab" href="#excel">上传文件</a>
 						</li>
-						<li>
+						<li id="li_tiptab">
+							<a data-toggle="tab" href="#tiptab">提示</a>
+						</li>
+						<li id="li_helps">
 							<a data-toggle="tab" href="#helps">帮助</a>
 						</li>
-						<li>
+						<li id="li_pack">
 							<a data-toggle="tab" href="#pack">安装包</a>
 						</li>
 
@@ -84,7 +87,7 @@
 					<div class="tab-content">
 						
 								
-						<div id="home4" class="tab-pane in active">
+						<div id="save" class="tab-pane in active">
 							<form id="target" name="target"  onsubmit="return validateForm()"  class="form-horizontal id-message-form" enctype="multipart/form-data"
 									action='${action_url!""}?id=<#if rlang??>${rlang.id!""}</#if>' method="POST" class="form-inline">
 							<textarea id="rcode" name="rcode"  rows=10" cols="10" style="display: none;" ></textarea>
@@ -107,7 +110,7 @@
 							<h3 class="header smaller lighter blue">是否图形展示：</h3>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" class="ace" name="showchart" id="showchart">
+									<input type="checkbox" class="ace" name="showchart" id="showchart" <#if rlang??> <#if (rlang.ishow?number==1) > checked="checked" </#if></#if> >
 									<span class="lbl">：展示</span>
 								</label>
 							</div>
@@ -129,9 +132,7 @@
 							<textarea placeholder="描述"  id="rdesc" name="rdesc"><#if rlang??>${rlang.rdesc!""}</#if> </textarea>
 							<button type="submit" class="btn btn-sm btn-default"> <i class="icon-ok bigger-110"></i> 保存 </button>
 							</form>
-						</div>
-						
-
+						</div>					
 						<div id="excel" class="tab-pane">
 					
 							<h3 class="header smaller lighter blue">
@@ -173,15 +174,51 @@
 								</table>
 								
 						</div>
-						<div id="helps" class="tab-pane">
+						<div id="tiptab" class="tab-pane">
 				
 							<h3 class="header smaller lighter blue">
 								<i class="icon-code"></i>
-								帮助:<span id="cname" name="cname"></span>
+								提示:<span id="cname" name="cname"></span>
 							</h3>
 			
 							<div class="widget-main">
 								<pre class="prettyprint linenums" id="tips" name="tips"></pre>
+							</div>
+							
+						</div>
+						<div id="helps" class="tab-pane">
+				
+							<h3 class="header smaller lighter blue">
+								<i class="icon-lightbulb"></i>
+								帮助:<span id="cname" name="cname"></span>
+							</h3>
+			
+							<div class="widget-main">
+								<blockquote>
+									<p>云端R 不支持 plot 这些函数显示图形。如果需要显示图形，请查看 "统计报表" 显示</p>
+
+									<small>
+										DiscoveryDBS
+										<cite title="Source Title">数据显示</cite>
+									</small>
+								</blockquote>
+								<hr>
+								<pre class="prettyprint linenums" >
+x<-c(1,3,4,5)
+y<-c(203,4,4,3)
+l<-list(volume=x,dial=y)
+print(l)
+								</pre>
+								<blockquote>
+									<p>让R 分析完成的数据在 "统计报表" 栏显示，x 最终代表X 坐标，y 最终代表Y 坐标，list 使用 volume 来作为 X 坐标的名字，dial 来作为 Y 坐标的名字，并在最终 pint 输出</p>
+
+									<small>
+										DiscoveryDBS
+										<cite title="Source Title">数据在"统计报表"栏中显示</cite>
+									</small>
+								</blockquote>
+							
+								
 							</div>
 							
 						</div>
@@ -258,10 +295,12 @@
 					            }));
 					        },
 					        template: function (value) {
+					        	console.log("value:"+value);
 					        	var val = value.substr(0, value.length-4);
-					        	if(value.indexOf("_var") >= 0){					        		
+					        	var lats = value.substr(value.length-4, 4);
+					        	if(lats == "_var" ){					        		
 					        		return '<i class="orange icon-exclamation-sign"></i>&nbsp;' + val;	
-					        	}else if(value.indexOf("_fun") >= 0){
+					        	}else if(lats == "_fun"){
 									return '<i class="purple icon-exclamation-sign"></i>&nbsp;' + val;
 					        	}
 					        	else{
@@ -272,9 +311,10 @@
 					        index: 1,
 					        replace: function (element) {
 					        	var val = element.substr(0, element.length-4);
-					        	if(element.indexOf("_var") >= 0){
+					        	var lat = element.substr(element.length-4, 4);
+					        	if(lat =="_var"){
 					        		return val;
-					        	}else if(element.indexOf("_fun") >= 0){
+					        	}else if(lat == "_fun"){
 					        		return [val+'(',  ')'];
 					        	}
 					        	else{
@@ -372,6 +412,18 @@
 					}					
 				}
 			}
+						
+			$("#li_save").attr("class","");
+			$("#li_excel").attr("class","");
+			$("#li_tiptab").attr("class","active");
+			$("#li_helps").attr("class","");
+			$("#li_pack").attr("class","");
+			
+			$("#save").attr("class","tab-pane");
+			$("#excel").attr("class","tab-pane");
+			$("#tiptab").attr("class","tab-pane in active");
+			$("#helps").attr("class","tab-pane");
+			$("#pack").attr("class","tab-pane");
 		}		
 	}
 
@@ -409,14 +461,20 @@
 	    if (code == 40 || code == 38) {
 	  
 	    	var val = $(".textcomplete-item.active").html();
-	    	
-	    	 if(typeof  val != 'undefined' && val.indexOf("_var")==-1 && val.indexOf("_fun")==-1){
+	    	console.log("key val:"+val);
+	    	 if(typeof  val != 'undefined' && val.indexOf("orange")==-1 && val.indexOf("purple")==-1){
 	             val = val.trim();
 	             val = val.substr(3, val.length-7);
-	         	//console.log(val);
+	         	
 	         	$("#cname").html(val);
 	 	    	getKeyTip(val);
-	     	}     
+	     	}else{
+	     		val = val.trim();
+	            val = val.substr(3, val.length-7);
+	         	
+	         	$("#cname").html(val);
+	         	$("#tips").html("");
+	     	}    
 	    }
 	       
 	});
