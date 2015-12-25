@@ -145,10 +145,10 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		PaserJson();
 		if (ftype == 0) {
 			pieList = getEcharts();
-			//echo(pieList);
+			// echo(pieList);
 		} else {
 			pieList = getRList();
-			//echo(pieList);
+			// echo(pieList);
 		}
 
 		math_lm = toInt(porg.getKey("math_lm"));
@@ -1103,19 +1103,22 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		Rlan rcoonnect = Rlan.getInstance();
 		ProjectPath pp = ProjectPath.getInstance();
 		URI uri = pp.DataDir();
-		String path = uri.getPath().substring(1);
+		String path = uri.getPath();
+		if (System.getProperty("file.separator").equals("\\")) {
+			path = path.substring(1);
+		}
 		String setwd = String.format("setwd('%s')", path);
-		//String[] scode;
+
 		String rcode = "";
 		REXP r;
 		int size;
 		double[] volume;
-		double[] diald=null;
-		String[] dials=null;
-		int[] dialf=null;
-		
+		double[] diald = null;
+		String[] dials = null;
+		int[] dialf = null;
+
 		Map<String, Object> val;
-		try {			
+		try {
 			rcoonnect.connection().voidEval(setwd);
 			for (Map<String, String> id : JsonIds) {
 				RListJson = new ArrayList<>();
@@ -1126,48 +1129,47 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				if (res == null)
 					continue;
 				rcode = res.get("rcode").toString();
-				
+
 				rcode = Escape.unescape(rcode);
 				rcode = rcode.replace("\r", "");
 
 				r = rcoonnect.connection().eval(rcode);
-				
+
 				if (r != null) {
 					SelectREXP(r, "val");
-					
+
 					volume = (double[]) RListJson.get(0).get("volume");
-					
-					if(RListJson.get(1).get("dial") instanceof double[]){
+
+					if (RListJson.get(1).get("dial") instanceof double[]) {
 						diald = (double[]) RListJson.get(1).get("dial");
-					}else if (RListJson.get(1).get("dial") instanceof int[]) {
-						dialf = (int[]) RListJson.get(1).get("dial");					
-					}else {
+					} else if (RListJson.get(1).get("dial") instanceof int[]) {
+						dialf = (int[]) RListJson.get(1).get("dial");
+					} else {
 						dials = (String[]) RListJson.get(1).get("dial");
 					}
-					
-					
+
 					size = volume.length;
 					for (int i = 0; i < size; i++) {
 						val = new HashMap<>();
-						
-						val.put("volume",volume[i]);
-						if(diald!=null){
+
+						val.put("volume", volume[i]);
+						if (diald != null) {
 							val.put("dial", diald[i]);
-						}else if (dialf!=null) {
+						} else if (dialf != null) {
 							val.put("dial", dialf[i]);
-						}else {
+						} else {
 							val.put("dial", dials[i]);
 						}
 						RListObject.add(val);
 					}
 					ret.add(RListObject);
-				}				
+				}
 			}
-			
+
 		} catch (RserveException e) {
-			// TODO Auto-generated catch block		
+			// TODO Auto-generated catch block
 			echo(rcoonnect.connection().getLastError());
-		}finally{
+		} finally {
 			rcoonnect.close();
 		}
 		return ret;
@@ -1423,15 +1425,15 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		// build table for editor
 		PaserJson();
 		ftype = toInt(porg.getKey("ftype"));
-		
+
 		List<List<Map<String, Object>>> eList = null;
-		
+
 		if (ftype == 0) {
-			eList = getEcharts();			
+			eList = getEcharts();
 		} else {
-			eList = getRList();			
+			eList = getRList();
 		}
-		
+
 		String listJson = JSON.toJSONString(eList);
 
 		super.setHtml(listJson);

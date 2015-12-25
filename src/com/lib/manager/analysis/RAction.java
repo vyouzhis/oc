@@ -74,11 +74,13 @@ public class RAction extends Permission implements BasePerminterface {
 		try {
 			if (listPack == 1) {
 
-				rcoonnect.connection()
-						.voidEval("ip <- as.data.frame(installed.packages()[,c(1,3:4)]) ");
+				rcoonnect
+						.connection()
+						.voidEval(
+								"ip <- as.data.frame(installed.packages()[,c(1,3:4)]) ");
 				rcoonnect.connection().voidEval("rownames(ip) <- NULL");
-				rcoonnect.connection()
-						.voidEval("ip <- ip[is.na(ip$Priority),1:2,drop=FALSE]");
+				rcoonnect.connection().voidEval(
+						"ip <- ip[is.na(ip$Priority),1:2,drop=FALSE]");
 				r = rcoonnect.connection().eval("print(ip, row.names=FALSE)");
 
 			} else {
@@ -86,11 +88,15 @@ public class RAction extends Permission implements BasePerminterface {
 					return;
 				ProjectPath pp = ProjectPath.getInstance();
 				URI uri = pp.DataDir();
-				String path = uri.getPath().substring(1);
+				String path = uri.getPath();
+
+				if (System.getProperty("file.separator").equals("\\")) {
+					path = path.substring(1);
+				}
 				String setwd = String.format("setwd('%s')", path);
-				// echo(setwd);
+
 				rcoonnect.connection().voidEval(setwd);
-				// globale_config.rcoonnect.voidEval("if (!is.null(WD)) setwd(WD)");
+
 				r = rcoonnect.connection().eval(RJson);
 
 			}
@@ -100,7 +106,7 @@ public class RAction extends Permission implements BasePerminterface {
 		}
 		if (r != null) {
 			SelectREXP(r._attr(), "attr");
-			SelectREXP(r, "val");			
+			SelectREXP(r, "val");
 			echo("end");
 		}
 		rcoonnect.close();
