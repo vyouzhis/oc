@@ -86,15 +86,20 @@ public class RAction extends Permission implements BasePerminterface {
 			} else {
 				if (RJson == null || RJson.length() == 0)
 					return;
-				ProjectPath pp = ProjectPath.getInstance();
-				URI uri = pp.DataDir();
-				String path = uri.getPath();
+				String setwd = "";
+				if (mConfig.GetInt("r.autopath") == 1) {
+					ProjectPath pp = ProjectPath.getInstance();
+					URI uri = pp.DataDir();
+					String path = uri.getPath();
 
-				if (System.getProperty("file.separator").equals("\\")) {
-					path = path.substring(1);
+					if (System.getProperty("file.separator").equals("\\")) {
+						path = path.substring(1);
+					}
+					setwd = String.format("setwd('%s')", path);
+				} else {
+					setwd = String.format("setwd('%s')",
+							mConfig.GetValue("r.pwd"));
 				}
-				String setwd = String.format("setwd('%s')", path);
-
 				rcoonnect.connection().voidEval(setwd);
 
 				r = rcoonnect.connection().eval(RJson);

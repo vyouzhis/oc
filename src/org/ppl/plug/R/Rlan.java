@@ -1,11 +1,17 @@
 package org.ppl.plug.R;
 
+import org.ppl.common.function;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
-public class Rlan {
+/**
+ * 
+ * @author vyouzhi
+ *   R CMD Rserve --RS-enable-remote
+ */
+public class Rlan extends function{
 	static RConnection rcoonnect = null;
 
 	static Rlan rl = null;
@@ -27,7 +33,7 @@ public class Rlan {
 	public RConnection connection() {
 		if (rcoonnect == null) {
 			try {
-				rcoonnect = new RConnection();
+				rcoonnect = new RConnection(mConfig.GetValue("r.host"), mConfig.GetInt("r.port"));
 			} catch (RserveException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

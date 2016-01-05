@@ -450,6 +450,19 @@ print(l)
 
 	
 	function validateForm(){
+		if($("#title").val().length == 0){
+			alert("标题不能为空");
+			return false;
+		}
+		if($("#r_query").val().length == 0){
+			alert("R 规则不能为空");
+			return false;
+		}
+		if($("#rdesc").val().length == 0){
+			alert("描述不能为空");
+			return false;
+		}
+		
 		$("#rcode").val($("#r_query").val());
 		return true;
 	}
