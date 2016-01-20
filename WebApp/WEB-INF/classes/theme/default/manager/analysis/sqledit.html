@@ -273,7 +273,7 @@
 												<td>
 												<#if (item[value])??>
 													<#if (item[value])?is_string || (item[value])?is_number > ${item[value]?string} </#if>
-													<#if (item[value])?is_date> ${item[value]?date} </#if>
+													<#if (item[value])?is_date> ${item[value]?string} </#if>
 												</#if>
 												 </td> 
 											</#list>

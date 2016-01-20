@@ -1101,14 +1101,21 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		String sql = "";
 		Map<String, Object> res;
 		Rlan rcoonnect = Rlan.getInstance();
-		ProjectPath pp = ProjectPath.getInstance();
-		URI uri = pp.DataDir();
-		String path = uri.getPath();
-		if (System.getProperty("file.separator").equals("\\")) {
-			path = path.substring(1);
-		}
-		String setwd = String.format("setwd('%s')", path);
+		String setwd = "";
+		if (mConfig.GetInt("r.autopath") == 1) {
+			ProjectPath pp = ProjectPath.getInstance();
+			URI uri = pp.DataDir();
+			String path = uri.getPath();
 
+			if (System.getProperty("file.separator").equals("\\")) {
+				path = path.substring(1);
+			}
+			setwd = String.format("setwd('%s')", path);
+		} else {
+			setwd = String.format("setwd('%s')",
+					mConfig.GetValue("r.pwd"));
+		}
+		
 		String rcode = "";
 		REXP r;
 		int size;
