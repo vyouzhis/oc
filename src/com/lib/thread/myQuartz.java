@@ -6,17 +6,18 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 public class myQuartz extends BaseQuartz implements Job{
-
+	String nowTime = null;
 	public myQuartz() {
 		// TODO Auto-generated constructor stub
-		echo("myQuartz");
+		nowTime = DateFormat((long)time(), "yyyy-MM-dd HH:mm:ss");
+		echo("myQuartz:"+nowTime);
 	}
 	
 	@Override
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
 		// TODO Auto-generated method stub
-		echo("myquartz ... execute ");
+		echo("myquartz ... execute :"+nowTime);
 	}
 
 	@Override

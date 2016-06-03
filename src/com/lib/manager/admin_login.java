@@ -2,6 +2,7 @@ package com.lib.manager;
 
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
+import org.ppl.plug.Quartz.RunQuartz;
 
 public class admin_login extends Permission {
 
@@ -16,7 +17,9 @@ public class admin_login extends Permission {
 		// TODO Auto-generated method stub
 
 		//callRJava();
-						
+		RunQuartz rq = new RunQuartz();
+		rq.ListQuartz();
+		
 		UrlClassList ucl = UrlClassList.getInstance();
 
 		setRoot("admin_login_action_uri",

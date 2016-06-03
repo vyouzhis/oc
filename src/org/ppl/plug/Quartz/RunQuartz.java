@@ -12,6 +12,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.StdSchedulerFactory;
@@ -24,7 +25,7 @@ import com.google.inject.name.Names;
 
 public class RunQuartz extends function {
 	private BaseQuartz runquartz = null;
-	private static Scheduler scheduler = null;
+	private Scheduler scheduler = null;
 	@SuppressWarnings("unchecked")
 	public void ListQuartz() {
 		// TODO Auto-generated method stub
@@ -32,9 +33,9 @@ public class RunQuartz extends function {
 
 		try {
 			//scheduler = StdSchedulerFactory.getDefaultScheduler();
-			scheduler = new StdSchedulerFactory().getScheduler();  
-			scheduler.start();
-			
+			 
+			scheduler = new StdSchedulerFactory("properties/quartz.properties").getScheduler();  
+					
 			Injector injector = globale_config.injector;
 
 			for (String ps : ucl.getPackList()) {
@@ -71,6 +72,8 @@ public class RunQuartz extends function {
 
 			}
 			
+			scheduler.start();
+			
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -78,20 +81,20 @@ public class RunQuartz extends function {
 
 	}
 	
-	public static boolean isJobRunning(String jobName, String groupName)
-	        throws SchedulerException {
-	    List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
-
-//	    for (JobExecutionContext jobCtx : currentJobs) {
-//	        String thisJobName = jobCtx.getJobDetail().getKey().getName();
-//	        String thisGroupName = jobCtx.getJobDetail().getKey().getGroup();
-//	        if (jobName.equalsIgnoreCase(thisJobName) && groupName.equalsIgnoreCase(thisGroupName)
-//	                && !jobCtx.getFireTime().equals(scheduler.getFireTime())) {
-//	            return true;
-//	        }
-//	    }
-	    return false;
-	}
+//	public static boolean isJobRunning(String jobName, String groupName)
+//	        throws SchedulerException {
+//	    List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
+//
+////	    for (JobExecutionContext jobCtx : currentJobs) {
+////	        String thisJobName = jobCtx.getJobDetail().getKey().getName();
+////	        String thisGroupName = jobCtx.getJobDetail().getKey().getGroup();
+////	        if (jobName.equalsIgnoreCase(thisJobName) && groupName.equalsIgnoreCase(thisGroupName)
+////	                && !jobCtx.getFireTime().equals(scheduler.getFireTime())) {
+////	            return true;
+////	        }
+////	    }
+//	    return false;
+//	}
 	
 	public Boolean isJobPaused(String jobName) throws SchedulerException {
 
