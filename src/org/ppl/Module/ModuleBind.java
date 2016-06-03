@@ -10,6 +10,7 @@ import org.ppl.BaseClass.LibLang;
 import org.ppl.BaseClass.Permission;
 import org.ppl.core.PObject;
 import org.ppl.etc.UrlClassList;
+import org.ppl.plug.Quartz.BaseQuartz;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -65,6 +66,10 @@ public class ModuleBind extends PObject implements Module {
 					Class<? extends BaseCronThread> cls = (Class<? extends BaseCronThread>) Class
 							.forName(ps);
 					 Add(BaseCronThread.class, cls);
+				}else if (clazz.getSuperclass().equals(BaseQuartz.class)) {
+					Class<? extends BaseQuartz> cls = (Class<? extends BaseQuartz>) Class
+							.forName(ps);
+					 Add(BaseQuartz.class, cls);
 				}
 				
 				

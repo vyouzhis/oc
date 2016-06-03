@@ -1,7 +1,6 @@
 package org.ppl.common;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,6 +130,7 @@ public class function extends InitCore {
 		return (int) tc.time();
 	}
 
+	//yyyy-MM-dd HH:mm:ss
 	public String DateFormat(Long TimeStamp, String format) {
 		TimeClass tc = TimeClass.getInstance();
 		return tc.TimeStamptoDate(TimeStamp, format);

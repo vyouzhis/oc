@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebListener;
 import org.ppl.Module.ModuleBind;
 import org.ppl.db.HikariConnectionPool;
 import org.ppl.etc.globale_config;
+import org.ppl.plug.Quartz.RunQuartz;
 import org.ppl.plug.R.Rlan;
 
 import com.alibaba.fastjson.JSON;
@@ -46,21 +47,24 @@ public class ServletApplicationLifeListener extends PObject implements
 
 		InitPackList();
 
-		int autorun = mConfig.GetInt("autorun");
+
 
 		new Rlan();
 
 		globale_config.RapidListQueue = new ArrayList<>();
 		globale_config.RapidList = new HashMap<>();
 		globale_config.CronListQueue = new HashMap<>();
-
-		if (autorun == 1) {
-			Thread dt = new Thread(new RapidThread(), "dt_");
-			dt.start();
-
-			Thread cron = new Thread(new CronThread(), "cron_");
-			cron.start();
-		}
+		
+//		int autorun = mConfig.GetInt("autorun");
+//		if (autorun == 1) {
+//			// Thread dt = new Thread(new RapidThread(), "dt_");
+//			// dt.start();
+//			//
+//			// Thread cron = new Thread(new CronThread(), "cron_");
+//			// cron.start();
+//			RunQuartz rq = new RunQuartz();
+//			rq.ListQuartz();
+//		}
 
 	}
 

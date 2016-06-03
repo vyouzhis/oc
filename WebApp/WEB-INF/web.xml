@@ -12,7 +12,7 @@
 		<welcome-file>default.htm</welcome-file>
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
-	
+
 
 	<!-- CORS -->
 	<filter>
@@ -48,7 +48,7 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<!-- CORS -->
-	
+
 	<!--CharsetFilter start -->
 	<filter>
 		<filter-name>CharsetFilter</filter-name>
@@ -60,26 +60,45 @@
 	</filter>
 
 
-	 <servlet>
-        <servlet-name>WsChatServlet</servlet-name>
-        <servlet-class>WsChatServlet</servlet-class>
-    </servlet>
+	<servlet>
+		<servlet-name>WsChatServlet</servlet-name>
+		<servlet-class>WsChatServlet</servlet-class>
+	</servlet>
 
-    <servlet-mapping>
-        <servlet-name>WsChatServlet</servlet-name>
-        <url-pattern>/WsChatServlet</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>SecureChatServerHandler</servlet-name>
-        <servlet-class>SecureChatServerHandler</servlet-class>
-    </servlet>
+	<servlet-mapping>
+		<servlet-name>WsChatServlet</servlet-name>
+		<url-pattern>/WsChatServlet</url-pattern>
+	</servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>SecureChatServerHandler</servlet-name>
-        <url-pattern>/SecureChatServerHandler</url-pattern>
-    </servlet-mapping>
-    
+	<servlet>
+		<servlet-name>SecureChatServerHandler</servlet-name>
+		<servlet-class>SecureChatServerHandler</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SecureChatServerHandler</servlet-name>
+		<url-pattern>/SecureChatServerHandler</url-pattern>
+	</servlet-mapping>
+
+	<!-- quartz -->
+	<servlet>
+		<servlet-name>QuartzInitializer</servlet-name>
+		<servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class>
+		<init-param>
+			<param-name>shutdown-on-unload</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>start-scheduler-on-load</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config-file</param-name>
+			<param-value>properties/quartz.properties</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- quartz -->
 
 	<filter-mapping>
 		<filter-name>CharsetFilter</filter-name>

@@ -2,10 +2,6 @@ package com.lib.manager;
 
 import org.ppl.BaseClass.Permission;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
-import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.Rserve.RserveException;
-
 
 public class admin_login extends Permission {
 
