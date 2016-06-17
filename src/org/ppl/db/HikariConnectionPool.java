@@ -68,7 +68,7 @@ public class HikariConnectionPool extends PObject {
 		
 		synchronized (globale_config.GDB) {	
 			long tid = myThreadId();
-			//echo("tid:"+tid);
+			
 			Connection con;
 			try {
 				con = ds.getConnection();	

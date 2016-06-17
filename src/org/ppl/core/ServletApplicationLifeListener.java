@@ -51,20 +51,20 @@ public class ServletApplicationLifeListener extends PObject implements
 
 		new Rlan();
 
-		globale_config.RapidListQueue = new ArrayList<>();
-		globale_config.RapidList = new HashMap<>();
-		globale_config.CronListQueue = new HashMap<>();
+//		globale_config.RapidListQueue = new ArrayList<>();
+//		globale_config.RapidList = new HashMap<>();
+//		globale_config.CronListQueue = new HashMap<>();
 		
-//		int autorun = mConfig.GetInt("autorun");
-//		if (autorun == 1) {
-//			// Thread dt = new Thread(new RapidThread(), "dt_");
-//			// dt.start();
-//			//
-//			// Thread cron = new Thread(new CronThread(), "cron_");
-//			// cron.start();
-//			RunQuartz rq = new RunQuartz();
-//			rq.ListQuartz();
-//		}
+		int autorun = mConfig.GetInt("autorun");
+		if (autorun == 1) {
+			// Thread dt = new Thread(new RapidThread(), "dt_");
+			// dt.start();
+			//
+			// Thread cron = new Thread(new CronThread(), "cron_");
+			// cron.start();
+			RunQuartz rq = new RunQuartz();
+			rq.CronQuartz();
+		}
 
 	}
 

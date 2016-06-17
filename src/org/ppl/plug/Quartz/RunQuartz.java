@@ -8,14 +8,14 @@ import org.ppl.etc.globale_config;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.StdSchedulerFactory;
+
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.CronScheduleBuilder.*;
 
@@ -24,33 +24,37 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 
 public class RunQuartz extends function {
-	private BaseQuartz runquartz = null;
-	private Scheduler scheduler = null;
+	private CronQuartz runquartz = null;
 
 	@SuppressWarnings("unchecked")
-	public void ListQuartz() {
+	public void CronQuartz() {
 		// TODO Auto-generated method stub
 		UrlClassList ucl = UrlClassList.getInstance();
-
+		List<String> groupList;
 		try {
 			// scheduler = StdSchedulerFactory.getDefaultScheduler();
 
-			scheduler = new StdSchedulerFactory("properties/quartz.properties")
-					.getScheduler();
+			globale_config.scheduler = new StdSchedulerFactory(
+					"properties/quartz.properties").getScheduler();
 
+			groupList = globale_config.scheduler.getJobGroupNames();
+			echo("+++++++++++++");
+			// echo(scheduler.);
+			echo("+++++++++++++");
 			Injector injector = globale_config.injector;
 
 			for (String ps : ucl.getPackList()) {
 				try {
 					Class<?> clazz = Class.forName(ps);
 
-					if (clazz.getSuperclass().equals(BaseQuartz.class)) {
+					if (clazz.getSuperclass().equals(CronQuartz.class)) {
 						String name = SliceName(ps);
-						JobKey jobKey = new JobKey(name);
-						if (scheduler.checkExists(jobKey) == false) {
+						// JobKey jobKey = new JobKey(name);
+						echo("name====:" + name);
+						runquartz = (CronQuartz) injector.getInstance(Key.get(
+								CronQuartz.class, Names.named(name)));
 
-							runquartz = (BaseQuartz) injector.getInstance(Key
-									.get(BaseQuartz.class, Names.named(name)));
+						if (!groupList.contains("Group_" + name)) {
 
 							JobDetail job = (JobDetail) JobBuilder
 									.newJob((Class<? extends Job>) runquartz
@@ -68,9 +72,14 @@ public class RunQuartz extends function {
 
 									.forJob(name, runquartz.getGroup()).build();
 
-							scheduler.scheduleJob(job, trigger);
-						}else {
-							echo("job "+name+" is exits  !!");
+							globale_config.scheduler.scheduleJob(job, trigger);
+
+						} else {
+							echo("job " + name + " is exits  !!");
+						}
+
+						if (runquartz.isRun() == 0) {
+							delete(name, runquartz.getGroup());
 						}
 					}
 				} catch (ClassNotFoundException e) {
@@ -80,7 +89,7 @@ public class RunQuartz extends function {
 
 			}
 
-			scheduler.start();
+			globale_config.scheduler.start();
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -106,15 +115,47 @@ public class RunQuartz extends function {
 	// return false;
 	// }
 
+	@SuppressWarnings("unchecked")
+	public void SimpleQuartz(String ThreadName, Object message) {
+		SimpleQuartz Simquartz = null;
+		Injector injector = globale_config.injector;
+		Simquartz = (SimpleQuartz) injector.getInstance(Key.get(
+				SimpleQuartz.class, Names.named(ThreadName)));
+
+		JobDetail job = (JobDetail) JobBuilder
+				.newJob((Class<? extends Job>) Simquartz.getClass())
+				.withIdentity(ThreadName + time(), Simquartz.getGroup())
+
+				.build();
+
+		Trigger trigger = TriggerBuilder
+				.newTrigger()
+				.withIdentity(Simquartz.getTrigger(), Simquartz.getGroup())
+				.startNow()
+				.withSchedule(
+						simpleSchedule().withRepeatCount(
+								Simquartz.withRepeatCount())
+								.withIntervalInSeconds(
+										Simquartz.withIntervalInSeconds()))
+				.build();
+
+		try {
+			globale_config.scheduler.scheduleJob(job, trigger);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public Boolean isJobPaused(String jobName) throws SchedulerException {
 
 		JobKey jobKey = new JobKey(jobName);
-		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-		List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobDetail
-				.getKey());
+		JobDetail jobDetail = globale_config.scheduler.getJobDetail(jobKey);
+		List<? extends Trigger> triggers = globale_config.scheduler
+				.getTriggersOfJob(jobDetail.getKey());
 		for (Trigger trigger : triggers) {
-			TriggerState triggerState = scheduler.getTriggerState(trigger
-					.getKey());
+			TriggerState triggerState = globale_config.scheduler
+					.getTriggerState(trigger.getKey());
 			if (TriggerState.PAUSED.equals(triggerState)) {
 				return true;
 			}
@@ -124,7 +165,8 @@ public class RunQuartz extends function {
 
 	public void delete(String jobName, String groupName) {
 		try {
-			scheduler.deleteJob(JobKey.jobKey(jobName, groupName));
+			globale_config.scheduler.deleteJob(JobKey
+					.jobKey(jobName, groupName));
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

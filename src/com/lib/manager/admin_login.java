@@ -16,16 +16,15 @@ public class admin_login extends Permission {
 	public void Show() {
 		// TODO Auto-generated method stub
 
-		//callRJava();
-		RunQuartz rq = new RunQuartz();
-		rq.ListQuartz();
-		
+		//callRJava();		
 		UrlClassList ucl = UrlClassList.getInstance();
 
 		setRoot("admin_login_action_uri",
 				ucl.BuildUrl("admin_login_action", ""));
 		setRoot("salt", getSalt());
 		setRoot("input_tips", _CLang("input_tips"));
+		
+		TellPostMan("testThread", null);
 		super.View();
 	}
 

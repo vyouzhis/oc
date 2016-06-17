@@ -53,17 +53,17 @@ BasePerminterface{
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		Map<String, Map<String, Object>> CronList = globale_config.CronListQueue;
-		//echo(CronList);
-		String property = mConfig.GetValue("cron.property");
-		Map<String, String> proJson = JSON.parseObject(property, Map.class);
-		setRoot("cron_list", CronList);
-		setRoot("proJson", proJson);
-		
-		UrlClassList ucl = UrlClassList.getInstance();
-		String editUrl = ucl.read("CronThreadListAction");
-		
-		setRoot("editUrl", editUrl);
+//		Map<String, Map<String, Object>> CronList = globale_config.CronListQueue;
+//		//echo(CronList);
+//		String property = mConfig.GetValue("cron.property");
+//		Map<String, String> proJson = JSON.parseObject(property, Map.class);
+//		setRoot("cron_list", CronList);
+//		setRoot("proJson", proJson);
+//		
+//		UrlClassList ucl = UrlClassList.getInstance();
+//		String editUrl = ucl.read("CronThreadListAction");
+//		
+//		setRoot("editUrl", editUrl);
 	}
 
 	@Override

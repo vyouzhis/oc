@@ -115,6 +115,7 @@ public class classify_action extends Permission implements BasePerminterface{
 	@Override
 	public void remove(Object arg) {
 		// TODO Auto-generated method stub
+		int pid = toInt(porg.getKey("pid"));
 		
 	}
 

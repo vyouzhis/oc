@@ -181,7 +181,7 @@ public class DBSQL extends BaseLang {
 	}
 
 	public long update(String sql) throws SQLException {
-		long id = exec(sql, false, true);
+		long id = exec(sql, false, false);
 
 		return id;
 	}
@@ -194,7 +194,7 @@ public class DBSQL extends BaseLang {
 
 	public long insert(String sql, boolean ret) throws SQLException {
 		long numRowsUpdated = -1;
-		numRowsUpdated = exec(sql, ret, false);
+		numRowsUpdated = exec(sql, ret, true);
 		return numRowsUpdated;
 	}
 
@@ -225,6 +225,7 @@ public class DBSQL extends BaseLang {
 			if (ret) {
 				numRowsUpdated = stmt.executeUpdate(clearSQL,
 						Statement.RETURN_GENERATED_KEYS);
+				//echo("numRowsUpdated:"+numRowsUpdated+" sql:"+clearSQL);
 			}else {
 				stmt.executeUpdate(clearSQL);			
 			}
@@ -250,6 +251,7 @@ public class DBSQL extends BaseLang {
 	private void InitConDB() {
 		if (ConDB == null) {
 			long tid = myThreadId();
+			//echo("tid:"+tid);
 			ConDB = globale_config.GDB.get(tid);
 		}
 	}

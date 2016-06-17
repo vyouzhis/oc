@@ -56,27 +56,27 @@ public class CronThreadListAction extends Permission implements BasePerminterfac
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		Map<String, Map<String, Object>> CronList = globale_config.CronListQueue;
-		//echo(CronList);
-		UrlClassList ucl = UrlClassList.getInstance();
-		
-		String key=porg.getKey("key");
-		if(key==null || key.length()==0){
-			TipMessage(ucl.read("CronThreadList"), _CLang("error_null"));
-			return;
-		}
-		
-		Map<String, Object> map = CronList.get(key);
-		String property = mConfig.GetValue("cron.property");
-		Map<String, String> proJson = JSON.parseObject(property, Map.class);
-		setRoot("CronMap", map);
-		setRoot("proJson", proJson);
-		
-		
-		String editUrl = ucl.edit(SliceName(stdClass));
-		
-		setRoot("action_url", editUrl);
-		setRoot("ekey", key);
+//		Map<String, Map<String, Object>> CronList = globale_config.CronListQueue;
+//		//echo(CronList);
+//		UrlClassList ucl = UrlClassList.getInstance();
+//		
+//		String key=porg.getKey("key");
+//		if(key==null || key.length()==0){
+//			TipMessage(ucl.read("CronThreadList"), _CLang("error_null"));
+//			return;
+//		}
+//		
+//		Map<String, Object> map = CronList.get(key);
+//		String property = mConfig.GetValue("cron.property");
+//		Map<String, String> proJson = JSON.parseObject(property, Map.class);
+//		setRoot("CronMap", map);
+//		setRoot("proJson", proJson);
+//		
+//		
+//		String editUrl = ucl.edit(SliceName(stdClass));
+//		
+//		setRoot("action_url", editUrl);
+//		setRoot("ekey", key);
 	}
 
 	@Override
@@ -87,21 +87,21 @@ public class CronThreadListAction extends Permission implements BasePerminterfac
 
 	@Override
 	public void edit(Object arg) {
-		// TODO Auto-generated method stub
-		String key = porg.getKey("key");
-		int minute = toInt(porg.getKey("minute"));
-		int hour = toInt(porg.getKey("hour"));
-		int day = toInt(porg.getKey("day"));
-		boolean isStop = Boolean.valueOf(porg.getKey("isStop").toString());
-		
-		synchronized (globale_config.CronListQueue) {
-			globale_config.CronListQueue.get(key).put("minute", minute);
-			globale_config.CronListQueue.get(key).put("hour", hour);
-			globale_config.CronListQueue.get(key).put("day", day);
-			globale_config.CronListQueue.get(key).put("isStop", isStop);
-		}
-		UrlClassList ucl = UrlClassList.getInstance();
-		TipMessage(ucl.read("CronThreadList"), _CLang("ok_save"));
+//		// TODO Auto-generated method stub
+//		String key = porg.getKey("key");
+//		int minute = toInt(porg.getKey("minute"));
+//		int hour = toInt(porg.getKey("hour"));
+//		int day = toInt(porg.getKey("day"));
+//		boolean isStop = Boolean.valueOf(porg.getKey("isStop").toString());
+//		
+//		synchronized (globale_config.CronListQueue) {
+//			globale_config.CronListQueue.get(key).put("minute", minute);
+//			globale_config.CronListQueue.get(key).put("hour", hour);
+//			globale_config.CronListQueue.get(key).put("day", day);
+//			globale_config.CronListQueue.get(key).put("isStop", isStop);
+//		}
+//		UrlClassList ucl = UrlClassList.getInstance();
+//		TipMessage(ucl.read("CronThreadList"), _CLang("ok_save"));
 	}
 
 	@Override

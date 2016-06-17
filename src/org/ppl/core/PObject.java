@@ -11,6 +11,7 @@ import org.ppl.etc.Config;
 import org.ppl.etc.globale_config;
 import org.ppl.io.Encrypt;
 import org.ppl.io.TimeClass;
+import org.ppl.plug.Quartz.RunQuartz;
 
 public class PObject extends function{
 	protected String stdClass = null;
@@ -67,14 +68,16 @@ public class PObject extends function{
 	}
 
 	public void TellPostMan(String ThreadName, Object message) {
-		Map<String, Object> tpm = new HashMap<>();
-		tpm.put("name", ThreadName);
-		tpm.put("obj", message);
+//		Map<String, Object> tpm = new HashMap<>();
+//		tpm.put("name", ThreadName);
+//		tpm.put("obj", message);
 		
-		synchronized (globale_config.RapidListQueue) {
-			globale_config.RapidListQueue.add(tpm);
-			globale_config.RapidListQueue.notify();
-		}
+//		synchronized (globale_config.RapidListQueue) {
+//			globale_config.RapidListQueue.add(tpm);
+//			globale_config.RapidListQueue.notify();
+//		}
+		RunQuartz rq = new RunQuartz();
+		rq.SimpleQuartz(ThreadName, message);
 	}
 
 	public long myThreadId() {

@@ -1,45 +1,32 @@
 package com.lib.thread;
 
+import java.awt.Stroke;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ppl.BaseClass.BaseRapidThread;
+import org.ppl.db.HikariConnectionPool;
 import org.ppl.net.cUrl;
+import org.ppl.plug.Quartz.SimpleQuartz;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import com.alibaba.fastjson.JSON;
-import com.lib.surface.loginsalseforce;
 
-public class getGovData extends BaseRapidThread {
+
+public class getGovData extends SimpleQuartz implements Job {
 	cUrl curl;
 	String SearchUrl = "http://data.stats.gov.cn/easyquery.htm";
 	String LoginUrl = "http://data.stats.gov.cn/login.htm?m=login";
-
-	@Override
-	public void Run() {
-		// TODO Auto-generated method stub
-		echo("getGovData start ....");
-		govFetch();
-		echo("getGovData end ....");
-	}
-
-	@Override
-	public boolean isRun() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean Stop() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void mailbox(Object o) {
-		// TODO Auto-generated method stub
-
+	
+	public getGovData() {
+		// TODO Auto-generated constructor stub
+		String className = null;
+		className = this.getClass().getCanonicalName();
+		super.GetSubClassName(className);
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,8 +51,8 @@ public class getGovData extends BaseRapidThread {
 		res = curl.httpPost(SearchUrl);
 
 		govJson = JSON.parseObject(res, List.class); // 获取所有的主树
-		// echo(govJson);
-
+		//echo(govJson);
+		//echo("pid:"+pid);
 		for (Map<String, Object> key : govJson) {
 			subLoop(pid, key.get("id").toString(), key.get("name").toString(),
 					(boolean) key.get("isParent"));
@@ -82,10 +69,11 @@ public class getGovData extends BaseRapidThread {
 			return;
 
 		subpid = CreateClassify(pid, name);
-
+		//echo("subpid:"+subpid);
 		if (isParent == false) {
 
 			ucid = CreateUserSQL(subpid, name);
+			//echo("ucid:"+ucid);
 			DataSave(dataId, ucid, name); // 保存数据
 
 		} else {
@@ -114,15 +102,23 @@ public class getGovData extends BaseRapidThread {
 				+ "values(%d,'%s', %d, %d, %d);";
 		String sql = "";
 		sql = String.format(format, pid, name, time(), 1, 1);
-
+		String checkSQLtmp = "select id from "+DB_HOR_PRE+"classify where name='%s' and pid=%d; ";
+		String checkSQL = String.format(checkSQLtmp, name, pid);
+		Map<String, Object> cMap = FetchOne(checkSQL);
+		if(cMap!=null){
+			return Long.valueOf(cMap.get("id").toString());
+		}
 		try {
+		
 			tpid = insert(sql, true);
+			//echo("tpid:"+tpid+" sql:"+sql);
 			CommitDB();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 
 		}
-
+		
 		return tpid;
 	}
 
@@ -134,11 +130,19 @@ public class getGovData extends BaseRapidThread {
 				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
 		String sql = String.format(format, name, usql, 0, 1, jsonTmp, 0, "",
 				cid, 1);
-		long tpid = 0;
+		long tpid = 0;	
+		
+		String checkSQLtmp="select id from "+DB_HOR_PRE+"usersql where cid=%d and name='%s'";
+		String checkSQL = String.format(checkSQLtmp, cid, name);
+		Map<String, Object> cMap = FetchOne(checkSQL);
+		if(cMap!=null){
+			echo("===id:"+cMap.get("id"));
+			return Long.valueOf(cMap.get("id").toString());
+		}
 		try {
-			// echo(sql);
 			tpid = insert(sql, true);
 			CommitDB();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 
@@ -188,6 +192,11 @@ public class getGovData extends BaseRapidThread {
 				+ DB_HOR_PRE
 				+ "sqltmp  (sid,name,sqltmp) values(%d, '%s', '{\"arg0\":\"%s\"}')";
 		String sqltmpSQL = "";
+		
+		String checkSQLtmp = "select id from "+DB_HOR_PRE+"classinfo where view_name = '%s' limit 1;";
+		String checkSQL = "";
+		String checkClzztmp = "select rule from "+DB_HOR_PRE+"class where rule=%d and act_v1='%s'  limit 1;";
+		String checkClzz = "";
 		resJson = JSON.parseObject(res, Map.class);
 
 		if (resJson.get("returndata").toString().length() < 21)
@@ -246,13 +255,25 @@ public class getGovData extends BaseRapidThread {
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
 			dnameo = dname;
-			// echo("dnameo:"+dnameo+" dnamet:"+dnamet);
+			//echo("dnameo:"+dnameo+" dnamet:"+dnamet);
+			
+			checkSQL = String.format(checkSQLtmp, dname);
+			Map<String, Object> cMap = FetchOne(checkSQL);
+			if(cMap!=null){
+				checkClzz = String.format(checkClzztmp, cMap.get("id"), dtime);
+				cMap = FetchOne(checkClzz);
+				if(cMap!=null) {
+					echo("rule:"+cMap.get("rule")+ " time:"+dtime);
+					continue;
+				}
+			}
 			if (!dnameo.equals(dnamet)) {
 				dnamet = dnameo;
 				try {
 					sqltmpSQL = String.format(sqltmp, pid, nameList.get(dname),
 							dnamet);
 					// echo(sqltmpSQL);
+					
 					insert(sqltmpSQL);
 
 					long cidt = insert(classList.get(dname), true);
@@ -289,11 +310,32 @@ public class getGovData extends BaseRapidThread {
 	}
 
 	@Override
-	public String title() {
+	public void execute(JobExecutionContext context)
+			throws JobExecutionException {
 		// TODO Auto-generated method stub
-		String className = this.getClass().getCanonicalName();
+		HikariConnectionPool hcp = HikariConnectionPool.getInstance();
+		hcp.GetCon();
+		echo("getGovData start ....");
+		govFetch();
+		echo("getGovData end ....");
+	}
 
-		return _CLang(SliceName(className));
+	@Override
+	public String getGroup() {
+		// TODO Auto-generated method stub
+		return "Group_"+SliceName(stdClass);
+	}
+
+	@Override
+	public int withRepeatCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int withIntervalInSeconds() {
+		// TODO Auto-generated method stub
+		return 20;
 	}
 
 }

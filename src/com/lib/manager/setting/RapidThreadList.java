@@ -53,12 +53,12 @@ public class RapidThreadList extends Permission implements BasePerminterface{
 	@Override
 	public void read(Object arg) {
 		// TODO Auto-generated method stub
-		Map<String, Map<String, Object>> rapidList = globale_config.RapidList;
-		setRoot("rapidList", rapidList);
-		
-		String property = mConfig.GetValue("rapid.property");		
-		Map<String, String> proJson = JSON.parseObject(property, Map.class);
-		setRoot("proJson", proJson);
+//		Map<String, Map<String, Object>> rapidList = globale_config.RapidList;
+//		setRoot("rapidList", rapidList);
+//		
+//		String property = mConfig.GetValue("rapid.property");		
+//		Map<String, String> proJson = JSON.parseObject(property, Map.class);
+//		setRoot("proJson", proJson);
 	}
 
 	@Override
