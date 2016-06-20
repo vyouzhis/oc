@@ -275,6 +275,8 @@ public class DBSQL extends BaseLang {
 
 	public void setErrorMsg(String errorMsg) {
 		ErrorMsg = errorMsg;
+		
+		echo(errorMsg);
 	}
 
 	public Connection getCon() {

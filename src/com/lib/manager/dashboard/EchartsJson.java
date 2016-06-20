@@ -1001,7 +1001,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				ures = FetchOne(usql);
 
 				if (ures != null) {
-					sql = ures.get("sql").toString();
+					sql = ures.get("usql").toString();
 					sql = escapeHtml(sql);
 					dtype = toInt(ures.get("dtype"));
 				}
@@ -1015,28 +1015,29 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						+ " limit 1";
 
 				tres = FetchOne(sql);
-				// echo(tsql);
+//				echo(sql);
+
 				if (tres == null)
 					continue;
-
-				sql = tres.get("sql").toString();
+				
+				sql = tres.get("usql").toString();
 				String tJson = tres.get("sqltmp").toString();
 				String uJson = tres.get("usqltmp").toString();
 				dtype = toInt(tres.get("dtype"));
 				tList = JSON.parseObject(tJson, Map.class);
-
+				
 				uList = JSON.parseObject(uJson, List.class);
 
 				for (String key : tList.keySet()) {
 					sql = sql.replace("@" + key + "@", tList.get(key));
 				}
-
+				
 				for (List<String> lkey : uList) {
 					sql = sql.replace("@" + lkey.get(0) + "@", lkey.get(1));
 				}
-
+				
 				sql = escapeHtml(sql);
-				// echo(sql);
+				
 
 			} else if (qaction == 6) {
 				if (tmp_map == null)
@@ -1048,7 +1049,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				tmpRes = FetchOne(sql);
 				if (tmpRes == null)
 					continue;
-				format = tmpRes.get("sql").toString();
+				format = tmpRes.get("usql").toString();
 				dtype = toInt(tmpRes.get("dtype"));
 				for (int i = 0; i < 10; i++) {
 					if (tmp_map.containsKey(tid + "_arg" + i)) {
