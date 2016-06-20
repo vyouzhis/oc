@@ -232,7 +232,7 @@ public class sqlread extends Permission implements BasePerminterface {
 		//echo(usql);
 		
 		String format = " insert INTO " + DB_HOR_PRE
-				+ "usersql (name,sql, dtype, uid)values('%s','%s', %d, %d);";
+				+ "usersql (name,usql, dtype, uid)values('%s','%s', %d, %d);";
 		String sql = String.format(format, name, usql, save_id, aclGetUid());
 
 		try {

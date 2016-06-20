@@ -123,7 +123,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 				+ DB_HOR_PRE
 				+ "mongodbrule where qaction in (2,3) and snap=0 and cid="+lid+" and "
 				+ UserPermi() + " order by id desc;");
-		formats.add("select id,sql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
+		formats.add("select id,usql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
 				+ "usersql where sql_type=0 and input_data=0 and "
 				+ UserPermi() + " and cid="+lid);
 		formats.add("select s.id,s.name,u.cid from " + DB_HOR_PRE

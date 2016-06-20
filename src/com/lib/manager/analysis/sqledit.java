@@ -316,7 +316,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		int is_share = toInt(porg.getKey("is_share"));
 		String format = " insert INTO "
 				+ DB_HOR_PRE
-				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
+				+ "usersql (name,usql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
 		String sql = String.format(format, name, usql, save_id, sql_type,
 				jsonTmp, is_get_data, nview, cid, aclGetUid());
 
@@ -370,7 +370,7 @@ public class sqledit extends Permission implements BasePerminterface {
 		if (nview == null)
 			nview = "";
 
-		String format = " update "+DB_HOR_PRE+"usersql SET name='%s', sql='%s',dtype='%s', sql_type='%s',sqltmp='%s', input_data='%s',uview='%s',cid='%s' where id=%d";
+		String format = " update "+DB_HOR_PRE+"usersql SET name='%s', usql='%s',dtype='%s', sql_type='%s',sqltmp='%s', input_data='%s',uview='%s',cid='%s' where id=%d";
 		
 		
 		String sql = String.format(format, name, usql, save_id, sql_type,

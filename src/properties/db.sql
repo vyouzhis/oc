@@ -408,7 +408,7 @@ COMMENT ON COLUMN hor_sqltmp.isshare IS '0 no share, 1 share';
 CREATE TABLE hor_usersql
 (
   id serial NOT NULL,
-  sql text NOT NULL,
+  usql text NOT NULL,
   name character varying NOT NULL,
   modify_time timestamp without time zone DEFAULT now(),
   dtype integer NOT NULL DEFAULT 0,

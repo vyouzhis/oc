@@ -994,7 +994,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			tid = toInt(id.get("id"));
 			if (qaction == 4) {
 
-				usql = "select sql,dtype from " + DB_HOR_PRE
+				usql = "select usql,dtype from " + DB_HOR_PRE
 						+ "usersql where id=" + tid + " and " + UserPermi()
 						+ " LIMIT 1";
 
@@ -1008,7 +1008,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 			} else if (qaction == 5) {
 
-				sql = "select t.sqltmp,u.sql,u.dtype,u.sqltmp as usqltmp from "
+				sql = "select t.sqltmp,u.usql,u.dtype,u.sqltmp as usqltmp from "
 						+ DB_HOR_PRE + "sqltmp t, " + DB_HOR_PRE
 						+ "usersql u where t.sid=u.id and (u.uid = "
 						+ aclGetUid() + " or u.isshare=1) and t.id=" + tid
@@ -1041,7 +1041,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			} else if (qaction == 6) {
 				if (tmp_map == null)
 					continue;
-				sql = "SELECT sql,dtype from " + DB_HOR_PRE
+				sql = "SELECT usql,dtype from " + DB_HOR_PRE
 						+ "usersql where id=" + tid + " and " + UserPermi()
 						+ " limit 1";
 

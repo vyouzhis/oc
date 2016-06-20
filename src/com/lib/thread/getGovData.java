@@ -127,7 +127,7 @@ public class getGovData extends SimpleQuartz implements Job {
 		String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		String format = " insert INTO "
 				+ DB_HOR_PRE
-				+ "usersql (name,sql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
+				+ "usersql (name,usql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
 		String sql = String.format(format, name, usql, 0, 1, jsonTmp, 0, "",
 				cid, 1);
 		long tpid = 0;	
@@ -166,7 +166,7 @@ public class getGovData extends SimpleQuartz implements Job {
 		curl.addParams("wds", "[]");
 		curl.httpPost(SearchUrl);
 
-		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\"LAST36\"}]";
+		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\""+mConfig.GetValue("ggd.valuecode")+"\"}]";
 		curl.clearParams();
 		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
@@ -283,8 +283,8 @@ public class getGovData extends SimpleQuartz implements Job {
 						// echo(cid);
 
 						String vsql = String.format(viewformat,
-								dname.toLowerCase(), view, (int) cid);
-						// echo(sqlI);
+								dname, view, (int) cid);
+						//echo(vsql);
 						dbcreate(vsql);
 
 						CommitDB();
@@ -298,7 +298,7 @@ public class getGovData extends SimpleQuartz implements Job {
 
 			}
 			sql = String.format(format, cid, val, dtime, UnitList.get(dname));
-			// echo(sql);
+			//echo(sql);
 			try {
 				insert(sql);
 			} catch (SQLException e) {
