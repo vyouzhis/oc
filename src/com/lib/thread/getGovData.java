@@ -1,6 +1,5 @@
 package com.lib.thread;
 
-import java.awt.Stroke;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -15,18 +14,17 @@ import org.quartz.JobExecutionException;
 
 import com.alibaba.fastjson.JSON;
 
-
 public class getGovData extends SimpleQuartz implements Job {
 	cUrl curl;
 	String SearchUrl = "http://data.stats.gov.cn/easyquery.htm";
 	String LoginUrl = "http://data.stats.gov.cn/login.htm?m=login";
-	
+
 	public getGovData() {
 		// TODO Auto-generated constructor stub
 		String className = null;
 		className = this.getClass().getCanonicalName();
 		super.GetSubClassName(className);
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -51,8 +49,8 @@ public class getGovData extends SimpleQuartz implements Job {
 		res = curl.httpPost(SearchUrl);
 
 		govJson = JSON.parseObject(res, List.class); // 获取所有的主树
-		//echo(govJson);
-		//echo("pid:"+pid);
+		// echo(govJson);
+		// echo("pid:"+pid);
 		for (Map<String, Object> key : govJson) {
 			subLoop(pid, key.get("id").toString(), key.get("name").toString(),
 					(boolean) key.get("isParent"));
@@ -69,11 +67,11 @@ public class getGovData extends SimpleQuartz implements Job {
 			return;
 
 		subpid = CreateClassify(pid, name);
-		//echo("subpid:"+subpid);
+		// echo("subpid:"+subpid);
 		if (isParent == false) {
 
 			ucid = CreateUserSQL(subpid, name);
-			//echo("ucid:"+ucid);
+			// echo("ucid:"+ucid);
 			DataSave(dataId, ucid, name); // 保存数据
 
 		} else {
@@ -102,47 +100,49 @@ public class getGovData extends SimpleQuartz implements Job {
 				+ "values(%d,'%s', %d, %d, %d);";
 		String sql = "";
 		sql = String.format(format, pid, name, time(), 1, 1);
-		String checkSQLtmp = "select id from "+DB_HOR_PRE+"classify where name='%s' and pid=%d; ";
+		String checkSQLtmp = "select id from " + DB_HOR_PRE
+				+ "classify where name='%s' and pid=%d; ";
 		String checkSQL = String.format(checkSQLtmp, name, pid);
 		Map<String, Object> cMap = FetchOne(checkSQL);
-		if(cMap!=null){
+		if (cMap != null) {
 			return Long.valueOf(cMap.get("id").toString());
 		}
 		try {
-		
+
 			tpid = insert(sql, true);
-			//echo("tpid:"+tpid+" sql:"+sql);
+			// echo("tpid:"+tpid+" sql:"+sql);
 			CommitDB();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 
 		}
-		
+
 		return tpid;
 	}
 
 	private long CreateUserSQL(long cid, String name) {
-		String usql = "SELECT month AS dial,  data AS volume  FROM @arg0@  ORDER BY  month";
+		String usql = "SELECT month AS dial,  data AS volume  FROM  (SELECT act_v0 as data, act_v1 as month  FROM "+ DB_HOR_PRE + "class WHERE rule=@arg0@ ) as gov   ORDER BY  month";
 		String jsonTmp = "[[\"arg0\",\"a01010101\",\"TEXT\",\"字段表名\"]]";
 		String format = " insert INTO "
 				+ DB_HOR_PRE
 				+ "usersql (name,usql, dtype, sql_type, sqltmp, input_data, uview,cid, uid)values('%s','%s', %d, %d, '%s', %d, '%s' ,%d, %d);";
 		String sql = String.format(format, name, usql, 0, 1, jsonTmp, 0, "",
 				cid, 1);
-		long tpid = 0;	
-		
-		String checkSQLtmp="select id from "+DB_HOR_PRE+"usersql where cid=%d and name='%s'";
+		long tpid = 0;
+
+		String checkSQLtmp = "select id from " + DB_HOR_PRE
+				+ "usersql where cid=%d and name='%s'";
 		String checkSQL = String.format(checkSQLtmp, cid, name);
 		Map<String, Object> cMap = FetchOne(checkSQL);
-		if(cMap!=null){
-			echo("===id:"+cMap.get("id"));
+		if (cMap != null) {
+			echo("===id:" + cMap.get("id"));
 			return Long.valueOf(cMap.get("id").toString());
 		}
 		try {
 			tpid = insert(sql, true);
 			CommitDB();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 
@@ -166,7 +166,8 @@ public class getGovData extends SimpleQuartz implements Job {
 		curl.addParams("wds", "[]");
 		curl.httpPost(SearchUrl);
 
-		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\""+mConfig.GetValue("ggd.valuecode")+"\"}]";
+		dfwds = "[{\"wdcode\":\"sj\",\"valuecode\":\""
+				+ mConfig.GetValue("ggd.valuecode") + "\"}]";
 		curl.clearParams();
 		curl.addParams("colcode", "sj");
 		curl.addParams("dbcode", "hgyd");
@@ -176,26 +177,30 @@ public class getGovData extends SimpleQuartz implements Job {
 		curl.addParams("rowcode", "zb");
 		curl.addParams("wds", "[]");
 		String res = curl.httpPost(SearchUrl);
-
-		String format = " insert INTO "
-				+ DB_HOR_PRE
-				+ "class (rule,act_v0,act_v1, act_v2)values(%d, '%s','%s', '%s')";
+		if(res.length() < 10){
+			echo("dfwds:"+dfwds);
+			return;
+		}
+		String format = " insert INTO " + DB_HOR_PRE
+				+ "class (rule,act_v0,act_v1)values(%d, '%s','%s')";
 		String sql = "";
 		String formatI = "INSERT INTO "
 				+ DB_HOR_PRE
 				+ "classinfo (title,view_name,idesc,ctime)values ('%s','%s','%s', %d)";
-		String view = "act_v0 as data, act_v1 as month, act_v2 as unit ";
-		String viewformat = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM "
-				+ DB_HOR_PRE + "class WHERE rule=%d";
-
+		String view = "act_v0 as data, act_v1 as month ";
+		//String viewformat = "CREATE OR REPLACE VIEW %s AS SELECT %s FROM "
+		//		+ DB_HOR_PRE + "class WHERE rule=%d";
+		//String sqlTmpformat = "update "+ DB_HOR_PRE +"sqltmp set  sqltmp= '{\"arg0\":\"%d\"}' where sid='%d';";		
 		String sqltmp = "insert INTO "
 				+ DB_HOR_PRE
-				+ "sqltmp  (sid,name,sqltmp) values(%d, '%s', '{\"arg0\":\"%s\"}')";
+				+ "sqltmp  (sid,name,units, sqltmp) values(%d, '%s','%s','{\"arg0\":\"%d\"}')";
 		String sqltmpSQL = "";
-		
-		String checkSQLtmp = "select id from "+DB_HOR_PRE+"classinfo where view_name = '%s' limit 1;";
+
+		String checkSQLtmp = "select id from " + DB_HOR_PRE
+				+ "classinfo where view_name = '%s' limit 1;";
 		String checkSQL = "";
-		String checkClzztmp = "select rule from "+DB_HOR_PRE+"class where rule=%d and act_v1='%s'  limit 1;";
+		String checkClzztmp = "select rule from " + DB_HOR_PRE
+				+ "class where rule=%d and act_v1='%s'  limit 1;";
 		String checkClzz = "";
 		resJson = JSON.parseObject(res, Map.class);
 
@@ -206,7 +211,7 @@ public class getGovData extends SimpleQuartz implements Job {
 				resJson.get("returndata").toString(), Map.class);
 		List<Object> datanodes = (List<Object>) returndata.get("datanodes");
 		List<Object> wdnodes = (List<Object>) returndata.get("wdnodes");
-
+		String unit = "";
 		int now = time();
 
 		Map<String, Object> mapNodes = (Map<String, Object>) wdnodes.get(0);
@@ -224,18 +229,21 @@ public class getGovData extends SimpleQuartz implements Job {
 		for (Map<String, Object> map : nodes) {
 			// echo(map.get("name")+"--"+map.get("code")+"--"+map.get("memo"));
 			if (!tmpView.equals(map.get("code").toString())) {
+				
 				String sqlI = String.format(formatI, map.get("name"),
 						map.get("code"), map.get("memo"), now);
 				// echo(map.get("name"));
 				classList.put(map.get("code").toString(), sqlI);
 				tmpView = map.get("code").toString();
 			}
-
+			if (map.containsKey("unit")) {
+				unit = map.get("unit").toString();
+			}
 			nameList.put(map.get("code").toString(), map.get("name").toString());
-			UnitList.put(map.get("code").toString(), map.get("unit").toString());
+			UnitList.put(map.get("code").toString(), unit);
 
 		}
-		long cid = 0;
+		long cid = -1,  cidt = -1;
 		String val = "";
 		String dnameo = "", dnamet = "";
 
@@ -254,51 +262,53 @@ public class getGovData extends SimpleQuartz implements Job {
 			String dname = nt[0].substring(3);
 			String dtime = nt[1].substring(3);
 			dtime = dtime.substring(0, 4) + "-" + dtime.substring(4);
-			dnameo = dname;
-			//echo("dnameo:"+dnameo+" dnamet:"+dnamet);
 			
+			// echo("dnameo:"+dnameo+" dnamet:"+dnamet);
 			checkSQL = String.format(checkSQLtmp, dname);
 			Map<String, Object> cMap = FetchOne(checkSQL);
-			if(cMap!=null){
+			if (cMap != null) {
 				checkClzz = String.format(checkClzztmp, cMap.get("id"), dtime);
 				cMap = FetchOne(checkClzz);
-				if(cMap!=null) {
-					echo("rule:"+cMap.get("rule")+ " time:"+dtime);
+				if (cMap != null) {
+					echo("rule:" + cMap.get("rule") + " time:" + dtime);
 					continue;
 				}
 			}
+			dnameo = dname;
 			if (!dnameo.equals(dnamet)) {
-				dnamet = dnameo;
+				
 				try {
-					sqltmpSQL = String.format(sqltmp, pid, nameList.get(dname),
-							dnamet);
-					// echo(sqltmpSQL);
+					cidt = insert(classList.get(dname), true);
 					
-					insert(sqltmpSQL);
-
-					long cidt = insert(classList.get(dname), true);
 
 					if (cidt != -1) {
-						cid = cidt;
-						// echo(cid);
+						sqltmpSQL = String.format(sqltmp, pid, nameList.get(dname),UnitList.get(dname),
+								 cidt);
+						insert(sqltmpSQL);
+						//String vsql = String.format(sqlTmpformat,(int) cidt ,pid);
 
-						String vsql = String.format(viewformat,
-								dname, view, (int) cid);
-						//echo(vsql);
-						dbcreate(vsql);
-
-						CommitDB();
+						//update(vsql);
+						//CommitDB();
 					} else {
+						echo(classList.get(dname));
 						continue;
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				cid = cidt;
+				dnamet = dnameo;
+				echo("=====cid:"+cid);
 			}
-			sql = String.format(format, cid, val, dtime, UnitList.get(dname));
-			//echo(sql);
+
+//			if(cid==-1){
+//				echo("dnameo:"+dnameo+" cid:"+cid+" dnamet:"+dnamet);
+//				//echo(datanodes);
+//			}
+			
+			sql = String.format(format, cid, val, dtime);
+			
 			try {
 				insert(sql);
 			} catch (SQLException e) {
@@ -323,7 +333,7 @@ public class getGovData extends SimpleQuartz implements Job {
 	@Override
 	public String getGroup() {
 		// TODO Auto-generated method stub
-		return "Group_"+SliceName(stdClass);
+		return "Group_" + SliceName(stdClass);
 	}
 
 	@Override

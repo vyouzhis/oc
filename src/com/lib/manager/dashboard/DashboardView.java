@@ -1,8 +1,6 @@
 package com.lib.manager.dashboard;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +8,6 @@ import org.ppl.BaseClass.BasePerminterface;
 import org.ppl.BaseClass.Permission;
 import org.ppl.common.Escape;
 import org.ppl.etc.UrlClassList;
-import org.ppl.etc.globale_config;
 import org.ppl.plug.R.Rlan;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RserveException;

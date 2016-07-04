@@ -67,8 +67,8 @@ DROP TABLE IF EXISTS `hor_apisecret`;
  CREATE TABLE hor_apisecret
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
-  username varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
+  username varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   passwd varchar(32) NOT NULL COMMENT 'login passwd only md5, if only one change code ,pls see here and use https to login',
   ctime int(11) NOT NULL DEFAULT '0' COMMENT 'log time',
   idesc varchar(200) NOT NULL DEFAULT '' COMMENT 'id desc',
@@ -84,7 +84,7 @@ CREATE TABLE hor_cache
   md5 varchar(32) NOT NULL,
   json text COMMENT 'json data',
   ctime timestamp DEFAULT now(),
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name', -- 名称
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name', -- 名称
   uid int(11) NOT NULL  COMMENT 'user id ', -- user id
   isshare int(1) NOT NULL DEFAULT '0' COMMENT '0 no share , 1 share' -- 0 no share , 1 share
 ) DEFAULT CHARSET=utf8;
@@ -95,7 +95,7 @@ CREATE TABLE hor_classify
 (
   id  int(11) NOT NULL AUTO_INCREMENT,
   pid int(11) NOT NULL DEFAULT '0' COMMENT 'pid',
-  name varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  name varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   ctime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
   displays  int(11) NOT NULL DEFAULT '0' COMMENT 'create time', -- 0 显示，1 隐藏
   uid int(11) NOT NULL  COMMENT 'user id ', -- user id
@@ -109,7 +109,7 @@ DROP TABLE IF EXISTS `hor_rlanguage`;
 CREATE TABLE hor_rlanguage
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   cid  int(11) NOT NULL DEFAULT '0' COMMENT 'cid',
   day  int(11) NOT NULL DEFAULT '0' COMMENT 'day',
   hour  int(11) NOT NULL DEFAULT '0' COMMENT 'hour',
@@ -128,7 +128,7 @@ DROP TABLE IF EXISTS `hor_rexcel`;
 CREATE TABLE hor_rexcel
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   path text ,
   ctime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
   etime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
@@ -141,22 +141,22 @@ DROP TABLE IF EXISTS `hor_classinfo`;
 CREATE TABLE hor_classinfo
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title  varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
-  idesc  varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
+  title  varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
+  idesc  text  COMMENT 'idesc',
   ctime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
   view_name varchar(50) NOT NULL DEFAULT '' COMMENT 'name', -- 保存 view 的名称
   ctype  int(1) NOT NULL DEFAULT '0' COMMENT '-- 0 -- csv , 1 -- sql', -- 0 -- csv , 1 -- sql
   uid int(11) NOT NULL DEFAULT '0' COMMENT 'uid', -- user id
   isshare  int(1) NOT NULL DEFAULT '0' COMMENT '0 no share , 1 share', -- 0 no share, 1 share
   PRIMARY KEY (id),
-   UNIQUE (view_name)
+  UNIQUE (view_name)
 )DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `hor_dbsource`;
 CREATE TABLE hor_dbsource
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   dcname varchar(256) NOT NULL DEFAULT '' COMMENT 'name',
   url varchar(256) NOT NULL DEFAULT '' COMMENT 'name',
   username varchar(100) NOT NULL DEFAULT '' COMMENT 'name',
@@ -172,7 +172,7 @@ DROP TABLE IF EXISTS `hor_doc`;
 CREATE TABLE hor_doc
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  title varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  title varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   ctime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
   doc text,
   uid int(11) NOT NULL DEFAULT '0' COMMENT 'uid', -- user id
@@ -184,7 +184,7 @@ DROP TABLE IF EXISTS `hor_mongodbrule`;
 CREATE TABLE hor_mongodbrule
 (
   id int(11) NOT NULL AUTO_INCREMENT,
-  name varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  name varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   collention varchar(256) NOT NULL DEFAULT '' COMMENT 'name',
   qaction int(11) NOT NULL DEFAULT '0' COMMENT 'uid',
   query text NOT NULL,
@@ -207,8 +207,9 @@ CREATE TABLE hor_sqltmp
 (
   id int(11) NOT NULL AUTO_INCREMENT,
   sid  int(11) NOT NULL DEFAULT '0' COMMENT 'cid',
-  name varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  name varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   sqltmp text ,
+  units varchar(256) NOT NULL DEFAULT '' COMMENT 'unit',
   ctime timestamp  DEFAULT now(),
   etime int(11) NOT NULL DEFAULT '0' COMMENT 'create time',
   uid int(11) NOT NULL DEFAULT '0' COMMENT 'uid', -- user id
@@ -222,12 +223,12 @@ CREATE TABLE hor_usersql
 (
   id  int(11) NOT NULL AUTO_INCREMENT,
   usql text,
-  name varchar(30) NOT NULL DEFAULT '' COMMENT 'name',
+  name varchar(200) NOT NULL DEFAULT '' COMMENT 'name',
   modify_time timestamp  DEFAULT now(),
   dtype int(1) NOT NULL DEFAULT '0' COMMENT '0 no share , 1 share',
   sql_type int(1) NOT NULL DEFAULT '0',
   sqltmp text NOT NULL ,
-  uview varchar(256) NOT NULL DEFAULT '' COMMENT 'name',
+  uview varchar(256) NOT NULL DEFAULT '' COMMENT 'name',  
   input_data int(1) NOT NULL DEFAULT '0', -- 0 不导入，1 导入数据
   vtime int(11) NOT NULL DEFAULT '0', -- view 运行完成时间
   cid int(11) NOT NULL DEFAULT '0' COMMENT 'cid', -- classify id

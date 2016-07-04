@@ -117,7 +117,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 		option.calculable(true);
 		Title title = new Title();
-		title.subtext("DiscoveryDBS.com");
+		title.text("DiscoveryDBS.com");
+		//title.text("unit");
 		title.x(X.center);
 		title.y(Y.top);
 		option.title(title);
@@ -181,6 +182,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 	@SuppressWarnings("rawtypes")
 	public String JsonLine() {
+		String unit="";
 		CategoryAxis categoryAxis = new CategoryAxis();
 		categoryAxis.axisLine().onZero(false);
 		categoryAxis.setType(AxisType.value);
@@ -194,10 +196,12 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		List<Object> valAxiList = new ArrayList<>();
 		option.tooltip().trigger(Trigger.axis);
 
+		//option.tooltip().formatter("Temperature : <br/>{b}km : {c}°C");
+
 		boolean Xbool = true;
 		ValueAxis valueAxis = new ValueAxis();
 		valueAxis.setType(AxisType.category);
-
+					    	   
 		if (pieList == null || pieList.size() == 0 || JsonIds.size() == 0)
 			return "";
 		int m = 0;
@@ -218,6 +222,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 			if (toInt(id.get("id")) == 0) {
 				continue;
 			}
+			
+			if(id.containsKey("unit")){
+				unit = id.get("unit").toString();
+			}
+			
 			option.legend(id.get("name").toString());
 
 			List<Map<String, Object>> list = pieList.get(m);
@@ -231,7 +240,8 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				Bar bar = new Bar();
 				bar.name(id.get("name").toString()).itemStyle().normal()
 						.lineStyle();
-				myAxis.name(id.get("name").toString());
+				
+				myAxis.name(id.get("name").toString()+ unit);
 
 				if (markLine_average == 1) {
 					Map<String, String> mkline = new HashMap<>();
@@ -278,6 +288,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				myaAxis.add(myAxis);
 				option.series(bar);
 			} else {
+				
 				Line line = new Line();
 				line.smooth(true).name(id.get("name").toString()).itemStyle()
 						.normal().lineStyle();
@@ -288,7 +299,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 
 				tAxis.scale(true);
 				if (JsonIds.size() == 2) {
-					tAxis.name(id.get("name").toString());
+					tAxis.name(id.get("name").toString()+ unit);
 
 					jCount++;
 				}
@@ -375,10 +386,11 @@ public class EchartsJson extends Permission implements BasePerminterface {
 		}
 
 		myaAxis.add(categoryAxis);
+		
 		option.yAxis(myaAxis);
 
 		// option.yAxis();
-
+		
 		option.xAxis(valueAxis);
 
 		if (Xbool) {
@@ -1015,7 +1027,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 						+ " limit 1";
 
 				tres = FetchOne(sql);
-//				echo(sql);
+				//echo(sql);
 
 				if (tres == null)
 					continue;
@@ -1038,7 +1050,7 @@ public class EchartsJson extends Permission implements BasePerminterface {
 				
 				sql = escapeHtml(sql);
 				
-
+				echo(sql);
 			} else if (qaction == 6) {
 				if (tmp_map == null)
 					continue;

@@ -220,6 +220,7 @@ public class function extends InitCore {
 			String name) {
 		Map<String, Map<String, String>> file = new HashMap<>();
 		Map<String, String> Item = null;
+		String unit="";
 		if (res != null) {
 			for (Map<String, Object> map : res) {
 				Item = new HashMap<>();
@@ -241,17 +242,20 @@ public class function extends InitCore {
 				if (map.containsKey("sqltmp")) {
 					Item.put("sqltmp", map.get("sqltmp").toString());
 				}
-
+				if(map.containsKey("units")){
+					unit = " ("+map.get("units").toString()+")";
+				}
+				Item.put("unit", unit);
 				file.put(map.get("id").toString(), Item);
 			}
 		}
-		Map<String, Object> Mongo;
-		Mongo = new HashMap<String, Object>();
+		Map<String, Object> Trees;
+		Trees = new HashMap<String, Object>();
 
-		Mongo.put("children", file);
-		Mongo.put("name", name);
-		Mongo.put("id", id);
-		return Mongo;
+		Trees.put("children", file);
+		Trees.put("name", name);
+		Trees.put("id", id);
+		return Trees;
 	}
 
 }

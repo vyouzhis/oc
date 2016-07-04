@@ -7,47 +7,32 @@ import java.util.Map;
 import org.ppl.BaseClass.BaseRapidThread;
 import org.ppl.db.MGDB;
 import org.ppl.net.cUrl;
+import org.ppl.plug.Quartz.SimpleQuartz;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import com.alibaba.fastjson.JSON;
 
-public class getJPGovMongoDB extends BaseRapidThread {
+public class getJPGovMongoDB extends SimpleQuartz implements Job {
 	private cUrl curl;
 	private String url;
 	private static String Ver = "2.0";
 	private static String appId = "abb68400ed0dd8e8828b6d8b3e32154c111561b4";
 	// private static String lang = "E";
 	private static int limit = 1000;
-	private String statsField = "";
+	private String statsField = "06";
 	private int tolNumber = 0;
 	private List<String> KeyList;
 	MGDB mgdb = new MGDB();
-	
-	@Override
-	public String title() {
-		// TODO Auto-generated method stub
-		String className = this.getClass().getCanonicalName();
 
-		return _CLang(SliceName(className));
+	public getJPGovMongoDB() {
+		// TODO Auto-generated method stub
+		String className = null;
+		className = this.getClass().getCanonicalName();
+		super.GetSubClassName(className);
 	}
 
-	@Override
-	public void Run() {
-		// TODO Auto-generated method stub
-		curl = new cUrl();
-		
-		int startPosition = 0;
-		KeyList = new ArrayList<>();
-		boolean StatsList = true;
-		while (StatsList) {
-			echo(statsField+" = startPosition:"+startPosition);
-			StatsList = getStatsList(startPosition);
-			startPosition += limit;
-		}
-
-		echo("getJPGovData end... ");
-	}
-	
-	
 	@SuppressWarnings("unchecked")
 	private boolean getStatsList(int startPosition) {
 
@@ -56,6 +41,7 @@ public class getJPGovMongoDB extends BaseRapidThread {
 				+ "&startPosition=" + startPosition + "&statsField="
 				+ statsField;
 		// if(startPosition > 100) return; // ===========================
+		//echo("url:"+url);
 		String res = "";
 		int loopTime = 0;
 		while (true) {
@@ -71,7 +57,7 @@ public class getJPGovMongoDB extends BaseRapidThread {
 				return false;
 			loopTime++;
 		}
-
+		
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 		Map<String, Object> GET_STATS_LIST = (Map<String, Object>) json
 				.get("GET_STATS_LIST");
@@ -83,11 +69,11 @@ public class getJPGovMongoDB extends BaseRapidThread {
 			echo("getStatsList startPosition:" + startPosition);
 			return false;
 		}
-		
+
 		res = res.replace("$", "volume");
 		res = res.replace("@", "");
-		//echo(res);
-		mgdb.SetCollection("getStatsList_"+statsField);
+		// echo(res);
+		mgdb.SetCollection("getStatsList_" + statsField);
 		mgdb.Insert(res);
 
 		Map<String, Object> DATALIST_INF = (Map<String, Object>) GET_STATS_LIST
@@ -110,22 +96,23 @@ public class getJPGovMongoDB extends BaseRapidThread {
 			// n++;
 			if (!map.containsKey("TITLE"))
 				continue;
-	
+
 			String id = map.get("@id").toString();
 			KeyList.clear();
 			getMetaInfo(id);
 
 			boolean StatsData = true;
-			//long StatsData_startPosition = getNowStatsDataID(id);
-			 long StatsData_startPosition = 0;
+			// long StatsData_startPosition = getNowStatsDataID(id);
+			long StatsData_startPosition = 0;
 			// echo("StatsData_startPosition:"+StatsData_startPosition+" id:"+id);
-			int im=0;
-			mgdb.SetCollection("getStatsData_"+statsField);
+			int im = 0;
+			mgdb.SetCollection("getStatsData_" + statsField);
 			while (StatsData) {
 				StatsData = getStatsData(StatsData_startPosition, id);
 				StatsData_startPosition += limit;
 				im++;
-				if(im>5)break;
+				if (im > 5)
+					break;
 			}
 
 		}
@@ -134,7 +121,7 @@ public class getJPGovMongoDB extends BaseRapidThread {
 
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void getMetaInfo(String statsDataId) {
 		String url = "http://api.e-stat.go.jp/rest/" + Ver
@@ -153,10 +140,10 @@ public class getJPGovMongoDB extends BaseRapidThread {
 				break;
 			}
 			if (loopTime > 5)
-				return ;
+				return;
 			loopTime++;
 		}
-		
+
 		Map<String, Object> json = JSON.parseObject(res, Map.class);
 
 		Map<String, Object> GET_META_INFO = (Map<String, Object>) json
@@ -168,22 +155,22 @@ public class getJPGovMongoDB extends BaseRapidThread {
 			echo("STATUS:" + RESULT.get("STATUS"));
 			echo("error:" + RESULT.get("ERROR_MSG"));
 
-			return ;
+			return;
 		}
-		
+
 		res = res.replace("$", "volume");
 		res = res.replace("@", "");
-		//echo(res);
-		mgdb.SetCollection("getMetaInfo_"+statsField);
+		// echo(res);
+		mgdb.SetCollection("getMetaInfo_" + statsField);
 		mgdb.Insert(res);
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private boolean getStatsData(long startPosition, String statsDataId) {
 
 		// echo("getStatsData m:"+m);
-		
+
 		String url = "http://api.e-stat.go.jp/rest/" + Ver
 				+ "/app/json/getStatsData?appId=" + appId + "&statsDataId="
 				+ statsDataId + "&metaGetFlg=N&limit=" + limit
@@ -226,31 +213,49 @@ public class getJPGovMongoDB extends BaseRapidThread {
 					+ " statsDataId:" + statsDataId);
 			return false;
 		}
-		
+
 		res = res.replace("$", "volume");
 		res = res.replace("@", "");
-		//echo(res);		
+		// echo(res);
 		mgdb.Insert(res);
 
 		return true;
 	}
 
 	@Override
-	public boolean isRun() {
+	public void execute(JobExecutionContext context)
+			throws JobExecutionException {
 		// TODO Auto-generated method stub
-		return false;
+		curl = new cUrl();
+
+		int startPosition = 0;
+		KeyList = new ArrayList<>();
+		boolean StatsList = true;
+		while (StatsList) {
+			echo(statsField + " = startPosition:" + startPosition);
+			StatsList = getStatsList(startPosition);
+			startPosition += limit;
+		}
+
+		echo("getJPGovData end... ");
 	}
 
 	@Override
-	public boolean Stop() {
+	public String getGroup() {
 		// TODO Auto-generated method stub
-		return false;
+		return "Group_" + SliceName(stdClass);
 	}
 
 	@Override
-	public void mailbox(Object o) {
+	public int withRepeatCount() {
 		// TODO Auto-generated method stub
-		statsField = (String) o;
+		return 0;
+	}
+
+	@Override
+	public int withIntervalInSeconds() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -296,6 +296,7 @@ CREATE TABLE hor_classinfo
   idesc character varying NOT NULL DEFAULT ''::character varying,
   ctime integer NOT NULL DEFAULT 1,
   view_name character varying(50), -- 保存 view 的名称
+  view_sql text ,  
   ctype integer NOT NULL DEFAULT 0, -- 0 -- csv , 1 -- sql
   uid integer NOT NULL DEFAULT 1, -- user id
   isshare integer NOT NULL DEFAULT 0, -- 0 no share, 1 share
@@ -390,6 +391,7 @@ CREATE TABLE hor_sqltmp
   sid integer NOT NULL,
   name character varying NOT NULL,
   sqltmp text NOT NULL DEFAULT ''::character varying,
+  units character varying(256) NOT NULL DEFAULT ''::character varying,
   ctime timestamp without time zone DEFAULT now(),
   etime integer NOT NULL DEFAULT 0,
   uid integer NOT NULL DEFAULT 1, -- user id
@@ -415,6 +417,7 @@ CREATE TABLE hor_usersql
   sql_type integer NOT NULL DEFAULT 0,
   sqltmp text NOT NULL DEFAULT ''::character varying,
   uview character varying(256) NOT NULL DEFAULT ''::character varying,
+  
   input_data integer NOT NULL DEFAULT 0, -- 0 不导入，1 导入数据
   vtime integer NOT NULL DEFAULT 0, -- view 运行完成时间
   cid integer NOT NULL DEFAULT 0, -- classify id

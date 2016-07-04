@@ -126,7 +126,7 @@ public class ListSQL extends Permission implements BasePerminterface {
 		formats.add("select id,usql,name,sql_type,sqltmp,cid from " + DB_HOR_PRE
 				+ "usersql where sql_type=0 and input_data=0 and "
 				+ UserPermi() + " and cid="+lid);
-		formats.add("select s.id,s.name,u.cid from " + DB_HOR_PRE
+		formats.add("select s.id,s.name,s.units,u.cid from " + DB_HOR_PRE
 				+ "sqltmp s, " + DB_HOR_PRE
 				+ "usersql u where u.id=s.sid  and (u.uid = " + aclGetUid()
 				+ " or u.isshare=1) and u.cid= "+lid+" order by s.id desc");
