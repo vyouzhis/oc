@@ -47,17 +47,20 @@
 		
 						<div class="widget-body">
 							<div class="widget-main">
-								<textarea id="r_query" name="r_query"  rows="20" cols="100" style="width:98%;" onkeypress="FoundVar(event)">${rcode!""}</textarea>
+								<pre  style="width:98%;margin: 0;position: absolute;top: 0;bottom: 0;left: 0;right: 0; height: 300px;"  id="editor">
+
+								</pre>
+								 
 							</div>
 						</div>
 					</div>	
 				</div>
-				<div class="col-xs-12 col-sm-12">
+			  <div class="col-xs-12 col-sm-12">
 					<h3 class="header smaller lighter blue">
 						[<a href="javascript:void(0)" onclick="ScriptR()">查询</a>] <small>结果:
 						</small>
 					</h3>
-				</div>
+				</div> 
 			  	<div class="col-xs-12 col-sm-12">         			      
 			        <h5><span id="json_result" name="json_result"></span></h5> 			       
 		      	</div>		
@@ -265,9 +268,32 @@ print(l)
     <script type="text/javascript" src="${static_js_uri}/pretty_json/underscore-min.js" ></script>
   <script type="text/javascript" src="${static_js_uri}/pretty_json/backbone-min.js" ></script>
   <script type="text/javascript" src="${static_js_uri}/pretty_json/pretty-json-min.js" ></script>
+  
   <script type="text/javascript" src="${static_js_uri}/textcomplete/jquery.textcomplete.min.js"></script> 
+  
   <script src="${static_js_uri}/fuelux/fuelux.spinner.min.js"></script>
+  
+  
   <script type="text/javascript" charset="utf-8" src="${static_js_uri}/cookie.js"></script>
+  
+  
+  <script type="text/javascript" charset="utf-8" src="${static_js_uri}/ace_editor/ace.js"></script>
+  <script type="text/javascript" charset="utf-8" src="${static_js_uri}/ace_editor/ext-language_tools.js"></script>
+  
+  <script type="text/javascript">
+    // trigger extension
+    ace.require("ace/ext/language_tools");
+    var editor = ace.edit("editor");
+    editor.session.setMode("ace/mode/python");
+    editor.setTheme("ace/theme/tomorrow");
+    // enable autocompletion and snippets
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+</script>
+
   <script type="text/javascript">
   
 	var RKeyWords = ${r_key_list};
@@ -286,53 +312,7 @@ print(l)
 		$('#loophour').ace_spinner({value:0,min:0,max:24,step:1, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
 		$('#loopminu').ace_spinner({value:0,min:0,max:60,step:5, on_sides: true, icon_up:'icon-plus smaller-75', icon_down:'icon-minus smaller-75', btn_up_class:'btn-success' , btn_down_class:'btn-danger'});
 		
-		var completes = [
-							{							
-					    	match: /\b([a-zA-Z._]{2,})$/,
-					        search: function (term, callback) {
-					            callback($.map(RKeyWords, function (element) {
-					                return element.indexOf(term) === 0 ? element : null;
-					            }));
-					        },
-					        template: function (value) {
-					        	console.log("value:"+value);
-					        	var val = value.substr(0, value.length-4);
-					        	var lats = value.substr(value.length-4, 4);
-					        	if(lats == "_var" ){					        		
-					        		return '<i class="orange icon-exclamation-sign"></i>&nbsp;' + val;	
-					        	}else if(lats == "_fun"){
-									return '<i class="purple icon-exclamation-sign"></i>&nbsp;' + val;
-					        	}
-					        	else{
-					        		return '<i class="green icon-exclamation-sign"></i>&nbsp;' + value;
-					        	}
-					            
-					        },
-					        index: 1,
-					        replace: function (element) {
-					        	var val = element.substr(0, element.length-4);
-					        	var lat = element.substr(element.length-4, 4);
-					        	if(lat =="_var"){
-					        		return val;
-					        	}else if(lat == "_fun"){
-					        		return [val+'(',  ')'];
-					        	}
-					        	else{
-					        		return [element+'(',  ')'];
-					        	}
-
-					        }
-					    },
-					    					    
-					];	
-		$('#r_query').textcomplete(completes);
-
-		$("#r_query").linedtextarea(
-				{selectedLine: 1}
-			);
 		
-		
-		setTimeout(initEdits, 2000);
 		
 	   	setInterval("myInterval()",10000);//1000为1秒钟  60秒一次
 		
@@ -389,59 +369,12 @@ print(l)
 		
 	}
 	
-	function FoundVar(e){
-		if(e.keyCode == 13){
-			var stemTxt=$("#r_query").val();
-			//console.log("stemTxt:"+stemTxt);	
-			var rLine = stemTxt.replace("\r","").split("\n");;
-			//console.log("length:"+rLine.length);
-			for(var i=0; i<rLine.length; i++){
-				if(rLine[i].indexOf("<-") > 0){
-					var rVar = rLine[i].split("<-");
-					//console.log("rVar:"+rVar[0]+" fun:"+rVar[1]+" isfun:"+rVar[1].indexOf("function"));	
-					if(rVar[1].indexOf("function") >=0){
-						if(RKeyWords.indexOf(rVar[0].trim()+"_fun")==-1){
-							RKeyWords.push(rVar[0].trim()+"_fun");
-							//console.log("fun_:"+rVar[0]);
-						}
-					}else{ 
-						if(RKeyWords.indexOf(rVar[0].trim()+"_var")==-1){
-							RKeyWords.push(rVar[0].trim()+"_var");
-							//console.log("var_:"+rVar[0]);
-						}
-					}					
-				}
-			}
-						
-			$("#li_save").attr("class","");
-			$("#li_excel").attr("class","");
-			$("#li_tiptab").attr("class","active");
-			$("#li_helps").attr("class","");
-			$("#li_pack").attr("class","");
-			
-			$("#save").attr("class","tab-pane");
-			$("#excel").attr("class","tab-pane");
-			$("#tiptab").attr("class","tab-pane in active");
-			$("#helps").attr("class","tab-pane");
-			$("#pack").attr("class","tab-pane");
-		}		
-	}
 
-	function initEdits(){
-	  var initEDit = getCookie("REdit");
-	  var editCon = '${REdit!""}';
-	  if(editCon.length > 0){
-		   $("#r_query").val(unescape(editCon));
-	   }
-	  else if(initEDit.length >0){			    	   
-		  $("#r_query").val(unescape(initEDit));
-	    }
-	    
-	   // console.log("initEDit:"+initEDit);
-	}
+
+
 	function myInterval()
 		{
-	   var stemTxt=$("#r_query").val();
+	   var stemTxt=$("#editor").val();
 	   if(stemTxt.length > 1){
 	   		setCookie("REdit", escape(stemTxt), 1);
 	   }
@@ -454,7 +387,7 @@ print(l)
 			alert("标题不能为空");
 			return false;
 		}
-		if($("#r_query").val().length == 0){
+		if($("#editor").val().length == 0){
 			alert("R 规则不能为空");
 			return false;
 		}
@@ -467,7 +400,7 @@ print(l)
 		return true;
 	}
 	
-
+	/*
 	$(document).on("keyup", function(e) {
 		
 	    var code = e.which;
@@ -515,7 +448,7 @@ print(l)
 			  }
 			});
 	}
-	
+	*/
 	function ScriptR(){
 		$("#rload").attr("class","icon-spinner icon-spin orange bigger-125");
 		$.ajax({
@@ -550,64 +483,6 @@ print(l)
 			});
 	}
 		
-	function ajaxLoog(o, dataName){
-		var dataURL = myChart.getDataURL();
-		var step = 1024*2;
-		var len = Math.ceil(dataURL.length/step) ;
-		if(o>=len) return;
-		
-		$("#loop_ico").attr("class","icon-spinner icon-spin orange bigger-125");
-
-		var datasplit = dataURL.substr(o*step, step);
-		$.ajax({
-		  url: "${saveimg_url!''}?jsoncallback=?",
-		  contentType: 'text/html;charset=utf-8',
-		  //async: false,
-		  data:{"data":datasplit,"n":o,"len":len,"name":dataName},
-		  success: function(result){
-			 // console.log("success:"+result);
-		  },
-		  error: function(request, textStatus, errorThrown) {
-		    //alert(textStatus);
-		  },
-		  complete: function(request, textStatus) { //for additional info
-			  var option = request.responseText;
-			 // console.log("option:"+option);
-			  $("#loop_name").html( Math.ceil(option/len*100) +"%");
-			  if(parseInt(option)==len-1){					  
-				CreateImg(dataName);
-				$("#loop_ico").attr("class","icon-th-large");
-				$("#loop_name").html( "保存图表");
-			  }else{
-				  ajaxLoog(o+1, dataName);
-			  }
-		  }
-		});			
-		
-	}
 	
-	function checkFile(ImgName){
-		$.ajax({
-			  url: "${searchimg_url!''}?jsoncallback=?",
-			  contentType: 'text/html;charset=utf-8',
-			  //async: false,
-			  data:{"ImgName":ImgName},
-			  success: function(result){
-				 // console.log("success:"+result);
-			  },
-			  error: function(request, textStatus, errorThrown) {
-			    //alert(textStatus);
-			  },
-			  complete: function(request, textStatus) { //for additional info
-				  var option = request.responseText;
-				 // console.log("option:"+option);
-				  if(parseInt(option)==1){						  
-					  CreateImg(ImgName);				
-				  }else{
-					  ajaxLoog(0, ImgName);
-				  }
-			  }
-			});		
-	}
 </script>  
  

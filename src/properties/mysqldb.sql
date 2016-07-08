@@ -306,10 +306,11 @@ CREATE TABLE hor_class
   act_v3d text,
   act_v3e text,
   act_v3f text,
-  act_v40 text,
+  act_v40 text,  
   modify_time timestamp  DEFAULT now(),
   uid int(11) NOT NULL DEFAULT '0' COMMENT 'user id ', -- user id
-  isshare int(1) NOT NULL DEFAULT '0' COMMENT '0 no share , 1 share' -- 0 no share , 1 share
+  isshare int(1) NOT NULL DEFAULT '0' COMMENT '0 no share , 1 share', -- 0 no share , 1 share
+  KEY `rule_index` (`rule`)
 )DEFAULT CHARSET=utf8;
 
 
